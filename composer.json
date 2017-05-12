@@ -1,0 +1,32 @@
+{
+  "name": "meanbee/magedbm2",
+  "description": "Magento 2 database backup and import tool",
+  "homepage": "https://github.com/meanbee/magedbm2",
+  "license": "OSL-3.0",
+  "keywords": [
+    "magento2",
+    "magento",
+    "database",
+    "backup",
+    "magedbm2",
+    "magedbm"
+  ],
+  "authors": [
+    {
+      "name": "Tomas Gerulaitis",
+      "email": "tomas.gerulaitis@meanbee.com"
+    }
+  ],
+  "bin": [
+    "bin/magedbm2"
+  ],
+  "require": {
+    "php": ">=7.0.0",
+    "symfony/console": "~3.2.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Meanbee\\Magedbm2\\": "src/"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+<?php
+
+$autoload_file = __DIR__ . "/../vendor/autoload.php";
+
+if (!file_exists($autoload_file) || !($loader = require_once $autoload_file)) {
+    trigger_error("Dependencies have not been installed. Have you run 'composer install'?", E_USER_ERROR);
+}
+
+$app = new Meanbee\Magedbm2\Application($loader);
+$app->run();
