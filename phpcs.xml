@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ruleset name="magedbm2 Code Standard">
+    <description>Custom Code Standard for magedbm2</description>
+
+    <rule ref="PSR2"/>
+</ruleset>
