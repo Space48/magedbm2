@@ -13,4 +13,13 @@ interface DatabaseInterface
      * @return void
      */
     public function import($file);
+
+    /**
+     * Dump the database into a backup file.
+     *
+     * @param string[] $strip_tables List of tables to dump with no data.
+     *
+     * @return string Path to the database dump.
+     */
+    public function dump($strip_tables = ["@development"]);
 }
