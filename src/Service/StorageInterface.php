@@ -52,6 +52,16 @@ interface StorageInterface
     public function download($project, $file);
 
     /**
+     * Delete the given backup file from the given project.
+     *
+     * @param string $project
+     * @param string $file
+     *
+     * @return void
+     */
+    public function delete($project, $file);
+
+    /**
      * Delete old backup files for the given project, keeping only the latest few.
      *
      * @param string $project
