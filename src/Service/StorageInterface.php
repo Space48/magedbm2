@@ -2,8 +2,26 @@
 
 namespace Meanbee\Magedbm2\Service;
 
+use Meanbee\Magedbm2\Service\Storage\Data\File;
+
 interface StorageInterface
 {
+    /**
+     * List available projects.
+     *
+     * @return string[]
+     */
+    public function listProjects();
+
+    /**
+     * List backup files available in the given project.
+     *
+     * @param string $project
+     *
+     * @return File[]
+     */
+    public function listFiles($project);
+
     /**
      * Get the name of the latest backup file in the given project.
      *
