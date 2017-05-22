@@ -12,4 +12,7 @@ class File
 
     /** @var int $size */
     public $size;
+
+    /** @var DateTime $last_modified */
+    public $last_modified;
 }

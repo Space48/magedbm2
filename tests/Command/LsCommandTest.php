@@ -52,6 +52,7 @@ class LsCommandTest extends TestCase
             $file->name = $name;
             $file->project = "test";
             $file->size = (rand(1, 100) / 10) * 1024 * 1024;
+            $file->last_modified = new \DateTime();
 
             return $file;
         }, $files);
