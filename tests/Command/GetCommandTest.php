@@ -31,11 +31,8 @@ class GetCommandTest extends TestCase
 
         $filesystem = $this->createMock(FilesystemInterface::class);
 
-        $tester = $this->getCommandTester($database, $storage, $filesystem);
+        $tester = $this->getCommandTester($database, $storage, $filesystem, true);
         $tester
-            ->setInputs([
-                "yes",
-            ])
             ->execute([
                 "project" => "test",
                 "file"    => "backup-file.sql.gz",
@@ -63,11 +60,8 @@ class GetCommandTest extends TestCase
             ->method("move")
             ->willReturn(true);
 
-        $tester = $this->getCommandTester($database, $storage, $filesystem);
+        $tester = $this->getCommandTester($database, $storage, $filesystem, true);
         $tester
-            ->setInputs([
-                "yes",
-            ])
             ->execute([
                 "project"         => "Test",
                 "file"            => "backup-file.sql.gz",
@@ -90,21 +84,12 @@ class GetCommandTest extends TestCase
         $storage = $this->createMock(StorageInterface::class);
         $filesystem = $this->createMock(FilesystemInterface::class);
 
-        $tester = $this->getCommandTester($database, $storage, $filesystem);
+        $tester = $this->getCommandTester($database, $storage, $filesystem, false);
         $tester
-            ->setInputs([
-                "no",
-            ])
             ->execute([
                 "project" => "test",
                 "file"    => "backup-file.sql.gz",
             ]);
-
-        $this->assertContains(
-            "Are you sure",
-            $tester->getDisplay(),
-            "Failed to locate a confirmation question in the command output."
-        );
     }
 
     /**
@@ -128,12 +113,6 @@ class GetCommandTest extends TestCase
             "file"    => "backup-file.sql.gz",
             "--force" => true,
         ]);
-
-        $this->assertNotContains(
-            "Are you sure",
-            $tester->getDisplay(),
-            "Unexpected confirmation message found in the command output."
-        );
     }
 
     /**
@@ -169,11 +148,17 @@ class GetCommandTest extends TestCase
      *
      * @return CommandTester
      */
-    protected function getCommandTester($database, $storage, $filesystem)
+    protected function getCommandTester($database, $storage, $filesystem, $confirmation = false)
     {
         $command = new GetCommand($database, $storage, $filesystem);
+
+        $helper = $this->createMock(QuestionHelper::class);
+        $helper
+            ->method("ask")
+            ->willReturn($confirmation);
+
         $command->setHelperSet(new HelperSet([
-            "question" => new QuestionHelper(),
+            "question" => $helper,
         ]));
 
         $tester = new CommandTester($command);
