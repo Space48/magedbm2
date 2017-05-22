@@ -37,6 +37,7 @@ class Combined implements ConfigInterface
     public function load()
     {
         if (!$this->loaded) {
+            $this->loadDefaultConfig();
             $this->loadFromFile($this->input->getOption("config") ?: $this->getDefaultConfigFile());
             $this->loadFromInput($this->input);
 
@@ -96,6 +97,16 @@ class Combined implements ConfigInterface
         }, explode("/", self::DEFAULT_CONFIG_FILE)));
 
         return implode(DIRECTORY_SEPARATOR, $config_path);
+    }
+
+    /**
+     * Load default configuration option values.
+     */
+    protected function loadDefaultConfig()
+    {
+        $this->data = array_merge($this->data, [
+            "tmp_dir" => sys_get_temp_dir() . DIRECTORY_SEPARATOR . "magedbm2",
+        ]);
     }
 
     /**
