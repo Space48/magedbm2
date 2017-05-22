@@ -4,6 +4,9 @@ namespace Meanbee\Magedbm2;
 
 use Composer\Autoload\ClassLoader;
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Service\DatabaseInterface;
+use Meanbee\Magedbm2\Service\FilesystemInterface;
+use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,6 +21,9 @@ class Application extends \Symfony\Component\Console\Application
 
     /** @var ConfigInterface $config */
     protected $config;
+
+    /** @var array */
+    protected $services;
 
     public function __construct(ClassLoader $autoloader = null)
     {
@@ -61,6 +67,18 @@ class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Get a service instance.
+     *
+     * @param string $name
+     *
+     * @return DatabaseInterface|StorageInterface|FilesystemInterface|null
+     */
+    public function getService($name)
+    {
+        return $this->services[$name];
+    }
+
+    /**
      * @inheritdoc
      */
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -80,6 +98,7 @@ class Application extends \Symfony\Component\Console\Application
     public function init(InputInterface $input)
     {
         $this->initConfig($input);
+        $this->initServices();
     }
 
     /**
@@ -92,5 +111,17 @@ class Application extends \Symfony\Component\Console\Application
     protected function initConfig(InputInterface $input)
     {
         $this->config = new Application\Config\Combined($this, $input);
+    }
+
+    /**
+     * Initialise the available services.
+     *
+     * @return void
+     */
+    protected function initServices()
+    {
+        $this->services = [];
+
+        $this->services["storage"] = new Service\Storage\S3($this);
     }
 }
