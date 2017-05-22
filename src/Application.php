@@ -123,5 +123,6 @@ class Application extends \Symfony\Component\Console\Application
         $this->services = [];
 
         $this->services["storage"] = new Service\Storage\S3($this);
+        $this->services["filesystem"] = new Service\Filesystem\Simple();
     }
 }
