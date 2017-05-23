@@ -146,7 +146,7 @@ class S3 implements StorageInterface
         $key = $this->getFileKey($project, $file);
         $bucket = $this->getConfig()->get("bucket");
         $local_file = implode(DIRECTORY_SEPARATOR, [
-            $this->getConfig()->get("tmp_dir"),
+            $this->getConfig()->getTmpDir(),
             $file
         ]);
 

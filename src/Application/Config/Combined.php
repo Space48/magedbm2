@@ -4,6 +4,7 @@ namespace Meanbee\Magedbm2\Application\Config;
 
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -68,6 +69,26 @@ class Combined implements ConfigInterface
         $this->load();
 
         return $this->data[$option];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTmpDir()
+    {
+        $dir = $this->get("tmp_dir");
+
+        if (!file_exists($dir)) {
+            if (!mkdir($dir, 0777, true)) {
+                throw new RuntimeException(sprintf("Unable to create the temporary directory '%s'", $dir));
+            }
+        }
+
+        if (!is_dir($dir) || !is_writable($dir)) {
+            throw new RuntimeException(sprintf("Unable to write a temporary backup file to '%s'", $dir));
+        }
+
+        return $dir;
     }
 
     /**

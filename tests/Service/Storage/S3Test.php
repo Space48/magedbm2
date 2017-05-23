@@ -260,16 +260,10 @@ class S3Test extends TestCase
         $config = $this->createMock(Application\ConfigInterface::class);
         $config
             ->method("get")
-            ->will($this->returnCallback(function ($param) use ($bucket, $tmp_dir) {
-                switch ($param) {
-                    case "bucket":
-                        return $bucket;
-                    case "tmp_dir":
-                        return $tmp_dir;
-                }
-
-                return null;
-            }));
+            ->willReturn($bucket);
+        $config
+            ->method("getTmpDir")
+            ->willReturn($tmp_dir);
 
         $client = $this->getMockBuilder(S3Client::class)
             ->disableOriginalConstructor()

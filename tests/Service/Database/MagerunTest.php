@@ -52,7 +52,7 @@ class MagerunTest extends TestCase
 
         $config = $this->createMock(Application\ConfigInterface::class);
         $config
-            ->method("get")
+            ->method("getTmpDir")
             ->willReturn("/tmp/test");
 
         $command = $this->createMock(DumpCommand::class);

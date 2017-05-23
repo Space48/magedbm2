@@ -161,7 +161,7 @@ class Magerun implements DatabaseInterface
      */
     protected function getBackupFilePath($identifier)
     {
-        $dir = $this->getConfig()->get("tmp_dir");
+        $dir = $this->getConfig()->getTmpDir();
         if ($dir && substr($dir, -1) !== DIRECTORY_SEPARATOR) {
             $dir .= DIRECTORY_SEPARATOR;
         }
