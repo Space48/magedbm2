@@ -7,9 +7,16 @@ use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class Application
+ * @package Meanbee\Magedbm2
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Application extends \Symfony\Component\Console\Application
 {
 
@@ -75,6 +82,10 @@ class Application extends \Symfony\Component\Console\Application
      */
     public function getService($name)
     {
+        if (!isset($this->services[$name])) {
+            throw new LogicException(sprintf("Requested service '%s' not found.", $name));
+        }
+
         return $this->services[$name];
     }
 
@@ -91,7 +102,7 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * Initialise the application, including configuration, services and available commands.
      *
-     * @param InputInterface  $input
+     * @param InputInterface $input
      *
      * return void
      */
@@ -99,6 +110,7 @@ class Application extends \Symfony\Component\Console\Application
     {
         $this->initConfig($input);
         $this->initServices();
+        $this->initCommands();
     }
 
     /**
@@ -125,5 +137,33 @@ class Application extends \Symfony\Component\Console\Application
         $this->services["database"] = new Service\Database\Magerun($this);
         $this->services["storage"] = new Service\Storage\S3($this);
         $this->services["filesystem"] = new Service\Filesystem\Simple();
+    }
+
+    /**
+     * Initialise the available commands.
+     *
+     * @return void
+     */
+    protected function initCommands()
+    {
+        $this->add(new Command\GetCommand(
+            $this->getService("database"),
+            $this->getService("storage"),
+            $this->getService("filesystem")
+        ));
+
+        $this->add(new Command\LsCommand(
+            $this->getService("storage")
+        ));
+
+        $this->add(new Command\PutCommand(
+            $this->getService("database"),
+            $this->getService("storage"),
+            $this->getService("filesystem")
+        ));
+
+        $this->add(new Command\RmCommand(
+            $this->getService("storage")
+        ));
     }
 }
