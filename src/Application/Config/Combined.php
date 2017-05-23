@@ -151,7 +151,12 @@ class Combined implements ConfigInterface
      */
     protected function loadFromInput(InputInterface $input)
     {
-        $this->data = array_merge($this->data, $input->getOptions());
+        $this->data = array_merge(
+            $this->data,
+            array_filter($input->getOptions(), function ($value) {
+                return $value !== null;
+            })
+        );
     }
 
     /**
