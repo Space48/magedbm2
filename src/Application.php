@@ -122,6 +122,7 @@ class Application extends \Symfony\Component\Console\Application
     {
         $this->services = [];
 
+        $this->services["database"] = new Service\Database\Magerun($this);
         $this->services["storage"] = new Service\Storage\S3($this);
         $this->services["filesystem"] = new Service\Filesystem\Simple();
     }

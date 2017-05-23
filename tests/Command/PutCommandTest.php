@@ -53,7 +53,10 @@ class PutCommandTest extends TestCase
         $database
             ->expects($this->once())
             ->method("dump")
-            ->with($this->equalTo(["test_table", "other_table"]));
+            ->with(
+                $this->equalTo("test"),
+                $this->equalTo("test_table other_table")
+            );
 
         $storage = $this->createMock(StorageInterface::class);
         $filesystem = $this->createMock(FilesystemInterface::class);

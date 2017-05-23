@@ -77,10 +77,10 @@ class PutCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $project = $input->getArgument("project");
-        $strip_tables = $input->getOption("strip") ? explode(" ", $input->getOption("strip")) : ["@development"];
+        $strip_tables = $input->getOption("strip") ?: "@development";
 
         try {
-            $local_file = $this->database->dump($strip_tables);
+            $local_file = $this->database->dump($project, $strip_tables);
         } catch (ServiceException $e) {
             $output->writeln(sprintf(
                 "<error>Failed to create a database backup file: %s</error>",
