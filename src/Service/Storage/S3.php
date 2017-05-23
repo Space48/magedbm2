@@ -253,8 +253,8 @@ class S3 implements StorageInterface
                 $params["region"] = $region;
             }
 
-            if ($access_key = $this->getConfig()->get("access-key")
-                && $secret_key = $this->getConfig()->get("secret-key")
+            if (($access_key = $this->getConfig()->get("access-key"))
+                && ($secret_key = $this->getConfig()->get("secret-key"))
             ) {
                 $params["credentials"] = [
                     "key"    => $access_key,
