@@ -83,7 +83,7 @@ class GetCommand extends Command
         if (!$input->getOption("force") && !$input->getOption("download-only")) {
             /** @var QuestionHelper $helper */
             $helper = $this->getHelper("question");
-            $question = new ConfirmationQuestion("Are you sure you with to overwrite the local database? [y/N]", false);
+            $question = new ConfirmationQuestion("Are you sure you with to overwrite the local database? [y/N] ", false);
 
             if (!$helper->ask($input, $output, $question)) {
                 return static::RETURN_CODE_NO_ERROR;
