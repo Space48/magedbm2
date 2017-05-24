@@ -79,6 +79,11 @@ class PutCommand extends Command
         $project = $input->getArgument("project");
         $strip_tables = $input->getOption("strip") ?: "@development";
 
+        $output->writeln(
+            "<info>Creating a backup file of the database...</info>",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+
         try {
             $local_file = $this->database->dump($project, $strip_tables);
         } catch (ServiceException $e) {
@@ -89,6 +94,11 @@ class PutCommand extends Command
 
             return static::RETURN_CODE_DATABASE_ERROR;
         }
+
+        $output->writeln(
+            sprintf("<info>Uploading the backup file to project %s...", $project),
+            OutputInterface::VERBOSITY_VERBOSE
+        );
 
         try {
             $uploaded_file = $this->storage->upload($project, $local_file);

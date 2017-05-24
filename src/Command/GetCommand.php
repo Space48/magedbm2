@@ -83,7 +83,10 @@ class GetCommand extends Command
         if (!$input->getOption("force") && !$input->getOption("download-only")) {
             /** @var QuestionHelper $helper */
             $helper = $this->getHelper("question");
-            $question = new ConfirmationQuestion("Are you sure you with to overwrite the local database? [y/N] ", false);
+            $question = new ConfirmationQuestion(
+                "Are you sure you with to overwrite the local database? [y/N] ",
+                false
+            );
 
             if (!$helper->ask($input, $output, $question)) {
                 return static::RETURN_CODE_NO_ERROR;
@@ -94,6 +97,11 @@ class GetCommand extends Command
             if (!$file) {
                 $file = $this->storage->getLatestFile($project);
             }
+
+            $output->writeln(
+                sprintf("<info>Downloading backup file %s...</info>", $file),
+                OutputInterface::VERBOSITY_VERBOSE
+            );
 
             $local_file = $this->storage->download($project, $file);
         } catch (ServiceException $e) {
@@ -106,7 +114,7 @@ class GetCommand extends Command
             $output_file = getcwd() . DIRECTORY_SEPARATOR . $file;
 
             if ($this->filesystem->move($local_file, $output_file)) {
-                $output->writeln(sprintf("<info>Downloaded to %s</info>", $output_file));
+                $output->writeln(sprintf("<info>Backup file downloaded to %s</info>", $output_file));
             } else {
                 $output->writeln(sprintf(
                     "<error>Failed to move the downloaded backup file. Backup saved in %s</error>",
@@ -116,6 +124,11 @@ class GetCommand extends Command
                 return static::RETURN_CODE_FILESYSTEM_ERROR;
             }
         } else {
+            $output->writeln(
+                "<info>Importing downloaded backup file into the database...</info>",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+
             try {
                 $this->database->import($local_file);
             } catch (ServiceException $e) {
