@@ -49,18 +49,32 @@ class Magerun implements DatabaseInterface
 
         $input = new ArrayInput($params);
         $output = new StreamOutput(fopen('php://memory', 'w', false));
+        $exception = null;
 
         try {
             $command->run($input, $output);
         } catch (\Exception $e) {
-            rewind($output->getStream());
-            $command_output = stream_get_contents($output->getStream());
+            $exception = $e->getMessage();
+        }
 
-            throw new ServiceException(sprintf(
-                "magerun2 db:import failed:\nError: %s\nOutput:\n%s",
-                $e->getMessage(),
-                $command_output
-            ));
+        rewind($output->getStream());
+        $command_output = stream_get_contents($output->getStream());
+
+        // Check the output for errors, since Magerun does not return a useful status
+        if ($exception || strpos($command_output, "<error>") !== false) {
+            $message = ["magerun2 db:import failed:"];
+
+            if ($exception) {
+                $message[] = "Exception:";
+                $message[] = $exception;
+            }
+
+            if ($command_output) {
+                $message[] = "Command output:";
+                $message[] = $command_output;
+            }
+
+            throw new ServiceException(implode(PHP_EOL, $message));
         }
     }
 
@@ -84,18 +98,32 @@ class Magerun implements DatabaseInterface
 
         $input = new ArrayInput($params);
         $output = new StreamOutput(fopen('php://memory', 'w', false));
+        $exception = null;
 
         try {
             $command->run($input, $output);
         } catch (\Exception $e) {
-            rewind($output->getStream());
-            $command_output = stream_get_contents($output->getStream());
+            $exception = $e->getMessage();
+        }
 
-            throw new ServiceException(sprintf(
-                "magerun2 db:dump failed:\nError: %s\nOutput:\n%s",
-                $e->getMessage(),
-                $command_output
-            ));
+        rewind($output->getStream());
+        $command_output = stream_get_contents($output->getStream());
+
+        // Check the output for errors, since Magerun does not return a useful status
+        if ($exception || strpos($command_output, "<error>") !== false) {
+            $message = ["magerun2 db:dump failed:"];
+
+            if ($exception) {
+                $message[] = "Exception:";
+                $message[] = $exception;
+            }
+
+            if ($command_output) {
+                $message[] = "Command output:";
+                $message[] = $command_output;
+            }
+
+            throw new ServiceException(implode(PHP_EOL, $message));
         }
 
         return $file;
