@@ -52,15 +52,15 @@ class S3 implements StorageInterface
             $objects = $this->getClient()->getIterator("ListObjects", [
                 "Bucket" => $bucket,
             ]);
+
+            $projects = [];
+            foreach ($objects as $object) {
+                if ($project = strstr($object["Key"], "/", true)) {
+                    $projects[$project] = 1;
+                }
+            }
         } catch (\Exception $e) {
             throw new ServiceException($e->getMessage());
-        }
-
-        $projects = [];
-        foreach ($objects as $object) {
-            if ($project = strstr($object["Key"], "/", true)) {
-                $projects[$project] = 1;
-            }
         }
 
         return array_keys($projects);
@@ -79,20 +79,20 @@ class S3 implements StorageInterface
                 "Bucket" => $bucket,
                 "Prefix" => $prefix,
             ]);
+
+            $files = [];
+            foreach ($objects as $object) {
+                $file = new File();
+
+                $file->name = substr(strrchr($object["Key"], "/"), 1);
+                $file->project = $project;
+                $file->size = $object["Size"];
+                $file->last_modified = $object["LastModified"];
+
+                $files[] = $file;
+            }
         } catch (\Exception $e) {
             throw new ServiceException($e->getMessage());
-        }
-
-        $files = [];
-        foreach ($objects as $object) {
-            $file = new File();
-
-            $file->name = substr(strrchr($object["Key"], "/"), 1);
-            $file->project = $project;
-            $file->size = $object["Size"];
-            $file->last_modified = $object["LastModified"];
-
-            $files[] = $file;
         }
 
         return $files;
