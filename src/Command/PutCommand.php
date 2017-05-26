@@ -55,13 +55,15 @@ class PutCommand extends Command
                 "strip",
                 "s",
                 InputOption::VALUE_OPTIONAL,
-                "List of tables to export without any data. By default, all customer data is stripped."
+                "List of tables to export without any data. By default, all customer data is stripped.",
+                "@development"
             )
             ->addOption(
                 "clean",
                 "c",
                 InputOption::VALUE_REQUIRED,
-                "The number of latest backup files to keep when uploading. Default: 5."
+                "The number of latest backup files to keep when uploading.",
+                5
             )
             ->addOption(
                 "no-clean",
@@ -77,7 +79,7 @@ class PutCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $project = $input->getArgument("project");
-        $strip_tables = $input->getOption("strip") ?: "@development";
+        $strip_tables = $input->getOption("strip");
 
         $output->writeln(
             "<info>Creating a backup file of the database...</info>",
@@ -119,7 +121,7 @@ class PutCommand extends Command
         $this->filesystem->delete($local_file);
 
         if (!$input->getOption("no-clean")) {
-            $clean = $input->getOption("clean") ?: 5;
+            $clean = $input->getOption("clean");
 
             try {
                 $this->storage->clean($project, $clean);
