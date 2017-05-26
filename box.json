@@ -1,0 +1,27 @@
+{
+  "output": "magedbm2.phar",
+  "directories": [
+    "src"
+  ],
+  "files": [
+    "LICENSE"
+  ],
+  "finder": [
+    {
+      "in": "vendor",
+      "exclude": [
+        "Test",
+        "Tests",
+        "test",
+        "tests"
+      ]
+    }
+  ],
+  "main": "bin/magedbm2",
+  "compactors": [
+    "Herrera\\Box\\Compactor\\Php"
+  ],
+  "compression": "GZ",
+  "chmod": "0755",
+  "stub": true
+}
