@@ -74,7 +74,7 @@ class Combined implements ConfigInterface
     {
         $this->load();
 
-        return $this->data[$option];
+        return $this->data[$option] ?? null;
     }
 
     /**
