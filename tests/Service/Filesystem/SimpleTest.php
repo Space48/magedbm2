@@ -36,6 +36,20 @@ class SimpleTest extends TestCase
         parent::tearDown();
     }
 
+    public function testWrite()
+    {
+        $filesystem = new Service\Filesystem\Simple();
+
+        $file = implode(DIRECTORY_SEPARATOR, [$this->test_dir, "output-file.txt"]);
+        $contents = sprintf("Test file output. Timestamp %s.", time());
+
+        $this->assertFileNotExists($file);
+
+        $filesystem->write($file, $contents);
+
+        $this->assertStringEqualsFile($file, $contents);
+    }
+
     /**
      * Test moving file to a new location.
      *
