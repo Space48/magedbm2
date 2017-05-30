@@ -147,6 +147,12 @@ class Application extends \Symfony\Component\Console\Application
      */
     protected function initCommands()
     {
+        $this->add(new Command\ConfigureCommand(
+            $this->getConfig(),
+            $this->getService("filesystem"),
+            new Yaml()
+        ));
+
         $this->add(new Command\GetCommand(
             $this->getService("database"),
             $this->getService("storage"),

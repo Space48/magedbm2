@@ -45,7 +45,7 @@ class Combined implements ConfigInterface
     {
         if (!$this->loaded) {
             $this->loadDefaultConfig();
-            $this->loadFromFile($this->input->getOption("config") ?: $this->getDefaultConfigFile());
+            $this->loadFromFile($this->getConfigFile());
             $this->loadFromInput($this->input);
 
             $this->loaded = true;
@@ -95,6 +95,14 @@ class Combined implements ConfigInterface
         }
 
         return $dir;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfigFile()
+    {
+        return $this->input->getOption("config") ?: $this->getDefaultConfigFile();
     }
 
     /**

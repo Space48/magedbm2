@@ -22,6 +22,13 @@ interface ConfigInterface
     public function getTmpDir();
 
     /**
+     * Get the path to the configuration file.
+     *
+     * @return string
+     */
+    public function getConfigFile();
+
+    /**
      * Set a config option value.
      *
      * @param string $option
