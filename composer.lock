@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7f0097bab0745b5cdbc59dd63bbd99b3",
-    "content-hash": "437805f19c6581625ffa778430bedc2d",
+    "hash": "bd4be16ab78d29a82aa37fc27e960a63",
+    "content-hash": "db2e131a8523c55ec86e40affd94e780",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1916,7 +1916,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.8.20",
+            "version": "v2.8.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",

@@ -7,10 +7,12 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 class Combined implements ConfigInterface
 {
-    const DEFAULT_CONFIG_FILE = "~/.magedbm2/config.ini";
+    const DEFAULT_CONFIG_FILE = "~/.magedbm2/config.yml";
 
     protected $data = [];
 
@@ -22,10 +24,14 @@ class Combined implements ConfigInterface
     /** @var InputInterface */
     protected $input;
 
-    public function __construct(Application $app, InputInterface $input)
+    /** @var Yaml */
+    protected $yaml;
+
+    public function __construct(Application $app, InputInterface $input, Yaml $yaml)
     {
         $this->app = $app;
         $this->input = $input;
+        $this->yaml = $yaml;
 
         $this->addInputOptions($app);
     }
@@ -138,7 +144,17 @@ class Combined implements ConfigInterface
     protected function loadFromFile($file)
     {
         if (is_readable($file)) {
-            if ($config = parse_ini_file($file)) {
+            try {
+                $config = $this->yaml->parse(file_get_contents($file));
+            } catch (ParseException $e) {
+                throw new RuntimeException(sprintf(
+                    "Unable to read the configuration file '%s': %s",
+                    $file,
+                    $e->getMessage()
+                ));
+            }
+
+            if (is_array($config)) {
                 $this->data = array_merge($this->data, $config);
             }
         }

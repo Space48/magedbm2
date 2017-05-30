@@ -23,6 +23,7 @@
   "require": {
     "php": ">=7.0.0",
     "symfony/console": "^2.8.20",
+    "symfony/yaml": "^2.8.20",
     "aws/aws-sdk-php": "^3.28.0",
     "n98/magerun2": "^1.4.0"
   },

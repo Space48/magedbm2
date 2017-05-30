@@ -10,6 +10,7 @@ use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class Application
@@ -122,7 +123,7 @@ class Application extends \Symfony\Component\Console\Application
      */
     protected function initConfig(InputInterface $input)
     {
-        $this->config = new Application\Config\Combined($this, $input);
+        $this->config = new Application\Config\Combined($this, $input, new Yaml());
     }
 
     /**
