@@ -50,7 +50,7 @@ The configuration is saved in a [YAML](http://www.yaml.org/) file, usually locat
 
 The put command will create a database backup from a Magento 2 installation at the current working directory (or the directory specified with `--root-dir`) and upload it to S3.
 
-By default, the commamd uses [n98-magerun2](https://github.com/netz98/n98-magerun2) for database operations and creates backups with all customer data stripped out (the `@development` strip setting to the `n98-magerun2 db:dump` command). However, you can customise what data gets stripped, if any, using the `--strip` option.
+By default, the command uses [n98-magerun2](https://github.com/netz98/n98-magerun2) for database operations and creates backups with all customer data stripped out (the `@development` strip setting to the `n98-magerun2 db:dump` command). However, you can customise what data gets stripped, if any, using the `--strip` option.
 
 The put command also automatically cleans up old database backups once a new one has been uploaded, keeping only the 5 most recent backup files. You can customise the number of retained backups with the `--clean` option, or disable it completely with `--no-clean`.
 
