@@ -19,7 +19,7 @@ Run the following commands to install the latest version of `magedbm2` globally:
 
     curl -LO https://s3.eu-west-2.amazonaws.com/magedbm2-releases/magedbm2.phar
     mv magedbm2.phar /usr/local/bin/magedbm2
-    chmod +x /usr/local/bin/magebm2
+    chmod +x /usr/local/bin/magedbm2
 
 ## Configuration
 
