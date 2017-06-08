@@ -1,4 +1,6 @@
-# magedbm2
+# Magedbm2 - Magento Database 2.x Backup Manager
+
+Looking for Magento 1.x support? Head over to [magedbm](https://github.com/meanbee/magedbm).
 
 magedbm2 is a database backup manager for Magento 2.
 
@@ -6,8 +8,6 @@ It was written with developers in mind and provides commands for:
 
 * Creating sanitised (or unsanitised) Magento 2 production database backups and uploading them to Amazon S3
 * Downloading and importing existing backups to development or staging environments
-
-A Magento 1 version of the tool, [magedbm](https://github.com/meanbee/magedbm), is also available.
 
 ## Compatibility
 
