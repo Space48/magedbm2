@@ -2,6 +2,8 @@
 
 Looking for Magento 1.x support? Head over to [magedbm](https://github.com/meanbee/magedbm).
 
+[![Build Status](https://travis-ci.org/meanbee/magedbm2.svg?branch=master)](https://travis-ci.org/meanbee/magedbm2)
+
 magedbm2 is a database backup manager for Magento 2.
 
 It was written with developers in mind and provides commands for:
