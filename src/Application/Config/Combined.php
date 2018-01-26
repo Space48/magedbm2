@@ -12,8 +12,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class Combined implements ConfigInterface
 {
+    const DIST_CONFIG_FILE    = __DIR__ . "/../../../../etc/config.yml";
+    
     const DEFAULT_CONFIG_FILE = "~/.magedbm2/config.yml";
-
+    
+    const KEY_TABLE_GROUPS    = "table-groups";
+    
     protected $data = [];
 
     protected $loaded = false;
@@ -44,6 +48,7 @@ class Combined implements ConfigInterface
     public function load()
     {
         if (!$this->loaded) {
+            $this->loadDistConfig();
             $this->loadDefaultConfig();
             $this->loadFromFile($this->getConfigFile());
             $this->loadFromInput($this->input);
@@ -96,7 +101,41 @@ class Combined implements ConfigInterface
 
         return $dir;
     }
-
+    
+    /**
+     * @inheritdoc
+     * @throws \RuntimeException
+     */
+    public function getTableGroups(): array
+    {
+        $tableGroupsConfig = $this->get(static::KEY_TABLE_GROUPS);
+        $tableGroups = [];
+        
+        if ($tableGroupsConfig) {
+            foreach ($tableGroupsConfig as $singleTableGroupConfig) {
+                $id = $singleTableGroupConfig['id'] ?? null;
+                $description = $singleTableGroupConfig['description'] ?? null;
+                $tables = $singleTableGroupConfig['tables'] ?? null;
+                
+                if ($id === null) {
+                    throw new \RuntimeException("Expected table group to have an id");
+                }
+                
+                if ($description === null) {
+                    throw new \RuntimeException("Expected table group to have a description");
+                }
+    
+                if ($tables === null) {
+                    throw new \RuntimeException("Expected table group to have tables");
+                }
+                
+                $tableGroups[] = new TableGroup($id, $description, $tables);
+            }
+        }
+        
+        return $tableGroups;
+    }
+    
     /**
      * @inheritdoc
      */
@@ -133,7 +172,15 @@ class Combined implements ConfigInterface
 
         return implode(DIRECTORY_SEPARATOR, $config_path);
     }
-
+    
+    /**
+     * Load base configuration shipped with the distribution.
+     */
+    protected function loadDistConfig()
+    {
+        $this->loadFromFile(static::DIST_CONFIG_FILE);
+    }
+    
     /**
      * Load default configuration option values.
      */

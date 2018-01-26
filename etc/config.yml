@@ -1,0 +1,79 @@
+table-groups:
+  # Source: https://github.com/netz98/n98-magerun2/blob/f16429d5c86fcbcb2a686e92ebc89d0125f06da0/config.yaml
+  - id: admin
+    description: Admin tables
+    tables: admin* authorization*
+
+  - id: log
+    description: Log tables
+    tables: log_url log_url_info log_visitor log_visitor_info log_visitor_online report_event report_compared_product_index report_viewed_*
+
+  - id: sessions
+    description: Database session tables
+    tables: core_session
+
+  - id: stripped
+    description: Standard definition for a stripped dump (logs, sessions)
+    tables: @log @sessions
+
+  - id: sales
+    description: Sales data (orders, invoices, creditmemos etc)
+    tables: >
+      sales_order
+        sales_order_address
+        sales_order_aggregated_created
+        sales_order_aggregated_updated
+        sales_order_grid
+        sales_order_item
+        sales_order_payment
+        sales_order_status_history
+        sales_order_tax
+        sales_order_tax_item
+      sales_invoice
+        sales_invoice_*
+        sales_invoiced_*
+      sales_shipment
+        sales_shipment_*
+        sales_shipping_*
+      sales_creditmemo
+        sales_creditmemo_*
+      sales_recurring_* sales_refunded_* sales_payment_*
+      enterprise_sales_* enterprise_customer_sales_* sales_bestsellers_*
+      paypal_billing_agreement*
+      paypal_payment_transaction
+      paypal_settlement_report*
+  - id: quotes
+    description: Cart (quote) data
+    tables: quote quote_*
+
+  - id: customers
+    description: Customer data - Should not be used without @sales
+    tables: >
+      customer_address*
+      customer_entity*
+      customer_grid_flat
+      customer_log
+      customer_visitor
+      newsletter_subscriber
+      product_alert*
+      vault_payment_token*
+      wishlist*
+  - id: trade
+    description: Current trade data (customers and orders). You usally do not want those in developer systems.
+    tables: @customers @sales @quotes
+
+  - id: development
+    description: Removes logs and trade data so developers do not have to work with real customer data
+    tables: @admin @trade @stripped @search
+
+  - id: ee_changelog
+    description: Changelog tables of new indexer since EE 1.13
+    tables: "*_cl"
+
+  - id: search
+    description: Search related tables
+    tables: "catalogsearch_*"
+
+  - id: idx
+    description: Tables with _idx suffix
+    tables: "*_idx"

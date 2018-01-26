@@ -2,10 +2,12 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\ServiceException;
 use Meanbee\Magedbm2\Service\StorageInterface;
+use Meanbee\Magedbm2\Service\TableExpanderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,13 +29,21 @@ class PutCommand extends Command
     /** @var FilesystemInterface */
     protected $filesystem;
 
-    public function __construct(DatabaseInterface $database, StorageInterface $storage, FilesystemInterface $filesystem)
+    /** @var TableExpanderInterface */
+    protected $tableExpander;
+    
+    /** @var ConfigInterface */
+    protected $config;
+    
+    public function __construct(ConfigInterface $config, DatabaseInterface $database, StorageInterface $storage, FilesystemInterface $filesystem, TableExpanderInterface $tableExpander)
     {
         parent::__construct();
 
         $this->database = $database;
         $this->storage = $storage;
         $this->filesystem = $filesystem;
+        $this->tableExpander = $tableExpander;
+        $this->config = $config;
     }
 
     /**
@@ -55,7 +65,7 @@ class PutCommand extends Command
                 "strip",
                 "s",
                 InputOption::VALUE_OPTIONAL,
-                "List of tables to export without any data. By default, all customer data is stripped.",
+                "List of space-separated tables to export without any data. By default, all customer data is stripped.",
                 "@development"
             )
             ->addOption(
@@ -78,8 +88,10 @@ class PutCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setHelp($this->getHelpText());
+        
         $project = $input->getArgument("project");
-        $strip_tables = $input->getOption("strip");
+        $strip_tables = $input->getOption("strip") ?? '@development';
 
         $output->writeln(
             "<info>Creating a backup file of the database...</info>",
@@ -87,7 +99,7 @@ class PutCommand extends Command
         );
 
         try {
-            $local_file = $this->database->dump($project, $strip_tables);
+            $local_file = $this->database->dump($project, $this->tableExpander->expand($strip_tables));
         } catch (ServiceException $e) {
             $output->writeln(sprintf(
                 "<error>Failed to create a database backup file: %s</error>",
@@ -136,5 +148,27 @@ class PutCommand extends Command
         }
 
         return static::RETURN_CODE_NO_ERROR;
+    }
+    
+    /**
+     * @return string
+     */
+    private function getHelpText()
+    {
+        $tableGroups = $this->config->getTableGroups();
+        
+        if (count($tableGroups) > 0) {
+            return <<<HELP
+The following table groups are configured:
+
+$tableGroups
+HELP;
+
+        } else {
+            return <<<HELP
+There are no table groups configured. You can configure table groups in the configuration files.
+HELP;
+
+        }
     }
 }

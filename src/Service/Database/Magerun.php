@@ -81,7 +81,7 @@ class Magerun implements DatabaseInterface
     /**
      * @inheritdoc
      */
-    public function dump($identifier, $strip_tables = "@development")
+    public function dump($identifier, $strip_tables = '')
     {
         $command = $this->getMagerunCommand("db:dump");
         $file = $this->getBackupFilePath($identifier);

@@ -2,6 +2,8 @@
 
 namespace Meanbee\Magedbm2\Application;
 
+use Meanbee\Magedbm2\Application\Config\TableGroup;
+
 interface ConfigInterface
 {
 
@@ -27,6 +29,13 @@ interface ConfigInterface
      * @return string
      */
     public function getConfigFile();
+    
+    /**
+     * Get the defined table groups.
+     *
+     * @return TableGroup[]
+     */
+    public function getTableGroups();
 
     /**
      * Set a config option value.

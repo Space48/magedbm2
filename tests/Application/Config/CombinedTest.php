@@ -89,4 +89,35 @@ class CombinedTest extends TestCase
 
         $this->assertEquals("overriden-value", $config->get("test-option"));
     }
+    
+    /**
+     * Test that table groups get built out of the config file.
+     */
+    public function testBuildsTableGroups()
+    {
+        $app = new Application();
+        $input = new ArrayInput([
+            "--config" => implode(DIRECTORY_SEPARATOR, [__DIR__, "data", "config.yml"]),
+        ]);
+    
+        $config = new Combined($app, $input, new Yaml());
+        $input->bind($app->getDefinition());
+        
+        $tableGroups = $config->getTableGroups();
+        $this->assertCount(2, $tableGroups);
+        
+        $tableGroupMap = (function () use ($tableGroups) {
+            $map = [];
+            foreach ($tableGroups as $tableGroup) {
+                $map[$tableGroup->getId()] = $tableGroup;
+            }
+            return $map;
+        })();
+        
+        $this->assertArrayHasKey('example_1', $tableGroupMap);
+        $this->assertArrayHasKey('example_2', $tableGroupMap);
+        
+        $this->assertEquals(['table_one', 'table_two', 'table_thr*'], $tableGroupMap['example_1']->getTables());
+        $this->assertEquals(['moo', 'meow', 'woff', 'oink'], $tableGroupMap['example_2']->getTables());
+    }
 }
