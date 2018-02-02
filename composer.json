@@ -25,7 +25,8 @@
     "symfony/console": "^2.8.20",
     "symfony/yaml": "^2.8.20",
     "aws/aws-sdk-php": "^3.28.0",
-    "meanbee/libmageconf": "^1.0"
+    "meanbee/libmageconf": "^1.0",
+    "symfony/process": "^4.0"
   },
   "require-dev": {
     "phing/phing": "^2.15.2",
