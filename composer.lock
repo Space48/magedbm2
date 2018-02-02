@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b08acb83660f5a3bcc5cc54880d22ae",
+    "content-hash": "ec5d844879833656bcc238612a2466b6",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -263,6 +263,47 @@
                 "url"
             ],
             "time": "2017-03-20T17:10:46+00:00"
+        },
+        {
+            "name": "meanbee/libmageconf",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/meanbee/libmageconf.git",
+                "reference": "7a093e96c7ffd9e479310068281e8b64f7341bbe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/meanbee/libmageconf/zipball/7a093e96c7ffd9e479310068281e8b64f7341bbe",
+                "reference": "7a093e96c7ffd9e479310068281e8b64f7341bbe",
+                "shasum": ""
+            },
+            "require-dev": {
+                "php-vfs/php-vfs": "^1.3",
+                "phpunit/phpunit": "^5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Meanbee\\LibMageConf\\": "src/Meanbee/LibMageConf"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nick Jones",
+                    "email": "nick@nicksays.co.uk",
+                    "homepage": "http://www.nicksays.co.uk"
+                }
+            ],
+            "description": "Discover Magento environment and configuration information outside of an application installation.",
+            "keywords": [
+                "magento"
+            ],
+            "time": "2016-09-15T18:08:03+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",
