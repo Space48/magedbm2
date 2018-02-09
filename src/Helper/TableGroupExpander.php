@@ -1,11 +1,10 @@
 <?php
 
-namespace Meanbee\Magedbm2\Service\TableExpander;
+namespace Meanbee\Magedbm2\Helper;
 
 use Meanbee\Magedbm2\Application\Config\TableGroup;
-use Meanbee\Magedbm2\Service\TableExpanderInterface;
 
-class Magento implements TableExpanderInterface
+class TableGroupExpander
 {
     /**
      * @var TableGroup[]

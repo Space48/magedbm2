@@ -1,21 +1,21 @@
 <?php
 
-namespace Meanbee\Magedbm2\Tests\Service\TableExpander;
+namespace Meanbee\Magedbm2\Tests\Helper\TableExpander;
 
 use Meanbee\Magedbm2\Application\Config\TableGroup;
-use Meanbee\Magedbm2\Service\TableExpander\Magento as MagentoTableExpander;
+use Meanbee\Magedbm2\Helper\TableGroupExpander;
 use PHPUnit\Framework\TestCase;
 
-class MagentoTest extends TestCase
+class TableGroupExpanderTest extends TestCase
 {
     /**
-     * @var MagentoTableExpander
+     * @var TableGroupExpander
      */
     protected $subject;
     
     protected function setUp()
     {
-        $this->subject = new MagentoTableExpander([
+        $this->subject = new TableGroupExpander([
             new TableGroup('example', '', 'table1 table2 table3_ table4*'),
             new TableGroup('example2', '', 'cow_* foo_*'),
             new TableGroup('example3', '', '@example @example2'),

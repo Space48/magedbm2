@@ -7,7 +7,7 @@ use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Meanbee\Magedbm2\Service\TableExpander\Magento;
+use Meanbee\Magedbm2\Service\TableExpander\TableGroupExpander;
 use Meanbee\Magedbm2\Service\TableExpanderInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -81,7 +81,7 @@ class Application extends \Symfony\Component\Console\Application
      *
      * @param string $name
      *
-     * @return DatabaseInterface|StorageInterface|FilesystemInterface|TableExpanderInterface|null
+     * @return DatabaseInterface|StorageInterface|FilesystemInterface|null
      */
     public function getService($name)
     {
@@ -140,7 +140,6 @@ class Application extends \Symfony\Component\Console\Application
         $this->services["storage"] = new Service\Storage\S3($this);
         $this->services["database"] = new Service\Database\Shell($this, $this->getConfig());
         $this->services["filesystem"] = new Service\Filesystem\Simple();
-        $this->services["tableexpander"] = new Magento();
     }
 
     /**
@@ -170,8 +169,7 @@ class Application extends \Symfony\Component\Console\Application
             $this->getConfig(),
             $this->getService("database"),
             $this->getService("storage"),
-            $this->getService("filesystem"),
-            $this->getService("tableexpander")
+            $this->getService("filesystem")
         ));
 
         $this->add(new Command\RmCommand(

@@ -8,11 +8,8 @@ use Meanbee\Magedbm2\Service\Database\Fake;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Meanbee\Magedbm2\Service\TableExpander\Magento;
-use Meanbee\Magedbm2\Service\TableExpanderInterface;
+use Meanbee\Magedbm2\Helper\TableGroupExpander;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use VirtualFileSystem\FileSystem;
 use VirtualFileSystem\Structure\File;
@@ -83,7 +80,7 @@ class PutCommandTest extends TestCase
         // Simulate the fact that the file was written.
         file_put_contents($this->file, date('r'));
 
-        $tester = $this->getCommandTester(null, $database, null, null, new Magento());
+        $tester = $this->getCommandTester(null, $database, null, null, new TableGroupExpander());
         $exitCode = $tester->execute([
             "project" => "test",
             "--strip" => "test_table other_table",
@@ -150,7 +147,7 @@ class PutCommandTest extends TestCase
      * @param DatabaseInterface      $database
      * @param StorageInterface       $storage
      * @param FilesystemInterface    $filesystem
-     * @param TableExpanderInterface $tableexpander
+     * @param TableGroupExpander     $tableexpander
      * @return CommandTester
      */
     protected function getCommandTester($config = null, $database = null, $storage = null, $filesystem = null, $tableexpander = null)
@@ -159,12 +156,10 @@ class PutCommandTest extends TestCase
         $database      = $database ?? new Fake($this->vfs);
         $storage       = $storage ?? $this->createMock(StorageInterface::class);
         $filesystem    = $filesystem ?? $this->createMock(FilesystemInterface::class);
-        $tableexpander = $tableexpander ?? $this->createMock(TableExpanderInterface::class);
+        $tableexpander = $tableexpander ?? new TableGroupExpander();
 
         $command = new PutCommand($config, $database, $storage, $filesystem, $tableexpander);
 
-        $tester = new CommandTester($command);
-
-        return $tester;
+        return new CommandTester($command);
     }
 }
