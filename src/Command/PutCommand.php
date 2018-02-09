@@ -43,6 +43,8 @@ class PutCommand extends BaseCommand
         $this->filesystem = $filesystem;
         $this->tableExpander = $tableExpander;
         $this->config = $config;
+        $this->ensureServiceConfigurationValidated('database', $this->database);
+        $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
     /**

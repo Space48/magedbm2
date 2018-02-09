@@ -36,6 +36,9 @@ class GetCommand extends BaseCommand
         $this->database = $database;
         $this->storage = $storage;
         $this->filesystem = $filesystem;
+
+        $this->ensureServiceConfigurationValidated('database', $this->database);
+        $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
     /**

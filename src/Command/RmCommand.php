@@ -21,6 +21,8 @@ class RmCommand extends BaseCommand
         parent::__construct();
 
         $this->storage = $storage;
+
+        $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
     /**
