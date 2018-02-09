@@ -94,6 +94,10 @@ class PutCommand extends BaseCommand
         if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
             return $parentExitCode;
         }
+
+        if ($tableGroups = $this->config->getTableGroups()) {
+            $this->tableExpander->setTableGroups($tableGroups);
+        }
         
         $project = $input->getArgument("project");
         $strip_tables = $input->getOption("strip") ?? '@development';
