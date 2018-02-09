@@ -3,7 +3,7 @@
 namespace Meanbee\Magedbm2\Service\Database;
 
 use Meanbee\Magedbm2\Application;
-use Meanbee\Magedbm2\Helper\TablePatternResolver;
+use Meanbee\Magedbm2\Helper\TablePatternExpander;
 use Meanbee\Magedbm2\Service\ConfigurationException;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\ServiceException;
@@ -35,9 +35,9 @@ class Shell implements DatabaseInterface
     private $outputInterface;
 
     /**
-     * @var TablePatternResolver
+     * @var TablePatternExpander
      */
-    private $tablePatternResolver;
+    private $tablePatternExpander;
 
     /**
      * @var LoggerInterface
@@ -48,7 +48,7 @@ class Shell implements DatabaseInterface
     {
         $this->app = $app;
         $this->config = $config;
-        $this->tablePatternResolver = new TablePatternResolver();
+        $this->tablePatternExpander = new TablePatternExpander();
         $this->logger = new NullLogger();
     }
 
@@ -293,7 +293,7 @@ class Shell implements DatabaseInterface
      */
     private function getStripTables(string $strip_tables_patterns)
     {
-        return $this->tablePatternResolver->resolve(explode(' ', $strip_tables_patterns), $this->getAllTables());
+        return $this->tablePatternExpander->expand(explode(' ', $strip_tables_patterns), $this->getAllTables());
     }
 
     /**

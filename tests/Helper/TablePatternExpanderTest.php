@@ -2,19 +2,19 @@
 
 namespace Meanbee\Magedbm2\Tests\Helper;
 
-use Meanbee\Magedbm2\Helper\TablePatternResolver;
+use Meanbee\Magedbm2\Helper\TablePatternExpander;
 use PHPUnit\Framework\TestCase;
 
-class TablePatternResolverTest extends TestCase
+class TablePatternExpanderTest extends TestCase
 {
-    /** @var TablePatternResolver */
+    /** @var TablePatternExpander */
     private $subject;
 
     private $allTables = [];
 
     protected function setUp()
     {
-        $this->subject = new TablePatternResolver();
+        $this->subject = new TablePatternExpander();
         $this->allTables = [
             'admin',
             'admin_user',
@@ -74,6 +74,6 @@ class TablePatternResolverTest extends TestCase
      */
     private function assertCorrect($patterns, $expected)
     {
-        $this->assertEquals($expected, $this->subject->resolve($patterns, $this->allTables));
+        $this->assertEquals($expected, $this->subject->expand($patterns, $this->allTables));
     }
 }

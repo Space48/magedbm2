@@ -2,7 +2,7 @@
 
 namespace Meanbee\Magedbm2\Helper;
 
-class TablePatternResolver
+class TablePatternExpander
 {
     /**
      * Consume patterns like 'admin*', 'log_*' and '*_flat_*' and return matching tables.
@@ -11,7 +11,7 @@ class TablePatternResolver
      * @param array $tables
      * @return array
      */
-    public function resolve(array $tablePatterns, array $tables)
+    public function expand(array $tablePatterns, array $tables)
     {
         sort($tablePatterns);
         sort($tables);
