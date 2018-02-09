@@ -21,18 +21,20 @@
     "bin/magedbm2"
   ],
   "require": {
-    "php": ">=7.0.0",
-    "symfony/console": "^2.8.20",
-    "symfony/yaml": "^2.8.20",
-    "aws/aws-sdk-php": "^3.28.0",
+    "php": "~7.0",
+    "symfony/console": "^3.4",
+    "symfony/yaml": "^3.4",
+    "aws/aws-sdk-php": "^3.52",
     "meanbee/libmageconf": "^1.0",
-    "symfony/process": "^4.0"
+    "symfony/process": "^3.4",
+    "psr/log": "^1.0"
   },
   "require-dev": {
     "phing/phing": "^2.15.2",
     "phpunit/phpunit": "^6.1.4",
     "squizlabs/php_codesniffer": "^3.0.0",
-    "phpmd/phpmd": "^2.6.0"
+    "phpmd/phpmd": "^2.6.0",
+    "php-vfs/php-vfs": "^1.4"
   },
   "autoload": {
     "psr-4": {
