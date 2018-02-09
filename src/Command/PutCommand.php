@@ -14,9 +14,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PutCommand extends Command
+class PutCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_DATABASE_ERROR = 1;
     const RETURN_CODE_STORAGE_ERROR = 2;
 
@@ -89,6 +88,10 @@ class PutCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setHelp($this->getHelpText());
+
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
         
         $project = $input->getArgument("project");
         $strip_tables = $input->getOption("strip") ?? '@development';

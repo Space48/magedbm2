@@ -10,9 +10,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class LsCommand extends Command
+class LsCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_STORAGE_ERROR = 1;
 
     /** @var StorageInterface */
@@ -47,6 +46,10 @@ class LsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
+
         $project = $input->getArgument("project");
 
         if (!$project) {

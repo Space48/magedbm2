@@ -14,9 +14,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class GetCommand extends Command
+class GetCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_DOWNLOAD_ERROR = 1;
     const RETURN_CODE_FILESYSTEM_ERROR = 2;
     const RETURN_CODE_DATABASE_ERROR = 3;
@@ -76,6 +75,10 @@ class GetCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
+
         $project = $input->getArgument("project");
         $file = $input->getArgument("file");
 
