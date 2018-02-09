@@ -12,7 +12,7 @@ class TableGroup
     {
         $this->id = $id;
         $this->description = $description;
-        $this->tables = explode(' ', $tables);
+        $this->tables = $this->processTablesString($tables);
     }
     
     /**
@@ -37,5 +37,19 @@ class TableGroup
     public function getTables(): array
     {
         return $this->tables;
+    }
+
+    /**
+     * @param $tablesString
+     * @return array
+     */
+    private function processTablesString($tablesString)
+    {
+        $tablesString = preg_replace('/\s/', ' ', $tablesString);
+        $tablesString = preg_replace('/\s{2,}/', ' ', $tablesString);
+        $tables = explode(' ', $tablesString);
+        $tables = array_filter($tables);
+
+        return $tables;
     }
 }
