@@ -12,7 +12,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Combined implements ConfigInterface
 {
-    const DIST_CONFIG_FILE    = __DIR__ . "/../../../../etc/config.yml";
+    const DIST_CONFIG_FILE    = __DIR__ . "/../../../etc/config.yml";
     
     const DEFAULT_CONFIG_FILE = "~/.magedbm2/config.yml";
     
