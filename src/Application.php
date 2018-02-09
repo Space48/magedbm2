@@ -136,8 +136,8 @@ class Application extends \Symfony\Component\Console\Application
     {
         $this->services = [];
 
-        $this->services["database"] = new Service\Database\Magerun($this);
         $this->services["storage"] = new Service\Storage\S3($this);
+        $this->services["database"] = new Service\Database\Shell($this, $this->getConfig());
         $this->services["filesystem"] = new Service\Filesystem\Simple();
         $this->services["tableexpander"] = new Magento();
     }
