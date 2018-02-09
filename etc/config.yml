@@ -14,7 +14,7 @@ table-groups:
 
   - id: stripped
     description: Standard definition for a stripped dump (logs, sessions)
-    tables: @log @sessions
+    tables: '@log @sessions'
 
   - id: sales
     description: Sales data (orders, invoices, creditmemos etc)
@@ -60,11 +60,11 @@ table-groups:
       wishlist*
   - id: trade
     description: Current trade data (customers and orders). You usally do not want those in developer systems.
-    tables: @customers @sales @quotes
+    tables: '@customers @sales @quotes'
 
   - id: development
     description: Removes logs and trade data so developers do not have to work with real customer data
-    tables: @admin @trade @stripped @search
+    tables: '@admin @trade @stripped @search'
 
   - id: ee_changelog
     description: Changelog tables of new indexer since EE 1.13
