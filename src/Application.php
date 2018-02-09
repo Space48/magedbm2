@@ -8,6 +8,7 @@ use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Meanbee\Magedbm2\Service\TableExpander\Magento;
+use Meanbee\Magedbm2\Service\TableExpanderInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -80,7 +81,7 @@ class Application extends \Symfony\Component\Console\Application
      *
      * @param string $name
      *
-     * @return DatabaseInterface|StorageInterface|FilesystemInterface|null
+     * @return DatabaseInterface|StorageInterface|FilesystemInterface|TableExpanderInterface|null
      */
     public function getService($name)
     {

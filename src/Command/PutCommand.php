@@ -3,6 +3,8 @@
 namespace Meanbee\Magedbm2\Command;
 
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
+use Meanbee\Magedbm2\Service\ConfigurationException;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\ServiceException;
@@ -33,8 +35,21 @@ class PutCommand extends BaseCommand
     
     /** @var ConfigInterface */
     protected $config;
-    
-    public function __construct(ConfigInterface $config, DatabaseInterface $database, StorageInterface $storage, FilesystemInterface $filesystem, TableExpanderInterface $tableExpander)
+
+    /**
+     * @param ConfigInterface $config
+     * @param DatabaseInterface $database
+     * @param StorageInterface $storage
+     * @param FilesystemInterface $filesystem
+     * @param TableExpanderInterface $tableExpander
+     */
+    public function __construct(
+        ConfigInterface $config,
+        DatabaseInterface $database,
+        StorageInterface $storage,
+        FilesystemInterface $filesystem,
+        TableExpanderInterface $tableExpander
+    )
     {
         parent::__construct();
 
@@ -43,6 +58,7 @@ class PutCommand extends BaseCommand
         $this->filesystem = $filesystem;
         $this->tableExpander = $tableExpander;
         $this->config = $config;
+
         $this->ensureServiceConfigurationValidated('database', $this->database);
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
@@ -174,12 +190,10 @@ The following table groups are configured:
 
 $tableGroups
 HELP;
-
         } else {
             return <<<HELP
 There are no table groups configured. You can configure table groups in the configuration files.
 HELP;
-
         }
     }
 }
