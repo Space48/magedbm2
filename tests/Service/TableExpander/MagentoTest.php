@@ -18,6 +18,8 @@ class MagentoTest extends TestCase
         $this->subject = new MagentoTableExpander([
             new TableGroup('example', '', 'table1 table2 table3_ table4*'),
             new TableGroup('example2', '', 'cow_* foo_*'),
+            new TableGroup('example3', '', '@example @example2'),
+            new TableGroup('example4', '', '@example3'),
         ]);
     }
     
@@ -45,8 +47,14 @@ class MagentoTest extends TestCase
         $this->assertEquals('aaa table1 table2 table3_ table4* cow_* foo_* zzz', $this->subject->expand('aaa @example @example2 zzz'));
     }
     
-    public function test_ignores_undefined_table_group()
+    public function test_removes_undefined_table_group()
     {
-        $this->assertEquals('@moo', $this->subject->expand('@moo'));
+        $this->assertEquals('', $this->subject->expand('@moo'));
+    }
+
+    public function test_recursive_table_definition()
+    {
+        $this->assertEquals('table1 table2 table3_ table4* cow_* foo_*', $this->subject->expand('@example3'));
+        $this->assertEquals('table1 table2 table3_ table4* cow_* foo_*', $this->subject->expand('@example4'));
     }
 }

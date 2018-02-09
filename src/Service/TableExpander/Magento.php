@@ -19,6 +19,14 @@ class Magento implements TableExpanderInterface
     {
         $this->tableGroups = $tableGroups;
     }
+
+    /**
+     * @param TableGroup[] $tableGroups
+     */
+    public function setTableGroups(array $tableGroups)
+    {
+        $this->tableGroups = $tableGroups;
+    }
     
     /**
      * @inheritdoc
@@ -33,11 +41,21 @@ class Magento implements TableExpanderInterface
                 
                 if ($tableGroup !== null) {
                     $tableDefinitions[$idx] = implode(' ', $tableGroup->getTables());
+                } else {
+                    $tableDefinitions[$idx] = '';
                 }
             }
         }
+
+        $tableDefinitions = array_map('trim', $tableDefinitions);
         
-        return implode(' ', $tableDefinitions);
+        $tableDefinitionString = implode(' ', $tableDefinitions);
+
+        if (!$this->containsTableDefinition($tableDefinitionString)) {
+            return $tableDefinitionString;
+        }
+
+        return $this->expand($tableDefinitionString);
     }
     
     /**
@@ -48,12 +66,22 @@ class Magento implements TableExpanderInterface
     {
         return 0 === strpos($string, '@');
     }
+
+    /**
+     * @param $string
+     * @return bool
+     */
+    protected function containsTableDefinition($string): bool
+    {
+        return strpos($string, '@') !== false;
+    }
     
     /**
      * @param $string
      * @return TableGroup|null
      */
-    protected function getTableDefinition($string) {
+    protected function getTableDefinition($string)
+    {
         $tableGroupId = substr($string, 1);
         
         foreach ($this->tableGroups as $tableGroup) {
