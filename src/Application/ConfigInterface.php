@@ -2,6 +2,7 @@
 
 namespace Meanbee\Magedbm2\Application;
 
+use Meanbee\Magedbm2\Application\Config\DatabaseCredentials;
 use Meanbee\Magedbm2\Application\Config\TableGroup;
 
 interface ConfigInterface
@@ -50,6 +51,11 @@ interface ConfigInterface
      * @return TableGroup[]
      */
     public function getTableGroups();
+
+    /**
+     * @return DatabaseCredentials
+     */
+    public function getDatabaseCredentials();
 
     /**
      * Set a config option value.

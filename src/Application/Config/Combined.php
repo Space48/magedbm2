@@ -2,6 +2,7 @@
 
 namespace Meanbee\Magedbm2\Application\Config;
 
+use Meanbee\LibMageConf\RootDiscovery;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -116,6 +117,30 @@ class Combined implements ConfigInterface
     public function getRootDir()
     {
         return $this->input->getOption("root-dir");
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \RuntimeException
+     */
+    public function getDatabaseCredentials()
+    {
+        $rootDiscovery = new RootDiscovery($this->getRootDir() ?? $this->getWorkingDir());
+        $configReader = $rootDiscovery->getConfigReader();
+
+        if ($rootDiscovery->getInstallationType() == \Meanbee\LibMageConf\MagentoType::UNKNOWN) {
+            throw new \RuntimeException(
+                "Unable to detect Magento from the provided configuration -- try specifing a more specific root dir"
+            );
+        }
+
+        return new DatabaseCredentials(
+            $configReader->getDatabaseName(),
+            $configReader->getDatabaseUsername(),
+            $configReader->getDatabasePassword(),
+            $configReader->getDatabaseHost(),
+            $configReader->getDatabasePort()
+        );
     }
 
     /**
@@ -265,5 +290,12 @@ class Combined implements ConfigInterface
                 "Configuration file to use",
                 $this->getDefaultConfigFile()
             ));
+
+        $definition->addOption(new InputOption(
+            "root-dir",
+            null,
+            InputOption::VALUE_REQUIRED,
+            "Magento 2 root directory"
+        ));
     }
 }
