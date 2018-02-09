@@ -127,6 +127,17 @@ class PutCommand extends BaseCommand
             $this->database->setLogger($this->getLogger());
 
             $local_file = $this->database->dump($project, $this->tableExpander->expand($strip_tables));
+
+            if (!file_exists($local_file)) {
+                throw new ServiceException(sprintf(
+                    "No file was created from database service. (expected %s)",
+                    $local_file
+                ));
+            }
+
+            if (!is_readable($local_file)) {
+                throw new ServiceException("File was created from database service, but it wasn't readable.");
+            }
         } catch (ServiceException $e) {
             $output->writeln(sprintf(
                 "<error>Failed to create a database backup file: %s</error>",
