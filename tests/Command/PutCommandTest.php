@@ -4,16 +4,36 @@ namespace Meanbee\Magedbm2\Tests\Command;
 
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Command\PutCommand;
+use Meanbee\Magedbm2\Service\Database\Fake;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Meanbee\Magedbm2\Service\TableExpander\Magento;
 use Meanbee\Magedbm2\Service\TableExpanderInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
+use VirtualFileSystem\FileSystem;
+use VirtualFileSystem\Structure\File;
 
 class PutCommandTest extends TestCase
 {
+    /**
+     * @var FileSystem
+     */
+    private $vfs;
+
+    /**
+     * @var File
+     */
+    private $file;
+
+    protected function setUp()
+    {
+        $this->vfs = new FileSystem();
+        $this->file = $this->vfs->path(Fake::DUMP_FILE_LOCATION);
+    }
 
     /**
      * Test that a backup file is uploaded.
@@ -22,25 +42,23 @@ class PutCommandTest extends TestCase
      */
     public function testUpload()
     {
-        $database = $this->createMock(DatabaseInterface::class);
-        $database
-            ->expects($this->once())
-            ->method("dump")
-            ->willReturn("/tmp/backup-file.sql.gz");
-
         $storage = $this->createMock(StorageInterface::class);
         $storage
             ->expects($this->once())
             ->method("upload")
             ->with(
                 $this->equalTo("test"),
-                $this->equalTo("/tmp/backup-file.sql.gz")
+                $this->equalTo($this->file)
             );
 
-        $tester = $this->getCommandTester(null, $database, $storage);
-        $tester->execute([
+        $tester = $this->getCommandTester(null, null, $storage);
+        $exitCode = $tester->execute([
             "project" => "test",
         ]);
+
+        if ($exitCode !== 0) {
+            $this->fail(sprintf("Exit Code: %s, Output: %s", $exitCode, $tester->getDisplay()));
+        }
     }
 
     /**
@@ -50,20 +68,30 @@ class PutCommandTest extends TestCase
      */
     public function testStrip()
     {
-        $database = $this->createMock(DatabaseInterface::class);
+        $database = $this->getMockBuilder(Fake::class)
+            ->setConstructorArgs([$this->vfs])
+            ->getMock();
+
         $database
             ->expects($this->once())
             ->method("dump")
             ->with(
                 $this->equalTo("test"),
                 $this->equalTo("test_table other_table")
-            );
+            )->willReturn($this->file);
+
+        // Simulate the fact that the file was written.
+        file_put_contents($this->file, date('r'));
 
         $tester = $this->getCommandTester(null, $database, null, null, new Magento());
-        $tester->execute([
+        $exitCode = $tester->execute([
             "project" => "test",
             "--strip" => "test_table other_table",
         ]);
+
+        if ($exitCode !== 0) {
+            $this->fail(sprintf("Exit Code: %s, Output: %s, Dump File: %s", $exitCode, $tester->getDisplay(), $this->file));
+        }
     }
 
     /**
@@ -83,9 +111,13 @@ class PutCommandTest extends TestCase
             );
 
         $tester = $this->getCommandTester(null, null, $storage);
-        $tester->execute([
+        $exitCode = $tester->execute([
             "project" => "test",
         ]);
+
+        if ($exitCode !== 0) {
+            $this->fail(sprintf("Exit Code: %s, Output: %s", $exitCode, $tester->getDisplay()));
+        }
     }
 
     /**
@@ -101,10 +133,14 @@ class PutCommandTest extends TestCase
             ->method("clean");
 
         $tester = $this->getCommandTester(null, null, $storage);
-        $tester->execute([
+        $exitCode = $tester->execute([
             "project"    => "test",
             "--no-clean" => true,
         ]);
+
+        if ($exitCode !== 0) {
+            $this->fail(sprintf("Exit Code: %s, Output: %s", $exitCode, $tester->getDisplay()));
+        }
     }
     
     /**
@@ -120,11 +156,11 @@ class PutCommandTest extends TestCase
     protected function getCommandTester($config = null, $database = null, $storage = null, $filesystem = null, $tableexpander = null)
     {
         $config        = $config ?? $this->createMock(ConfigInterface::class);
-        $database      = $database ?? $this->createMock(DatabaseInterface::class);
+        $database      = $database ?? new Fake($this->vfs);
         $storage       = $storage ?? $this->createMock(StorageInterface::class);
         $filesystem    = $filesystem ?? $this->createMock(FilesystemInterface::class);
         $tableexpander = $tableexpander ?? $this->createMock(TableExpanderInterface::class);
-        
+
         $command = new PutCommand($config, $database, $storage, $filesystem, $tableexpander);
 
         $tester = new CommandTester($command);
