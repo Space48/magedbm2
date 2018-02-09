@@ -4,8 +4,8 @@ namespace Meanbee\Magedbm2\Service\Storage;
 
 use Aws\S3\S3Client;
 use Meanbee\Magedbm2\Application;
-use Meanbee\Magedbm2\Service\ConfigurationException;
-use Meanbee\Magedbm2\Service\ServiceException;
+use Meanbee\Magedbm2\Exception\ConfigurationException;
+use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputOption;

@@ -4,9 +4,9 @@ namespace Meanbee\Magedbm2\Service\Database;
 
 use Meanbee\Magedbm2\Application;
 use Meanbee\Magedbm2\Helper\TablePatternExpander;
-use Meanbee\Magedbm2\Service\ConfigurationException;
+use Meanbee\Magedbm2\Exception\ConfigurationException;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
-use Meanbee\Magedbm2\Service\ServiceException;
+use Meanbee\Magedbm2\Exception\ServiceException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Output\OutputInterface;

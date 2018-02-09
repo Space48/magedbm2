@@ -3,7 +3,7 @@
 namespace Meanbee\Magedbm2\Command;
 
 use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
-use Meanbee\Magedbm2\Service\ConfigurationException;
+use Meanbee\Magedbm2\Exception\ConfigurationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
