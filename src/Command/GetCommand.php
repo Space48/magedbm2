@@ -79,6 +79,8 @@ class GetCommand extends BaseCommand
             return $parentExitCode;
         }
 
+        $this->database->setLogger($this->getLogger());
+
         $project = $input->getArgument("project");
         $file = $input->getArgument("file");
 

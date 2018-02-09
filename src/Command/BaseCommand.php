@@ -13,9 +13,23 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class BaseCommand extends Command
 {
     const RETURN_CODE_NO_ERROR = 0;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->logger = new ConsoleLogger($output);
+
         return self::RETURN_CODE_NO_ERROR;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    protected function getLogger()
+    {
+        return $this->logger;
     }
 }

@@ -102,6 +102,8 @@ class PutCommand extends BaseCommand
         );
 
         try {
+            $this->database->setLogger($this->getLogger());
+
             $local_file = $this->database->dump($project, $this->tableExpander->expand($strip_tables));
         } catch (ServiceException $e) {
             $output->writeln(sprintf(
