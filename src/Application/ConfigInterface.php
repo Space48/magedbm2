@@ -24,6 +24,20 @@ interface ConfigInterface
     public function getTmpDir();
 
     /**
+     * Get the working directory.
+     *
+     * @return string
+     */
+    public function getWorkingDir();
+
+    /**
+     * Get the root directory of Magento.
+     *
+     * @return string|null
+     */
+    public function getRootDir();
+
+    /**
      * Get the path to the configuration file.
      *
      * @return string

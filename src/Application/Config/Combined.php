@@ -101,7 +101,23 @@ class Combined implements ConfigInterface
 
         return $dir;
     }
-    
+
+    /**
+     * @inheritdoc
+     */
+    public function getWorkingDir()
+    {
+        return getcwd();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRootDir()
+    {
+        return $this->input->getOption("root-dir");
+    }
+
     /**
      * @inheritdoc
      * @throws \RuntimeException
