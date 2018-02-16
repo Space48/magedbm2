@@ -4,9 +4,11 @@ namespace Meanbee\Magedbm2;
 
 use Composer\Autoload\ClassLoader;
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -112,7 +114,7 @@ class Application extends \Symfony\Component\Console\Application
     public function init(InputInterface $input, OutputInterface $output)
     {
         $this->initConfig($input, $output);
-        $this->initServices();
+        $this->initServices($output);
         $this->initCommands();
     }
 
@@ -133,15 +135,22 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * Initialise the available services.
      *
+     * @param OutputInterface $output
      * @return void
      */
-    protected function initServices()
+    protected function initServices(OutputInterface $output)
     {
         $this->services = [
             'storage' => $this->getStorageImplementation(),
             'database' => $this->getDatabaseImplementation(),
             'filesystem' => $this->getFileSystemImplementation(),
         ];
+
+        foreach ($this->services as $service) {
+            if ($service instanceof LoggerAwareInterface) {
+                $service->setLogger(new ConsoleLogger($output));
+            }
+        }
     }
 
     /**
