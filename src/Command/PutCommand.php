@@ -49,13 +49,13 @@ class PutCommand extends BaseCommand
         TableGroupExpander $tableGroupExpander = null
     )
     {
-        parent::__construct();
-
         $this->database = $database;
         $this->storage = $storage;
         $this->filesystem = $filesystem;
         $this->tableExpander = $tableGroupExpander ?? new TableGroupExpander();
         $this->config = $config;
+
+        parent::__construct();
 
         $this->ensureServiceConfigurationValidated('database', $this->database);
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
@@ -80,7 +80,7 @@ class PutCommand extends BaseCommand
                 "strip",
                 "s",
                 InputOption::VALUE_OPTIONAL,
-                "List of space-separated tables to export without any data. By default, all customer data is stripped.",
+                "List of space-separated tables / table groups to export without any data. By default, all customer data is stripped.",
                 "@development"
             )
             ->addOption(
@@ -96,6 +96,8 @@ class PutCommand extends BaseCommand
                 InputOption::VALUE_NONE,
                 "Do not remove old backup files after uploading."
             );
+
+        $this->setHelp($this->getHelpText());
     }
 
     /**
@@ -103,8 +105,6 @@ class PutCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setHelp($this->getHelpText());
-
         if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
             return $parentExitCode;
         }
@@ -194,15 +194,17 @@ class PutCommand extends BaseCommand
         $tableGroups = $this->config->getTableGroups();
         
         if (count($tableGroups) > 0) {
-            return <<<HELP
-The following table groups are configured:
+            $tableGroupHelp = "The following table groups are configured and can be used with the <info>--strip</info> option:\n\n";
 
-$tableGroups
-HELP;
+
+            foreach ($tableGroups as $tableGroup) {
+                $tableGroupHelp .= sprintf("<info>%s</info>: <comment>%s</comment>\n", $tableGroup->getId(), $tableGroup->getDescription());
+                $tableGroupHelp .= "\t" . implode(', ', $tableGroup->getTables()) . "\n";
+            }
         } else {
-            return <<<HELP
-There are no table groups configured. You can configure table groups in the configuration files.
-HELP;
+            $tableGroupHelp = 'There are no table groups configured. You can configure table groups in the configuration files.';
         }
+
+        return $this->getDescription() . "\n\n" . $tableGroupHelp;
     }
 }
