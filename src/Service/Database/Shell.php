@@ -258,9 +258,8 @@ class Shell implements DatabaseInterface
         try {
             $this->getPdo()->exec('SELECT 1');
         } catch (\PDOException $e) {
-            $this->logger->alert('Unable to validate database credentials.');
-
-            throw new ConfigurationException($e->getMessage());
+            $this->logger->emergency('Unable to validate database credentials.');
+            throw new ConfigurationException(implode(' ', $this->getPdo()->errorInfo()));
         }
 
         $this->logger->info('Validated database credentials!');
