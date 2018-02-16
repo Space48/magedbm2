@@ -9,6 +9,7 @@ use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -95,7 +96,7 @@ class Application extends \Symfony\Component\Console\Application
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
-        $this->init($input);
+        $this->init($input, $output);
 
         return parent::doRun($input, $output);
     }
@@ -104,12 +105,13 @@ class Application extends \Symfony\Component\Console\Application
      * Initialise the application, including configuration, services and available commands.
      *
      * @param InputInterface $input
+     * @param OutputInterface $output
      *
      * return void
      */
-    public function init(InputInterface $input)
+    public function init(InputInterface $input, OutputInterface $output)
     {
-        $this->initConfig($input);
+        $this->initConfig($input, $output);
         $this->initServices();
         $this->initCommands();
     }
@@ -118,12 +120,14 @@ class Application extends \Symfony\Component\Console\Application
      * Initialise the application config.
      *
      * @param InputInterface $input
+     * @param OutputInterface $output
      *
      * @return void
      */
-    protected function initConfig(InputInterface $input)
+    protected function initConfig(InputInterface $input, OutputInterface $output)
     {
         $this->config = new Application\Config\Combined($this, $input, new Yaml());
+        $this->config->setLogger(new ConsoleLogger($output));
     }
 
     /**

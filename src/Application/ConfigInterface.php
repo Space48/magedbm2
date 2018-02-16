@@ -4,8 +4,9 @@ namespace Meanbee\Magedbm2\Application;
 
 use Meanbee\Magedbm2\Application\Config\DatabaseCredentials;
 use Meanbee\Magedbm2\Application\Config\TableGroup;
+use Psr\Log\LoggerAwareInterface;
 
-interface ConfigInterface
+interface ConfigInterface extends LoggerAwareInterface
 {
 
     /**

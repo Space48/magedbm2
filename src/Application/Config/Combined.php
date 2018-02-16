@@ -4,7 +4,10 @@ namespace Meanbee\Magedbm2\Application\Config;
 
 use Meanbee\LibMageConf\RootDiscovery;
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,11 +35,15 @@ class Combined implements ConfigInterface
     /** @var Yaml */
     protected $yaml;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     public function __construct(Application $app, InputInterface $input, Yaml $yaml)
     {
         $this->app = $app;
         $this->input = $input;
         $this->yaml = $yaml;
+        $this->logger = new NullLogger();
 
         $this->addInputOptions($app);
     }
@@ -53,6 +60,8 @@ class Combined implements ConfigInterface
             $this->loadDefaultConfig();
             $this->loadFromFile($this->getConfigFile());
             $this->loadFromInput($this->input);
+
+            $this->logger->debug("Configuration:\n\n" . Yaml::dump($this->data));
 
             $this->loaded = true;
         }
@@ -267,6 +276,8 @@ class Combined implements ConfigInterface
      */
     protected function loadFromFile($file)
     {
+        $this->logger->debug(sprintf('Loading config from %s', $file));
+
         if (is_readable($file)) {
             try {
                 $config = $this->yaml->parse(file_get_contents($file));
@@ -291,6 +302,8 @@ class Combined implements ConfigInterface
      */
     protected function loadFromInput(InputInterface $input)
     {
+        $this->logger->debug('Loading config from input interface');
+
         $this->data = array_merge(
             $this->data,
             array_filter($input->getOptions(), function ($value) {
@@ -325,5 +338,13 @@ class Combined implements ConfigInterface
             InputOption::VALUE_REQUIRED,
             "Magento 2 root directory"
         ));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }
