@@ -7,8 +7,6 @@ use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Meanbee\Magedbm2\Service\TableExpander\TableGroupExpander;
-use Meanbee\Magedbm2\Service\TableExpanderInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -135,11 +133,48 @@ class Application extends \Symfony\Component\Console\Application
      */
     protected function initServices()
     {
-        $this->services = [];
+        $this->services = [
+            'storage' => $this->getStorageImplementation(),
+            'database' => $this->getDatabaseImplementation(),
+            'filesystem' => $this->getFileSystemImplementation(),
+        ];
+    }
 
-        $this->services["storage"] = new Service\Storage\S3($this);
-        $this->services["database"] = new Service\Database\Shell($this, $this->getConfig());
-        $this->services["filesystem"] = new Service\Filesystem\Simple();
+    /**
+     * @return StorageInterface
+     */
+    protected function getStorageImplementation()
+    {
+        switch ($this->config->getServicePreference('storage')) {
+            case 'local':
+                return new Service\Storage\Local();
+            case 's3':
+            default:
+                return new Service\Storage\S3($this);
+        }
+    }
+
+    /**
+     * @return DatabaseInterface
+     */
+    protected function getDatabaseImplementation()
+    {
+        switch ($this->config->getServicePreference('database')) {
+            case 'shell':
+            default:
+               return new Service\Database\Shell($this, $this->getConfig());
+        }
+    }
+
+    /**
+     * @return FilesystemInterface
+     */
+    protected function getFileSystemImplementation()
+    {
+        switch ($this->config->getServicePreference('filesystem')) {
+            default:
+                return new Service\Filesystem\Simple();
+        }
     }
 
     /**

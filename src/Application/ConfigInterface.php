@@ -66,4 +66,13 @@ interface ConfigInterface
      * @return void
      */
     public function set($option, $value);
+
+    /**
+     * Returns which service preference we should use for a given service, e.g.
+     *
+     * getServicePreference('storage') could return 's3' or 'local'.
+     *
+     * @return string
+     */
+    public function getServicePreference($service);
 }

@@ -213,7 +213,25 @@ class Combined implements ConfigInterface
 
         return implode(DIRECTORY_SEPARATOR, $config_path);
     }
-    
+
+    /**
+     * @inheritdoc
+     * @throws \InvalidArgumentException
+     */
+    public function getServicePreference($service)
+    {
+        switch ($service) {
+            case 'storage':
+                return 's3';
+            case 'database':
+                return 'shell';
+            case 'filesystem':
+                 return 'simple';
+            default:
+                throw new \InvalidArgumentException(sprintf('An unknown service (%s) was requested', $service));
+        }
+    }
+
     /**
      * Load base configuration shipped with the distribution.
      */

@@ -2,6 +2,8 @@
 
 namespace Meanbee\Magedbm2\Service;
 
+use Meanbee\Magedbm2\Exception\ConfigurationException;
+
 interface ConfigurableServiceInterface
 {
     /**
