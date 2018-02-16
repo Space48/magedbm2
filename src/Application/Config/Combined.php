@@ -19,9 +19,15 @@ class Combined implements ConfigInterface
     const DIST_CONFIG_FILE    = __DIR__ . "/../../../etc/config.yml";
     
     const DEFAULT_CONFIG_FILE = "~/.magedbm2/config.yml";
-    
-    const KEY_TABLE_GROUPS    = "table-groups";
-    
+
+    const KEY_TABLE_GROUPS = 'table-groups';
+
+    const KEY_DB_HOST      = 'db-host';
+    const KEY_DB_NAME      = 'db-name';
+    const KEY_DB_USER      = 'db-user';
+    const KEY_DB_PASS      = 'db-pass';
+    const KEY_DB_PORT      = 'db-port';
+
     protected $data = [];
 
     protected $loaded = false;
@@ -38,6 +44,9 @@ class Combined implements ConfigInterface
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var DatabaseCredentials */
+    private $databaseCredentials;
+
     public function __construct(Application $app, InputInterface $input, Yaml $yaml)
     {
         $this->app = $app;
@@ -53,17 +62,24 @@ class Combined implements ConfigInterface
      *
      * @return $this
      */
-    public function load()
+    protected function load()
     {
+        $initialData = $this->data ?? [];
+
         if (!$this->loaded) {
             $this->loadDistConfig();
             $this->loadDefaultConfig();
-            $this->loadFromFile($this->getConfigFile());
-            $this->loadFromInput($this->input);
-
-            $this->logger->debug("Configuration:\n\n" . Yaml::dump($this->data));
-
             $this->loaded = true;
+        }
+
+        $this->loadFromFile($this->getConfigFile());
+        $this->loadFromInput($this->input);
+
+        $finalData = $this->data ?? [];
+
+        if ($initialData != $finalData) {
+            $dataDiff = @array_diff($finalData, $initialData);
+            $this->logger->debug("Configuration changed:\n\n" . Yaml::dump($dataDiff));
         }
 
         return $this;
@@ -134,22 +150,38 @@ class Combined implements ConfigInterface
      */
     public function getDatabaseCredentials()
     {
-        $rootDiscovery = new RootDiscovery($this->getRootDir() ?? $this->getWorkingDir());
-        $configReader = $rootDiscovery->getConfigReader();
+        if ($this->databaseCredentials === null) {
+            $this->load();
 
-        if ($rootDiscovery->getInstallationType() == \Meanbee\LibMageConf\MagentoType::UNKNOWN) {
-            throw new \RuntimeException(
-                "Unable to detect Magento from the provided configuration -- try specifing a more specific root dir"
-            );
+            $rootDiscovery = new RootDiscovery($this->getRootDir() ?? $this->getWorkingDir());
+            $configReader = $rootDiscovery->getConfigReader();
+
+            if (\Meanbee\LibMageConf\MagentoType::UNKNOWN !== $rootDiscovery->getInstallationType()) {
+
+                $this->databaseCredentials = new DatabaseCredentials(
+                    $configReader->getDatabaseName(),
+                    $configReader->getDatabaseUsername(),
+                    $configReader->getDatabasePassword(),
+                    $configReader->getDatabaseHost(),
+                    $configReader->getDatabasePort()
+                );
+
+            } else {
+                $this->logger->warning(
+                    'Unable to find a Magento installation, using database credentials from configuration.'
+                );
+
+                $this->databaseCredentials = new DatabaseCredentials(
+                    $this->get(self::KEY_DB_NAME) ?? '',
+                    $this->get(self::KEY_DB_USER) ?? '',
+                    $this->get(self::KEY_DB_PASS) ?? '',
+                    $this->get(self::KEY_DB_HOST) ?? 'localhost',
+                    $this->get(self::KEY_DB_PORT) ?? '3306'
+                );
+            }
         }
 
-        return new DatabaseCredentials(
-            $configReader->getDatabaseName(),
-            $configReader->getDatabaseUsername(),
-            $configReader->getDatabasePassword(),
-            $configReader->getDatabaseHost(),
-            $configReader->getDatabasePort()
-        );
+        return $this->databaseCredentials;
     }
 
     /**
@@ -331,6 +363,47 @@ class Combined implements ConfigInterface
                 "Configuration file to use",
                 $this->getDefaultConfigFile()
             ));
+
+        $definition
+            ->addOption(new InputOption(
+                self::KEY_DB_HOST,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database host'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                self::KEY_DB_PORT,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database port'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                self::KEY_DB_USER,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database username'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                self::KEY_DB_PASS,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database password'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                self::KEY_DB_NAME,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database name'
+            ));
+
 
         $definition->addOption(new InputOption(
             "root-dir",
