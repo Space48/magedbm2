@@ -193,7 +193,7 @@ class PutCommand extends BaseCommand
     {
         $tableGroups = $this->config->getTableGroups();
         
-        if (count($tableGroups) > 0) {
+        if ($tableGroups && count($tableGroups) > 0) {
             $tableGroupHelp = "The following table groups are configured and can be used with the <info>--strip</info> option:\n\n";
 
 
