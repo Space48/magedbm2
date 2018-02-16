@@ -182,7 +182,17 @@ class Combined implements ConfigInterface
      */
     public function getConfigFile()
     {
-        return $this->input->getOption("config") ?: $this->getDefaultConfigFile();
+        try {
+            $configFile = $this->input->getOption('config');
+
+            if ($configFile) {
+                return $configFile;
+            }
+        } catch (InvalidArgumentException $e) {
+            return $this->getDefaultConfigFile();
+        }
+
+        return $this->getDefaultConfigFile();
     }
 
     /**
