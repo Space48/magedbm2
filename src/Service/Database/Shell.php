@@ -140,6 +140,15 @@ class Shell implements DatabaseInterface
             "> $dataOutputFile"
         ]));
 
+        $dumpHeader = sprintf(
+            '-- Generator: %s (%s) at %s on %s by %s\n--',
+            Application::APP_NAME,
+            Application::APP_VERSION,
+            date('c'),
+            gethostname(),
+            get_current_user()
+        );
+
         $this->logger->info('Starting structure and data dump commands.');
 
         // Kick the commands off
@@ -168,7 +177,7 @@ class Shell implements DatabaseInterface
 
         // Once the exports have finished then start the compression.
         $compressCommand = $this->createProcess(
-            sprintf('cat %s %s | gzip -9 > %s', $structureOutputFile, $dataOutputFile, $compressedFinalFile)
+            sprintf('echo %s | cat - %s %s | gzip -9 > %s', escapeshellarg($dumpHeader), $structureOutputFile, $dataOutputFile, $compressedFinalFile)
         );
 
         $this->logger->info('Starting compress command.');
