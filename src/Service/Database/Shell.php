@@ -178,7 +178,7 @@ class Shell implements DatabaseInterface
         // Once the exports have finished then start the compression.
         $compressCommand = $this->createProcess(
             sprintf(
-                'echo %s | cat - %s %s | gzip -9 > %s',
+                'echo %s | cat - %s %s | gzip -9 --force > %s',
                 escapeshellarg($dumpHeader),
                 $structureOutputFile,
                 $dataOutputFile,
