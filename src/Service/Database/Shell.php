@@ -89,9 +89,9 @@ class Shell implements DatabaseInterface
 
         $fileNamePrefix = $identifier . '-' . date('Y-m-d_His');
 
-        $structureOutputFile = $fileNamePrefix . '-structure.sql';
-        $dataOutputFile = $fileNamePrefix . '-data.sql';
-        $compressedFinalFile = $fileNamePrefix . '.sql.gz';
+        $structureOutputFile = $this->getTempFile($fileNamePrefix . '-structure.sql');
+        $dataOutputFile = $this->getTempFile($fileNamePrefix . '-data.sql');
+        $compressedFinalFile = $this->getTempFile($fileNamePrefix . '.sql.gz');
 
         $databaseName = $this->config->getDatabaseCredentials()->getName();
 
@@ -337,5 +337,16 @@ class Shell implements DatabaseInterface
                 throw new ServiceException("There was an error exporting the database: " . $command->getErrorOutput());
             }
         });
+    }
+
+    /**
+     * Return the full file path to a temporary file.
+     *
+     * @param $filename
+     * @return string
+     */
+    private function getTempFile($filename)
+    {
+        return $this->config->getTmpDir() . DIRECTORY_SEPARATOR . $filename;
     }
 }
