@@ -79,7 +79,7 @@ class Combined implements ConfigInterface
 
         if ($initialData != $finalData) {
             $dataDiff = @array_diff($finalData, $initialData);
-            $this->logger->debug("Configuration changed:\n\n" . Yaml::dump($dataDiff));
+            $this->logger->debug("Configuration changed:\n\n" . $this->yaml->dump($dataDiff));
         }
 
         return $this;
