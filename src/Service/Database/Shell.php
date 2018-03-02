@@ -125,14 +125,7 @@ class Shell implements DatabaseInterface
             "> $dataOutputFile"
         ]));
 
-        $dumpHeader = sprintf(
-            '-- Generator: %s (%s) at %s on %s by %s\n--',
-            Application::APP_NAME,
-            Application::APP_VERSION,
-            date('c'),
-            gethostname(),
-            get_current_user()
-        );
+        $dumpHeader = $this->getDumpHeader();
 
         $this->logger->info('Starting structure and data dump commands.');
 
@@ -305,5 +298,23 @@ class Shell implements DatabaseInterface
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * String to be placed at the top of a dump.
+     *
+     * @return string
+     */
+    private function getDumpHeader(): string
+    {
+        $dumpHeader = sprintf(
+            '-- Generator: %s (%s) at %s on %s by %s\n--',
+            Application::APP_NAME,
+            Application::APP_VERSION,
+            date('c'),
+            gethostname(),
+            get_current_user()
+        );
+        return $dumpHeader;
     }
 }
