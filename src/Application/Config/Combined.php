@@ -141,7 +141,11 @@ class Combined implements ConfigInterface
      */
     public function getRootDir()
     {
-        return $this->input->getOption("root-dir");
+        try {
+            return $this->input->getOption("root-dir");
+        } catch (InvalidArgumentException $e) {
+            return null;
+        }
     }
 
     /**
