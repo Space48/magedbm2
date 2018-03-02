@@ -157,7 +157,6 @@ class Combined implements ConfigInterface
             $configReader = $rootDiscovery->getConfigReader();
 
             if (\Meanbee\LibMageConf\MagentoType::UNKNOWN !== $rootDiscovery->getInstallationType()) {
-
                 $this->databaseCredentials = new DatabaseCredentials(
                     $configReader->getDatabaseName(),
                     $configReader->getDatabaseUsername(),
@@ -165,7 +164,6 @@ class Combined implements ConfigInterface
                     $configReader->getDatabaseHost(),
                     $configReader->getDatabasePort()
                 );
-
             } else {
                 $this->logger->warning(
                     'Unable to find a Magento installation, using database credentials from configuration.'
@@ -277,7 +275,7 @@ class Combined implements ConfigInterface
             case 'database':
                 return 'shell';
             case 'filesystem':
-                 return 'simple';
+                return 'simple';
             default:
                 throw new \InvalidArgumentException(sprintf('An unknown service (%s) was requested', $service));
         }

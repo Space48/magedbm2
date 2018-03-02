@@ -177,7 +177,13 @@ class Shell implements DatabaseInterface
 
         // Once the exports have finished then start the compression.
         $compressCommand = $this->createProcess(
-            sprintf('echo %s | cat - %s %s | gzip -9 > %s', escapeshellarg($dumpHeader), $structureOutputFile, $dataOutputFile, $compressedFinalFile)
+            sprintf(
+                'echo %s | cat - %s %s | gzip -9 > %s',
+                escapeshellarg($dumpHeader),
+                $structureOutputFile,
+                $dataOutputFile,
+                $compressedFinalFile
+            )
         );
 
         $this->logger->info('Starting compress command.');

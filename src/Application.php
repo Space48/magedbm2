@@ -175,7 +175,7 @@ class Application extends \Symfony\Component\Console\Application
         switch ($this->config->getServicePreference('database')) {
             case 'shell':
             default:
-               return new Service\Database\Shell($this, $this->getConfig());
+                return new Service\Database\Shell($this, $this->getConfig());
         }
     }
 
