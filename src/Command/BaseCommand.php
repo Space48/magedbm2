@@ -6,6 +6,7 @@ use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
 use Meanbee\Magedbm2\Exception\ConfigurationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,8 +23,26 @@ abstract class BaseCommand extends Command
      */
     private $logger;
 
+    /**
+     * @var InputInterface
+     */
+    protected $input;
+
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->input = $input;
+        $this->output = $output;
+
         $this->logger = new ConsoleLogger($output);
 
         $serviceExceptions = $this->validateServices();
