@@ -8,7 +8,6 @@ use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Meanbee\Magedbm2\Exception\TableExpanderInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
