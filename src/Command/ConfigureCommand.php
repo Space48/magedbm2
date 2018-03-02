@@ -35,6 +35,7 @@ class ConfigureCommand extends BaseCommand
         "quiet", "verbose", "no-interaction",
         "ansi", "no-ansi",
         "config", "root-dir",
+        "db-host", "db-port", "db-user", "db-pass", "db-name"
     ];
 
     public function __construct(
