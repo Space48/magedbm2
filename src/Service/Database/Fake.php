@@ -15,6 +15,11 @@ class Fake implements DatabaseInterface
      */
     private $fs;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(FileSystem $fs = null)
     {
         $this->fs = $fs ?? new FileSystem();
@@ -65,5 +70,6 @@ class Fake implements DatabaseInterface
      */
     public function setLogger(LoggerInterface $logger)
     {
+        $this->logger = $logger;
     }
 }
