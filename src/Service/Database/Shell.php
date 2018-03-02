@@ -304,9 +304,11 @@ class Shell implements DatabaseInterface
     }
 
     /**
-     * @return mixed
+     * Kick off an array of commands.
+     *
+     * @param Process[] $commands
      */
-    private function startCommands($commands): void
+    private function startCommands($commands)
     {
         array_walk($commands, function (Process $command) {
             $command->start();
@@ -314,9 +316,11 @@ class Shell implements DatabaseInterface
     }
 
     /**
-     * @param $commands
+     *
+     *
+     * @param Process[] $commands
      */
-    private function waitToFinish($commands): void
+    private function waitToFinish($commands)
     {
         array_walk($commands, function (Process $command) use ($commands) {
             $exitCode = $command->wait();
