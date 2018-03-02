@@ -131,26 +131,10 @@ class Shell implements DatabaseInterface
         $this->logger->info('Starting structure and data dump commands.');
 
         // Kick the commands off
-        array_walk($commands, function (Process $command) {
-            $command->start();
-        });
+        $this->startCommands($commands);
 
         // Wait for all commands to finish before carrying on
-        array_walk($commands, function (Process $command) use ($commands) {
-            $exitCode = $command->wait();
-
-            if ($exitCode !== 0) {
-                $this->logger->alert('There was an error in one of the commands -- stopping others.');
-
-                array_walk($commands, function (Process $command) {
-                    $command->stop();
-                });
-            }
-
-            if ($exitCode !== 0) {
-                throw new ServiceException("There was an error exporting the database: " . $command->getErrorOutput());
-            }
-        });
+        $this->waitToFinish($commands);
 
         $this->logger->info('Starting structure and data dump finished.');
 
@@ -317,5 +301,37 @@ class Shell implements DatabaseInterface
             get_current_user()
         );
         return $dumpHeader;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function startCommands($commands): void
+    {
+        array_walk($commands, function (Process $command) {
+            $command->start();
+        });
+    }
+
+    /**
+     * @param $commands
+     */
+    private function waitToFinish($commands): void
+    {
+        array_walk($commands, function (Process $command) use ($commands) {
+            $exitCode = $command->wait();
+
+            if ($exitCode !== 0) {
+                $this->logger->alert('There was an error in one of the commands -- stopping others.');
+
+                array_walk($commands, function (Process $command) {
+                    $command->stop();
+                });
+            }
+
+            if ($exitCode !== 0) {
+                throw new ServiceException("There was an error exporting the database: " . $command->getErrorOutput());
+            }
+        });
     }
 }
