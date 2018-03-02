@@ -31,12 +31,12 @@ class TablePatternExpanderTest extends TestCase
         ];
     }
 
-    public function test_empty()
+    public function testEmpty()
     {
         $this->assertCorrect([], []);
     }
 
-    public function test_no_wildcard()
+    public function testNoWildcard()
     {
         $patterns = ['admin', 'admin_user'];
         $expected = ['admin', 'admin_user'];
@@ -44,7 +44,7 @@ class TablePatternExpanderTest extends TestCase
         $this->assertCorrect($patterns, $expected);
     }
 
-    public function test_prefix_wildcard()
+    public function testPrefixWildcard()
     {
         $patterns = ['admin*'];
         $expected = ['admin', 'admin_password', 'admin_user'];
@@ -52,7 +52,7 @@ class TablePatternExpanderTest extends TestCase
         $this->assertCorrect($patterns, $expected);
     }
 
-    public function test_suffix_wildcard()
+    public function testSuffixWildcard()
     {
         $patterns = ['*visitor'];
         $expected = ['log_visitor', 'no_visitor', 'test_visitor'];
@@ -60,7 +60,7 @@ class TablePatternExpanderTest extends TestCase
         $this->assertCorrect($patterns, $expected);
     }
 
-    public function test_wrapped_wildcard()
+    public function testWrappedWildcard()
     {
         $patterns = ['*flat_order*'];
         $expected = ['sales_flat_order_1', 'sales_flat_order_2', 'sales_flat_order_3', 'sales_flat_order_4', 'sales_flat_order_5'];

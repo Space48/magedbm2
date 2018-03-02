@@ -23,36 +23,36 @@ class TableGroupExpanderTest extends TestCase
         ]);
     }
     
-    public function test_handles_empty()
+    public function testHandlesEmpty()
     {
         $this->assertEquals('', $this->subject->expand(''));
     }
     
-    public function test_handles_table_names()
+    public function testHandlesTableNames()
     {
         $this->assertEquals('table1', $this->subject->expand('table1'));
         $this->assertEquals('table1 table2', $this->subject->expand('table1 table2'));
         $this->assertEquals('table1 table2 table*', $this->subject->expand('table1 table2 table*'));
     }
     
-    public function test_handles_table_groups()
+    public function testHandlesTableGroups()
     {
         $this->assertEquals('table1 table2 table3_ table4*', $this->subject->expand('@example'));
         $this->assertEquals('cow_* foo_*', $this->subject->expand('@example2'));
         $this->assertEquals('table1 table2 table3_ table4* cow_* foo_*', $this->subject->expand('@example @example2'));
     }
     
-    public function test_handles_mix_of_both()
+    public function testHandlesMixOfBoth()
     {
         $this->assertEquals('aaa table1 table2 table3_ table4* cow_* foo_* zzz', $this->subject->expand('aaa @example @example2 zzz'));
     }
     
-    public function test_removes_undefined_table_group()
+    public function testRemovesUndefinedTableGroup()
     {
         $this->assertEquals('', $this->subject->expand('@moo'));
     }
 
-    public function test_recursive_table_definition()
+    public function testRecursiveTableDefinition()
     {
         $this->assertEquals('table1 table2 table3_ table4* cow_* foo_*', $this->subject->expand('@example3'));
         $this->assertEquals('table1 table2 table3_ table4* cow_* foo_*', $this->subject->expand('@example4'));

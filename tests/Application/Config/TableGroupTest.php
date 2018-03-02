@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class TableGroupTest extends TestCase
 {
-    public function test_with_whitespace_characters()
+    public function testWithWhitespaceCharacters()
     {
         $yaml = <<<YAML
       sales_order
