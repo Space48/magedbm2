@@ -86,18 +86,8 @@ class GetCommand extends BaseCommand
         $project = $input->getArgument("project");
         $file = $input->getArgument("file");
 
-        // Ask for confirmation before overwriting existing database data
-        if (!$input->getOption("force") && !$input->getOption("download-only")) {
-            /** @var QuestionHelper $helper */
-            $helper = $this->getHelper("question");
-            $question = new ConfirmationQuestion(
-                "Are you sure you with to overwrite the local database? [y/N] ",
-                false
-            );
-
-            if (!$helper->ask($input, $output, $question)) {
-                return static::RETURN_CODE_NO_ERROR;
-            }
+        if ($this->needsUserConfirmation() && !$this->confirmUserIsOkToProceed()) {
+            return static::RETURN_CODE_NO_ERROR;
         }
 
         try {
@@ -154,5 +144,32 @@ class GetCommand extends BaseCommand
         $this->filesystem->delete($local_file);
 
         return static::RETURN_CODE_NO_ERROR;
+    }
+
+    /**
+     * Establish whether or not we should be asking the user to confirm this action before proceeding.
+     */
+    private function needsUserConfirmation(): bool
+    {
+        $isForced = $this->input->getOption("force");
+        $isDownloadOnly = $this->input->getOption("download-only");
+
+        // Require confirm if we're not forcing and if we're importing a database (not just downloading)
+        return !$isForced && !$isDownloadOnly;
+    }
+
+    /**
+     * Prompt the user for confirmation that it's ok to proceed.
+     */
+    private function confirmUserIsOkToProceed(): bool
+    {
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper("question");
+        $question = new ConfirmationQuestion(
+            "Are you sure you with to overwrite the local database? [y/N] ",
+            false
+        );
+
+        return (bool) $helper->ask($this->input, $this->output, $question);
     }
 }
