@@ -13,7 +13,7 @@ It was written with developers in mind and provides commands for:
 
 ## Compatibility
 
-magedbm2 is compatible with PHP 7.0+ and requires `exec` and `passthru` functions to create and import database backups.
+magedbm2 requires PHP 7.0+ with permission to run the `exec` and `passthru` functions to create and import database backups.
 
 ## Installation
 
@@ -78,6 +78,17 @@ To download the backup file without importing it, use the `--download-only` opti
 
 The rm command allows you to delete specific backup files from S3.
 
+### Running without a Magento installation
+
+It's not always possible to run `magedbm2` on the same server that a Magento installation is present, for example you might want to run a cron for `magedbm2` on your database server so that you don't clog the pipe to the application server with unnecessary backup traffic.
+
+`magedbm2` normally discovers the database credentials by looking for the `app/etc/env.php` configuration file in a Magento project. If this is not found then `magedbm2` will fallback to the following options:
+
+* `--db-host`
+* `--db-port`
+* `--db-user`
+* `--db-pass`
+
 ## Development
 
 ### Contributing
@@ -92,6 +103,7 @@ Pull requests should be submitted to the `develop` branch to be included in the 
 ### Requirements
 
 Developing magedbm2 requires:
+
 - PHP 7.0+
 - [Phing](https://www.phing.info/)
 
