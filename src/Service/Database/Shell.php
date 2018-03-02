@@ -101,10 +101,10 @@ class Shell implements DatabaseInterface
         if (trim($strip_tables) !== '') {
             // Create the structure-only dump for tables that we don't want the data from.
             $commands[] = $this->createDumpProcess([
+                '--single-transaction',
+                '--quick',
                 '--no-data',
                 '--add-drop-table',
-                // @TODO Do we need to add --skip-triggers here?
-                // @TODO Do we need to add --routines here?
                 $databaseName,
                 $strip_tables,
                 "> $structureOutputFile"
@@ -119,8 +119,9 @@ class Shell implements DatabaseInterface
         }, explode(' ', $strip_tables));
 
         $commands[] = $this->createDumpProcess(array_merge($dataDumpOptions, [
+            '--single-transaction',
+            '--quick',
             '--add-drop-table',
-            // @TODO Do we need to add --skip-triggers here?
             $databaseName,
             "> $dataOutputFile"
         ]));
