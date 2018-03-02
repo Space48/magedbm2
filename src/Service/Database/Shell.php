@@ -73,7 +73,7 @@ class Shell implements DatabaseInterface
     public function import($file)
     {
         $command = array_merge(
-            ['zcat ' . $file . ' | mysql'],
+            ['gunzip -c ' . $file . ' | mysql'],
             $this->getCredentialOptions(),
             [$this->config->getDatabaseCredentials()->getName()]
         );
