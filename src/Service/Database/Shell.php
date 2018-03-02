@@ -9,7 +9,6 @@ use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 class Shell implements DatabaseInterface
@@ -30,11 +29,6 @@ class Shell implements DatabaseInterface
     private $config;
 
     /**
-     * @var OutputInterface
-     */
-    private $outputInterface;
-
-    /**
      * @var TablePatternExpander
      */
     private $tablePatternExpander;
@@ -51,15 +45,6 @@ class Shell implements DatabaseInterface
         $this->tablePatternExpander = new TablePatternExpander();
         $this->logger = new NullLogger();
     }
-
-    /**
-     * @param OutputInterface $interface
-     */
-    public function setOutputAdapter(OutputInterface $interface)
-    {
-        $this->outputInterface = $interface;
-    }
-
 
     /**
      * Import the given backup file into the database.
