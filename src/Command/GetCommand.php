@@ -36,7 +36,6 @@ class GetCommand extends BaseCommand
         $this->storage = $storage;
         $this->filesystem = $filesystem;
 
-        $this->ensureServiceConfigurationValidated('database', $this->database);
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
@@ -77,6 +76,10 @@ class GetCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('download-only')) {
+            $this->ensureServiceConfigurationValidated('database', $this->database);
+        }
+
         if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
             return $parentExitCode;
         }
