@@ -1,2 +1,11 @@
 ---
 test-option: test-value
+
+table-groups:
+  - id: example_1
+    description: Example 1 Table Group
+    tables: table_one table_two table_thr*
+
+  - id: example_2
+    description: Example 2 Table Group
+    tables: moo meow woff oink

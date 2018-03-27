@@ -2,9 +2,10 @@
 
 namespace Meanbee\Magedbm2\Service;
 
-interface DatabaseInterface
-{
+use Psr\Log\LoggerAwareInterface;
 
+interface DatabaseInterface extends ConfigurableServiceInterface, LoggerAwareInterface
+{
     /**
      * Import the given backup file into the database.
      *
@@ -17,10 +18,10 @@ interface DatabaseInterface
     /**
      * Dump the database into a backup file.
      *
-     * @param string $identifier   An identifier for the dump file.
+     * @param string $identifier An identifier for the dump file.
      * @param string $strip_tables List of tables to dump with no data.
      *
      * @return string Path to the database dump.
      */
-    public function dump($identifier, $strip_tables = "@development");
+    public function dump($identifier, $strip_tables = '');
 }

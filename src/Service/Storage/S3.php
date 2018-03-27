@@ -4,7 +4,8 @@ namespace Meanbee\Magedbm2\Service\Storage;
 
 use Aws\S3\S3Client;
 use Meanbee\Magedbm2\Application;
-use Meanbee\Magedbm2\Service\ServiceException;
+use Meanbee\Magedbm2\Exception\ConfigurationException;
+use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -319,5 +320,25 @@ class S3 implements StorageInterface
             InputOption::VALUE_REQUIRED,
             "S3 bucket"
         ));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function validateConfiguration(): bool
+    {
+        if (!$this->getConfig()->get('bucket')) {
+            throw new ConfigurationException('A bucket needs to be defined');
+        }
+
+        try {
+            // If we call this with invalid configuration then the client-side validation will mean that an exception
+            // will be thrown.
+            $this->getClient();
+        } catch (\InvalidArgumentException $e) {
+            throw new ConfigurationException($e->getMessage());
+        }
+
+        return true;
     }
 }

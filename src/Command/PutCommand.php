@@ -2,19 +2,19 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Helper\TableGroupExpander;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
-use Meanbee\Magedbm2\Service\ServiceException;
+use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PutCommand extends Command
+class PutCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_DATABASE_ERROR = 1;
     const RETURN_CODE_STORAGE_ERROR = 2;
 
@@ -27,13 +27,36 @@ class PutCommand extends Command
     /** @var FilesystemInterface */
     protected $filesystem;
 
-    public function __construct(DatabaseInterface $database, StorageInterface $storage, FilesystemInterface $filesystem)
-    {
-        parent::__construct();
+    /** @var TableGroupExpander */
+    protected $tableExpander;
 
+    /** @var ConfigInterface */
+    protected $config;
+
+    /**
+     * @param ConfigInterface $config
+     * @param DatabaseInterface $database
+     * @param StorageInterface $storage
+     * @param FilesystemInterface $filesystem
+     * @param TableGroupExpander $tableGroupExpander
+     */
+    public function __construct(
+        ConfigInterface $config,
+        DatabaseInterface $database,
+        StorageInterface $storage,
+        FilesystemInterface $filesystem,
+        TableGroupExpander $tableGroupExpander = null
+    ) {
         $this->database = $database;
         $this->storage = $storage;
         $this->filesystem = $filesystem;
+        $this->tableExpander = $tableGroupExpander ?? new TableGroupExpander();
+        $this->config = $config;
+
+        parent::__construct();
+
+        $this->ensureServiceConfigurationValidated('database', $this->database);
+        $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
     /**
@@ -55,7 +78,8 @@ class PutCommand extends Command
                 "strip",
                 "s",
                 InputOption::VALUE_OPTIONAL,
-                "List of tables to export without any data. By default, all customer data is stripped.",
+                "List of space-separated tables / table groups to export without any data. By default, all " .
+                    "customer data is stripped.",
                 "@development"
             )
             ->addOption(
@@ -71,6 +95,8 @@ class PutCommand extends Command
                 InputOption::VALUE_NONE,
                 "Do not remove old backup files after uploading."
             );
+
+        $this->setHelp($this->getHelpText());
     }
 
     /**
@@ -78,8 +104,16 @@ class PutCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
+
+        if ($tableGroups = $this->config->getTableGroups()) {
+            $this->tableExpander->setTableGroups($tableGroups);
+        }
+
         $project = $input->getArgument("project");
-        $strip_tables = $input->getOption("strip");
+        $strip_tables = $input->getOption("strip") ?? '@development';
 
         $output->writeln(
             "<info>Creating a backup file of the database...</info>",
@@ -87,7 +121,20 @@ class PutCommand extends Command
         );
 
         try {
-            $local_file = $this->database->dump($project, $strip_tables);
+            $this->database->setLogger($this->getLogger());
+
+            $local_file = $this->database->dump($project, $this->tableExpander->expand($strip_tables));
+
+            if (!file_exists($local_file)) {
+                throw new ServiceException(sprintf(
+                    "No file was created from database service. (expected %s)",
+                    $local_file
+                ));
+            }
+
+            if (!is_readable($local_file)) {
+                throw new ServiceException("File was created from database service, but it wasn't readable.");
+            }
         } catch (ServiceException $e) {
             $output->writeln(sprintf(
                 "<error>Failed to create a database backup file: %s</error>",
@@ -136,5 +183,34 @@ class PutCommand extends Command
         }
 
         return static::RETURN_CODE_NO_ERROR;
+    }
+
+    /**
+     * @return string
+     */
+    private function getHelpText()
+    {
+        $tableGroups = $this->config->getTableGroups();
+
+        if ($tableGroups && count($tableGroups) > 0) {
+            $tableGroupHelp =
+                "The following table groups are configured and can be used with the <info>--strip</info> option:\n\n";
+
+
+            foreach ($tableGroups as $tableGroup) {
+                $tableGroupHelp .= sprintf(
+                    "<info>%s</info>: <comment>%s</comment>\n",
+                    $tableGroup->getId(),
+                    $tableGroup->getDescription()
+                );
+
+                $tableGroupHelp .= "\t" . implode(', ', $tableGroup->getTables()) . "\n";
+            }
+        } else {
+            $tableGroupHelp =
+                'There are no table groups configured. You can configure table groups in the configuration files.';
+        }
+
+        return $this->getDescription() . "\n\n" . $tableGroupHelp;
     }
 }

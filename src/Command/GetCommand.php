@@ -4,9 +4,8 @@ namespace Meanbee\Magedbm2\Command;
 
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
-use Meanbee\Magedbm2\Service\ServiceException;
+use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,9 +13,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class GetCommand extends Command
+class GetCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_DOWNLOAD_ERROR = 1;
     const RETURN_CODE_FILESYSTEM_ERROR = 2;
     const RETURN_CODE_DATABASE_ERROR = 3;
@@ -37,6 +35,8 @@ class GetCommand extends Command
         $this->database = $database;
         $this->storage = $storage;
         $this->filesystem = $filesystem;
+
+        $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
     /**
@@ -76,21 +76,21 @@ class GetCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('download-only')) {
+            $this->ensureServiceConfigurationValidated('database', $this->database);
+        }
+
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
+
+        $this->database->setLogger($this->getLogger());
+
         $project = $input->getArgument("project");
         $file = $input->getArgument("file");
 
-        // Ask for confirmation before overwriting existing database data
-        if (!$input->getOption("force") && !$input->getOption("download-only")) {
-            /** @var QuestionHelper $helper */
-            $helper = $this->getHelper("question");
-            $question = new ConfirmationQuestion(
-                "Are you sure you with to overwrite the local database? [y/N] ",
-                false
-            );
-
-            if (!$helper->ask($input, $output, $question)) {
-                return static::RETURN_CODE_NO_ERROR;
-            }
+        if ($this->needsUserConfirmation() && !$this->confirmUserIsOkToProceed()) {
+            return static::RETURN_CODE_NO_ERROR;
         }
 
         try {
@@ -147,5 +147,32 @@ class GetCommand extends Command
         $this->filesystem->delete($local_file);
 
         return static::RETURN_CODE_NO_ERROR;
+    }
+
+    /**
+     * Establish whether or not we should be asking the user to confirm this action before proceeding.
+     */
+    private function needsUserConfirmation(): bool
+    {
+        $isForced = $this->input->getOption("force");
+        $isDownloadOnly = $this->input->getOption("download-only");
+
+        // Require confirm if we're not forcing and if we're importing a database (not just downloading)
+        return !$isForced && !$isDownloadOnly;
+    }
+
+    /**
+     * Prompt the user for confirmation that it's ok to proceed.
+     */
+    private function confirmUserIsOkToProceed(): bool
+    {
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper("question");
+        $question = new ConfirmationQuestion(
+            "Are you sure you with to overwrite the local database? [y/N] ",
+            false
+        );
+
+        return (bool) $helper->ask($this->input, $this->output, $question);
     }
 }

@@ -4,7 +4,7 @@ namespace Meanbee\Magedbm2\Service;
 
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 
-interface StorageInterface
+interface StorageInterface extends ConfigurableServiceInterface
 {
     /**
      * List available projects.

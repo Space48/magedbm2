@@ -2,16 +2,14 @@
 
 namespace Meanbee\Magedbm2\Command;
 
-use Meanbee\Magedbm2\Service\ServiceException;
+use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\StorageInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RmCommand extends Command
+class RmCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_STORAGE_ERROR = 1;
 
     /** @var StorageInterface */
@@ -22,6 +20,8 @@ class RmCommand extends Command
         parent::__construct();
 
         $this->storage = $storage;
+
+        $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 
     /**
@@ -51,6 +51,10 @@ class RmCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
+
         $project = $input->getArgument("project");
         $file = $input->getArgument("file");
 

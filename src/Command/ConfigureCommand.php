@@ -12,9 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigureCommand extends Command
+class ConfigureCommand extends BaseCommand
 {
-    const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_SAVE_ERROR = 1;
 
     /** @var ConfigInterface */
@@ -36,6 +35,7 @@ class ConfigureCommand extends Command
         "quiet", "verbose", "no-interaction",
         "ansi", "no-ansi",
         "config", "root-dir",
+        "db-host", "db-port", "db-user", "db-pass", "db-name"
     ];
 
     public function __construct(
@@ -78,6 +78,10 @@ HELP
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+            return $parentExitCode;
+        }
+
         $options = $this->getConfigOptions();
         $data = [];
 

@@ -1,7 +1,8 @@
 {
   "output": "magedbm2.phar",
   "directories": [
-    "src"
+    "src",
+    "etc"
   ],
   "files": [
     "LICENSE"

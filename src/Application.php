@@ -4,11 +4,14 @@ namespace Meanbee\Magedbm2;
 
 use Composer\Autoload\ClassLoader;
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -95,7 +98,7 @@ class Application extends \Symfony\Component\Console\Application
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
-        $this->init($input);
+        $this->init($input, $output);
 
         return parent::doRun($input, $output);
     }
@@ -104,13 +107,14 @@ class Application extends \Symfony\Component\Console\Application
      * Initialise the application, including configuration, services and available commands.
      *
      * @param InputInterface $input
+     * @param OutputInterface $output
      *
      * return void
      */
-    public function init(InputInterface $input)
+    public function init(InputInterface $input, OutputInterface $output)
     {
-        $this->initConfig($input);
-        $this->initServices();
+        $this->initConfig($input, $output);
+        $this->initServices($output);
         $this->initCommands();
     }
 
@@ -118,26 +122,72 @@ class Application extends \Symfony\Component\Console\Application
      * Initialise the application config.
      *
      * @param InputInterface $input
+     * @param OutputInterface $output
      *
      * @return void
      */
-    protected function initConfig(InputInterface $input)
+    protected function initConfig(InputInterface $input, OutputInterface $output)
     {
         $this->config = new Application\Config\Combined($this, $input, new Yaml());
+        $this->config->setLogger(new ConsoleLogger($output));
     }
 
     /**
      * Initialise the available services.
      *
+     * @param OutputInterface $output
      * @return void
      */
-    protected function initServices()
+    protected function initServices(OutputInterface $output)
     {
-        $this->services = [];
+        $this->services = [
+            'storage' => $this->getStorageImplementation(),
+            'database' => $this->getDatabaseImplementation(),
+            'filesystem' => $this->getFileSystemImplementation(),
+        ];
 
-        $this->services["database"] = new Service\Database\Magerun($this);
-        $this->services["storage"] = new Service\Storage\S3($this);
-        $this->services["filesystem"] = new Service\Filesystem\Simple();
+        foreach ($this->services as $service) {
+            if ($service instanceof LoggerAwareInterface) {
+                $service->setLogger(new ConsoleLogger($output));
+            }
+        }
+    }
+
+    /**
+     * @return StorageInterface
+     */
+    protected function getStorageImplementation()
+    {
+        switch ($this->config->getServicePreference('storage')) {
+            case 'local':
+                return new Service\Storage\Local();
+            case 's3':
+            default:
+                return new Service\Storage\S3($this);
+        }
+    }
+
+    /**
+     * @return DatabaseInterface
+     */
+    protected function getDatabaseImplementation()
+    {
+        switch ($this->config->getServicePreference('database')) {
+            case 'shell':
+            default:
+                return new Service\Database\Shell($this, $this->getConfig());
+        }
+    }
+
+    /**
+     * @return FilesystemInterface
+     */
+    protected function getFileSystemImplementation()
+    {
+        switch ($this->config->getServicePreference('filesystem')) {
+            default:
+                return new Service\Filesystem\Simple();
+        }
     }
 
     /**
@@ -164,6 +214,7 @@ class Application extends \Symfony\Component\Console\Application
         ));
 
         $this->add(new Command\PutCommand(
+            $this->getConfig(),
             $this->getService("database"),
             $this->getService("storage"),
             $this->getService("filesystem")
