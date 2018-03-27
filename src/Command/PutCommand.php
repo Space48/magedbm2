@@ -78,7 +78,7 @@ class PutCommand extends BaseCommand
                 "strip",
                 "s",
                 InputOption::VALUE_OPTIONAL,
-                "List of space-separated tables / table groups to export without any data. By default, all" .
+                "List of space-separated tables / table groups to export without any data. By default, all " .
                     "customer data is stripped.",
                 "@development"
             )
