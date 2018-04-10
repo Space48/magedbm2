@@ -2,16 +2,18 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Application\ConfigLoader\InputLoader;
 use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
 use Meanbee\Magedbm2\Exception\ConfigurationException;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class BaseCommand extends Command
+abstract class BaseCommand extends Command implements LoggerAwareInterface
 {
     const RETURN_CODE_NO_ERROR = 0;
     const RETURN_CODE_CONFIGURATION_ERROR = 100;
@@ -34,16 +36,35 @@ abstract class BaseCommand extends Command
     protected $output;
 
     /**
+     * @var ConfigInterface
+     */
+    protected $config;
+
+    /**
+     * @param ConfigInterface $config
+     * @param $name
+     * @throws \Symfony\Component\Console\Exception\LogicException
+     */
+    public function __construct(ConfigInterface $config, $name)
+    {
+        parent::__construct($name);
+
+        $this->logger = new NullLogger();
+        $this->config = $config;
+    }
+
+    /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|null|void
+     * @return int
+     * @throws ConfigurationException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
         $this->output = $output;
 
-        $this->logger = new ConsoleLogger($output);
+        $this->loadAdditionalConfig();
 
         $serviceExceptions = $this->validateServices();
 
@@ -68,6 +89,14 @@ abstract class BaseCommand extends Command
     protected function getLogger()
     {
         return $this->logger;
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -107,5 +136,14 @@ abstract class BaseCommand extends Command
         }
 
         return $exceptions;
+    }
+
+    /**
+     * @throws ConfigurationException
+     */
+    private function loadAdditionalConfig()
+    {
+        $this->logger->info('Loading config from input');
+        $this->config->merge((new InputLoader($this->input))->asConfig());
     }
 }

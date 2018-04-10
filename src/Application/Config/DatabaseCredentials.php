@@ -82,4 +82,21 @@ class DatabaseCredentials
     {
         return $this->port;
     }
+
+    /**
+     * @return \PDO
+     */
+    public function createPDO(): \PDO
+    {
+        return new \PDO(
+            sprintf(
+                'mysql:dbname=%s;host=%s;port=%s',
+                $this->getName(),
+                $this->getHost(),
+                $this->getPort()
+            ),
+            $this->getUsername(),
+            $this->getPassword()
+        );
+    }
 }

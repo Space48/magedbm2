@@ -2,6 +2,7 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\StorageInterface;
@@ -13,16 +14,25 @@ class LsCommand extends BaseCommand
 {
     const RETURN_CODE_STORAGE_ERROR = 1;
 
+    const ARG_PROJECT = "project";
+    const NAME        = "ls";
+
     /** @var StorageInterface */
     protected $storage;
+    /**
+     * @var StorageInterface
+     */
+    private $dataStorage;
 
-    public function __construct(StorageInterface $storage)
+    public function __construct(ConfigInterface $config, StorageInterface $storage, StorageInterface $dataStorage)
     {
-        parent::__construct();
+        parent::__construct($config, self::NAME);
 
         $this->storage = $storage;
+        $this->storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
 
-        $this->ensureServiceConfigurationValidated('storage', $this->storage);
+        $this->dataStorage = $dataStorage;
+        $this->dataStorage->setPurpose(StorageInterface::PURPOSE_ANONYMISED_DATA);
     }
 
     /**
@@ -33,10 +43,10 @@ class LsCommand extends BaseCommand
         parent::configure();
 
         $this
-            ->setName("ls")
+            ->setName(self::NAME)
             ->setDescription("List available projects or backup files.")
             ->addArgument(
-                "project",
+                self::ARG_PROJECT,
                 InputArgument::OPTIONAL,
                 "Project identifier."
             );
@@ -51,11 +61,51 @@ class LsCommand extends BaseCommand
             return $parentExitCode;
         }
 
-        $project = $input->getArgument("project");
+        if ($this->storage->validateConfiguration()) {
+            $this->output->writeln("Storage: Stripped Databases");
+            $this->output->writeln("========================================");
+            $this->renderStorage($this->storage, $input, $output);
+            $this->output->writeln('');
+        }
+
+        if ($this->dataStorage->validateConfiguration()) {
+            $this->output->writeln("Storage: Data Exports");
+            $this->output->writeln("========================================");
+            $this->renderStorage($this->dataStorage, $input, $output);
+        }
+
+        return static::RETURN_CODE_NO_ERROR;
+    }
+
+    /**
+     * Return the file information as a string.
+     *
+     * @param File $file
+     * @param int  $line_length Pad the output to fit the specified length.
+     *
+     * @return string
+     */
+    protected function renderFile(File $file, $line_length = 40)
+    {
+        $formatted_size = $this->formatFileSize($file->size);
+
+        $line = str_pad($file->name, $line_length - strlen($formatted_size)) . $formatted_size;
+
+        return $line;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
+    protected function renderStorage(StorageInterface $storage, InputInterface $input, OutputInterface $output): int
+    {
+        $project = $input->getArgument(self::ARG_PROJECT);
 
         if (!$project) {
             try {
-                $projects = $this->storage->listProjects();
+                $projects = $storage->listProjects();
             } catch (ServiceException $e) {
                 $output->writeln(sprintf(
                     "<error>Failed to retrieve available projects: %s</error>",
@@ -74,7 +124,7 @@ class LsCommand extends BaseCommand
         }
 
         try {
-            $files = $this->storage->listFiles($project);
+            $files = $storage->listFiles($project);
         } catch (ServiceException $e) {
             $output->writeln(sprintf(
                 "<error>Failed to retrieve available files for %s: %s</error>",
@@ -102,21 +152,33 @@ class LsCommand extends BaseCommand
     }
 
     /**
-     * Return the file information as a string.
-     *
-     * @param File $file
-     * @param int  $line_length Pad the output to fit the specified length.
-     *
-     * @return string
+     * @param $fileSizeBytes
+     * @return int
      */
-    protected function renderFile(File $file, $line_length = 40)
+    protected function formatFileSize($fileSizeBytes)
     {
-        $formatted_size = $file->size / (1024 * 1024);
-        $formatted_size = round($formatted_size, ($formatted_size < 1) ? 1 : 0);
-        $formatted_size = sprintf("%sMB", $formatted_size);
+        $fileSizeBytes = (int) $fileSizeBytes;
 
-        $line = str_pad($file->name, $line_length - strlen($formatted_size)) . $formatted_size;
+        $kb = 1024.0;
+        $mb = 1024.0 * $kb;
+        $gb = 1024.0 * $mb;
 
-        return $line;
+        if ($fileSizeBytes === 0) {
+            return '(zero)';
+        }
+
+        if ($fileSizeBytes < $kb) {
+            return sprintf('%dB', $fileSizeBytes);
+        }
+
+        if ($fileSizeBytes < $mb) {
+            return sprintf('%dKB', $fileSizeBytes / $kb);
+        }
+
+        if ($fileSizeBytes < $gb) {
+            return sprintf('%dMB', $fileSizeBytes / $mb);
+        }
+
+        return sprintf('%dGB', $fileSizeBytes / $gb);
     }
 }

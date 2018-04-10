@@ -16,6 +16,11 @@ class Local implements StorageInterface
     private $tmpDir;
 
     /**
+     * @var
+     */
+    private $purpose;
+
+    /**
      * Local constructor.
      */
     public function __construct()
@@ -194,5 +199,16 @@ class Local implements StorageInterface
                 throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
             }
         }
+    }
+
+    /**
+     * Define the purpose of this instantiation.
+     *
+     * @param $purpose
+     * @return mixed
+     */
+    public function setPurpose($purpose)
+    {
+        $this->purpose = $purpose;
     }
 }

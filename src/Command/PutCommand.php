@@ -2,6 +2,7 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Helper\TableGroupExpander;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
@@ -18,6 +19,9 @@ class PutCommand extends BaseCommand
     const RETURN_CODE_DATABASE_ERROR = 1;
     const RETURN_CODE_STORAGE_ERROR = 2;
 
+    const ARG_PROJECT = "project";
+    const NAME        = "put";
+
     /** @var DatabaseInterface */
     protected $database;
 
@@ -29,9 +33,6 @@ class PutCommand extends BaseCommand
 
     /** @var TableGroupExpander */
     protected $tableExpander;
-
-    /** @var ConfigInterface */
-    protected $config;
 
     /**
      * @param ConfigInterface $config
@@ -53,7 +54,9 @@ class PutCommand extends BaseCommand
         $this->tableExpander = $tableGroupExpander ?? new TableGroupExpander();
         $this->config = $config;
 
-        parent::__construct();
+        $storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
+
+        parent::__construct($config, self::NAME);
 
         $this->ensureServiceConfigurationValidated('database', $this->database);
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
@@ -67,15 +70,15 @@ class PutCommand extends BaseCommand
         parent::configure();
 
         $this
-            ->setName("put")
+            ->setName(self::NAME)
             ->setDescription("Create and upload a database backup.")
             ->addArgument(
-                "project",
+                self::ARG_PROJECT,
                 InputArgument::REQUIRED,
                 "Project identifier."
             )
             ->addOption(
-                "strip",
+                Option::STRIP,
                 "s",
                 InputOption::VALUE_OPTIONAL,
                 "List of space-separated tables / table groups to export without any data. By default, all " .
@@ -83,14 +86,14 @@ class PutCommand extends BaseCommand
                 "@development"
             )
             ->addOption(
-                "clean",
+                Option::CLEAN_COUNT,
                 "c",
                 InputOption::VALUE_REQUIRED,
                 "The number of latest backup files to keep when uploading.",
                 5
             )
             ->addOption(
-                "no-clean",
+                Option::NO_CLEAN,
                 "C",
                 InputOption::VALUE_NONE,
                 "Do not remove old backup files after uploading."
@@ -112,8 +115,8 @@ class PutCommand extends BaseCommand
             $this->tableExpander->setTableGroups($tableGroups);
         }
 
-        $project = $input->getArgument("project");
-        $strip_tables = $input->getOption("strip") ?? '@development';
+        $project = $input->getArgument(self::ARG_PROJECT);
+        $strip_tables = $input->getOption(Option::STRIP) ?? '@development';
 
         $output->writeln(
             "<info>Creating a backup file of the database...</info>",
@@ -167,8 +170,8 @@ class PutCommand extends BaseCommand
 
         $this->filesystem->delete($local_file);
 
-        if (!$input->getOption("no-clean")) {
-            $clean = $input->getOption("clean");
+        if (!$input->getOption(Option::NO_CLEAN)) {
+            $clean = $input->getOption(Option::CLEAN_COUNT);
 
             try {
                 $this->storage->clean($project, $clean);

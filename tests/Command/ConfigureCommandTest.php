@@ -2,6 +2,7 @@
 
 namespace Meanbee\Magedbm2\Tests\Command;
 
+use Meanbee\Magedbm2\Application\ConfigFileResolver;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Command\ConfigureCommand;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
@@ -14,9 +15,26 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Yaml\Yaml;
+use VirtualFileSystem\FileSystem as VirtualFileSystem;
 
-class ConfigureCommandTest extends TestCase
+class ConfigureCommandTest extends AbstractCommandTest
 {
+    /**
+     * @var VirtualFileSystem
+     */
+    private $vfs;
+
+    /**
+     * @var string
+     */
+    private $configPath;
+
+    protected function setUp()
+    {
+        $this->vfs = new VirtualFileSystem();
+        $this->configPath = $this->vfs->path('/example.yml');
+    }
+
     /**
      * Test that the command saves the configuration correctly in interactive mode.
      *
@@ -24,12 +42,12 @@ class ConfigureCommandTest extends TestCase
      */
     public function testInteractive()
     {
-        $filesystem = $this->createMock(FilesystemInterface::class);
+        $filesystem = $this->getFilesystemMock();
         $filesystem
             ->expects($this->once())
             ->method("write")
             ->with(
-                $this->equalTo("/tmp/test-config-file.yml"),
+                $this->equalTo($this->configPath),
                 $this->equalTo("test-option: test-option-value\nother-option: other-option-value\n")
             );
 
@@ -44,12 +62,12 @@ class ConfigureCommandTest extends TestCase
      */
     public function testNonInteractive()
     {
-        $filesystem = $this->createMock(FilesystemInterface::class);
+        $filesystem = $this->getFilesystemMock();
         $filesystem
             ->expects($this->once())
             ->method("write")
             ->with(
-                $this->equalTo("/tmp/test-config-file.yml"),
+                $this->equalTo($this->configPath),
                 $this->equalTo("test-option: default-test-option-value\nother-option: null\n")
             );
 
@@ -100,7 +118,7 @@ class ConfigureCommandTest extends TestCase
             ]));
 
         // Create a config mock to return the config file path and default config values
-        $config = $this->createMock(ConfigInterface::class);
+        $config = $this->getConfigMock();
         $config
             ->method("get")
             ->willReturnCallback(function ($option) {
@@ -111,15 +129,14 @@ class ConfigureCommandTest extends TestCase
                         return null;
                 }
             });
-        $config
-            ->method("getConfigFile")
-            ->willReturn("/tmp/test-config-file.yml");
 
-        $command = new ConfigureCommand($config, $filesystem, new Yaml());
+        $configResolver = $this->createMock(ConfigFileResolver::class);
+        $configResolver->method('getUserFilePath')
+            ->willReturn($this->configPath);
+
+        $command = new ConfigureCommand($config, $configResolver, $filesystem, new Yaml());
         $command->setApplication($application);
 
-        $tester = new CommandTester($command);
-
-        return $tester;
+        return new CommandTester($command);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,12 +13,20 @@ class RmCommand extends BaseCommand
 {
     const RETURN_CODE_STORAGE_ERROR = 1;
 
+    const ARG_TYPE    = "type";
+    const ARG_PROJECT = "project";
+    const ARG_FILE    = "file";
+    const NAME        = "rm";
+
+    const TYPE_DATABASE = 'database';
+    const TYPE_EXPORT   = 'export';
+
     /** @var StorageInterface */
     protected $storage;
 
-    public function __construct(StorageInterface $storage)
+    public function __construct(ConfigInterface $config, StorageInterface $storage)
     {
-        parent::__construct();
+        parent::__construct($config, self::NAME);
 
         $this->storage = $storage;
 
@@ -32,15 +41,20 @@ class RmCommand extends BaseCommand
         parent::configure();
 
         $this
-            ->setName("rm")
+            ->setName(self::NAME)
             ->setDescription("Delete uploaded backup files.")
             ->addArgument(
-                "project",
+                self::ARG_TYPE,
+                InputArgument::REQUIRED,
+                "File type (database or export)"
+            )
+            ->addArgument(
+                self::ARG_PROJECT,
                 InputArgument::REQUIRED,
                 "Project identifier."
             )
             ->addArgument(
-                "file",
+                self::ARG_FILE,
                 InputArgument::REQUIRED,
                 "File to delete."
             );
@@ -55,8 +69,22 @@ class RmCommand extends BaseCommand
             return $parentExitCode;
         }
 
-        $project = $input->getArgument("project");
-        $file = $input->getArgument("file");
+        $type = $input->getArgument(self::ARG_TYPE);
+        $project = $input->getArgument(self::ARG_PROJECT);
+        $file = $input->getArgument(self::ARG_FILE);
+
+        if ($type === self::TYPE_DATABASE) {
+            $this->storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
+        } elseif ($type === self::TYPE_EXPORT) {
+            $this->storage->setPurpose(StorageInterface::PURPOSE_ANONYMISED_DATA);
+        } else {
+            throw new \InvalidArgumentException(
+                "The argument 'type' supports the following values: " . implode(', ', [
+                    self::TYPE_DATABASE,
+                    self::TYPE_EXPORT
+                ])
+            );
+        }
 
         try {
             $this->storage->delete($project, $file);
