@@ -91,7 +91,7 @@ HELP
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_SUCCESS) {
             return $parentExitCode;
         }
 
@@ -136,7 +136,7 @@ HELP
                 $file
             ));
 
-            return static::RETURN_CODE_NO_ERROR;
+            return static::RETURN_CODE_SUCCESS;
         } else {
             $output->writeln(sprintf(
                 "<error>Failed to save configuration in %s!</error>",

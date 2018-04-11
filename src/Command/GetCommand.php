@@ -97,7 +97,7 @@ class GetCommand extends BaseCommand
             $this->ensureServiceConfigurationValidated('database', $this->database);
         }
 
-        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_SUCCESS) {
             return $parentExitCode;
         }
 
@@ -107,7 +107,7 @@ class GetCommand extends BaseCommand
         $file = $input->getArgument("file");
 
         if ($this->needsUserConfirmation() && !$this->confirmUserIsOkToProceed()) {
-            return static::RETURN_CODE_NO_ERROR;
+            return static::RETURN_CODE_SUCCESS;
         }
 
         try {
@@ -163,7 +163,7 @@ class GetCommand extends BaseCommand
 
         $this->filesystem->delete($local_file);
 
-        return static::RETURN_CODE_NO_ERROR;
+        return static::RETURN_CODE_SUCCESS;
     }
 
     /**

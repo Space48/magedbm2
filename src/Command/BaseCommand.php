@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command implements LoggerAwareInterface
 {
-    const RETURN_CODE_NO_ERROR = 0;
+    const RETURN_CODE_SUCCESS             = 0;
     const RETURN_CODE_CONFIGURATION_ERROR = 100;
 
     private $servicesToValidate = [];
@@ -80,7 +80,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
             return self::RETURN_CODE_CONFIGURATION_ERROR;
         }
 
-        return self::RETURN_CODE_NO_ERROR;
+        return self::RETURN_CODE_SUCCESS;
     }
 
     /**

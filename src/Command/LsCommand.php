@@ -57,7 +57,7 @@ class LsCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_SUCCESS) {
             return $parentExitCode;
         }
 
@@ -74,7 +74,7 @@ class LsCommand extends BaseCommand
             $this->renderStorage($this->dataStorage, $input, $output);
         }
 
-        return static::RETURN_CODE_NO_ERROR;
+        return static::RETURN_CODE_SUCCESS;
     }
 
     /**
@@ -120,7 +120,7 @@ class LsCommand extends BaseCommand
                 "========================================",
             ], $projects));
 
-            return static::RETURN_CODE_NO_ERROR;
+            return static::RETURN_CODE_SUCCESS;
         }
 
         try {
@@ -148,7 +148,7 @@ class LsCommand extends BaseCommand
             $output->writeln("[No files available]");
         }
 
-        return static::RETURN_CODE_NO_ERROR;
+        return static::RETURN_CODE_SUCCESS;
     }
 
     /**

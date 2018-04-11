@@ -57,7 +57,7 @@ class ExportCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_SUCCESS) {
             return $parentExitCode;
         }
 
@@ -90,7 +90,7 @@ class ExportCommand extends BaseCommand
             $uploaded_file
         ));
 
-        return static::RETURN_CODE_NO_ERROR;
+        return static::RETURN_CODE_SUCCESS;
     }
 
     protected function configure()
