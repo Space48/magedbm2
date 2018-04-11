@@ -3,21 +3,20 @@
 namespace Meanbee\Magedbm2\Anonymizer\Formatter\Person;
 
 use Meanbee\Magedbm2\Anonymizer\FormatterInterface;
+use Meanbee\Magedbm2\Anonymizer\RandomGeneratorTrait;
 
 class Gender implements FormatterInterface
 {
+    use RandomGeneratorTrait;
+
     /**
      * @param $value
      * @param array $rowContext
      * @return int
+     * @throws \InvalidArgumentException
      */
     public function format($value, array $rowContext)
     {
-        try {
-            return random_int(1, 3);
-        } catch (\Exception $e) {
-            // Returns the index, so we need to add one.
-            return array_rand([1, 2, 3]) + 1;
-        }
+        return $this->randomInteger(1, 3);
     }
 }
