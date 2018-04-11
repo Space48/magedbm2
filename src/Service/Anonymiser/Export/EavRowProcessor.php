@@ -28,6 +28,13 @@ class EavRowProcessor extends RowProcessor
         return $output;
     }
 
+    /**
+     * Add a formatter to be run for the $attributeCode belonging to the $eavEntity.
+     *
+     * @param $eavEntity
+     * @param $attributeCode
+     * @param $formatter
+     */
     public function addRule($eavEntity, $attributeCode, $formatter)
     {
         if (!array_key_exists($eavEntity, $this->formatterConfig)) {
