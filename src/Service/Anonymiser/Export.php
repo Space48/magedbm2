@@ -69,7 +69,7 @@ class Export implements LoggerAwareInterface
         $entityTable = sprintf('%s_entity', $eavEntity);
         $tables = [$entityTable];
 
-        $this->eavTables[] = sprintf('%s_entity', $eavEntity);
+        $this->eavTables[] = $entityTable;
 
         foreach (Eav::VALUE_TYPES as $type) {
             $table = sprintf('%s_entity_%s', $eavEntity, $type);
