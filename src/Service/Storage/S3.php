@@ -337,14 +337,14 @@ class S3 implements StorageInterface, LoggerAwareInterface
         $definition->addOption(new InputOption(
             "bucket",
             null,
-            InputOption::VALUE_OPTIONAL,
+            InputOption::VALUE_REQUIRED,
             "S3 bucket for stripped databases"
         ));
 
         $definition->addOption(new InputOption(
             "data-bucket",
             null,
-            InputOption::VALUE_OPTIONAL,
+            InputOption::VALUE_REQUIRED,
             "S3 bucket for anonymised data exports"
         ));
     }
