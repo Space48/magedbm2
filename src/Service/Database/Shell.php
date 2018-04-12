@@ -7,10 +7,20 @@ use Meanbee\Magedbm2\Helper\TablePatternExpander;
 use Meanbee\Magedbm2\Exception\ConfigurationException;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
+use Meanbee\Magedbm2\Shell\Command\Cat;
+use Meanbee\Magedbm2\Shell\Command\EchoPrint;
+use Meanbee\Magedbm2\Shell\Command\Gunzip;
+use Meanbee\Magedbm2\Shell\Command\Gzip;
+use Meanbee\Magedbm2\Shell\Command\Mysql;
+use Meanbee\Magedbm2\Shell\Command\Mysqldump;
+use Meanbee\Magedbm2\Shell\Pipe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Process\Process;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Shell implements DatabaseInterface
 {
     /**
@@ -38,7 +48,7 @@ class Shell implements DatabaseInterface
      */
     private $logger;
 
-    public function __construct(Application $app, Application\ConfigInterface $config = null)
+    public function __construct(Application $app, Application\ConfigInterface $config)
     {
         $this->app = $app;
         $this->config = $config;
@@ -57,15 +67,19 @@ class Shell implements DatabaseInterface
      */
     public function import($file)
     {
-        $command = array_merge(
-            ['gunzip -c ' . $file . ' | mysql'],
-            $this->getCredentialOptions(),
-            [$this->config->getDatabaseCredentials()->getName()]
-        );
-
-        $process = $this->createProcess($command);
+        $process = (new Pipe())
+            ->command(
+                (new Gunzip())
+                    ->argument('-c')
+                    ->argument($file)
+            )->command(
+                (new Mysql())
+                    ->arguments($this->getCredentialOptions())
+                    ->argument($this->config->getDatabaseCredentials()->getName())
+            )->toProcess();
 
         $process->start();
+
         $exitCode = $process->wait();
 
         if ($exitCode !== 0) {
@@ -100,15 +114,13 @@ class Shell implements DatabaseInterface
 
         if (trim($strip_tables) !== '') {
             // Create the structure-only dump for tables that we don't want the data from.
-            $commands[] = $this->createDumpProcess([
-                '--single-transaction',
-                '--quick',
-                '--no-data',
-                '--add-drop-table',
-                $databaseName,
-                $strip_tables,
-                "> $structureOutputFile"
-            ]);
+            $commands[] = $this->createDumpProcess()
+                ->argument('--no-data')
+                ->argument('--add-drop-table')
+                ->argument($databaseName)
+                ->argument($strip_tables)
+                ->output($structureOutputFile)
+                ->toProcess();
         } else {
             // Empty structure file to make the rest of the code more consistent.
             file_put_contents($structureOutputFile, '');
@@ -118,13 +130,12 @@ class Shell implements DatabaseInterface
             return sprintf('--ignore-table=%s', escapeshellarg($databaseName . '.' . $table));
         }, explode(' ', $strip_tables));
 
-        $commands[] = $this->createDumpProcess(array_merge($dataDumpOptions, [
-            '--single-transaction',
-            '--quick',
-            '--add-drop-table',
-            $databaseName,
-            "> $dataOutputFile"
-        ]));
+        $commands[] = $this->createDumpProcess()
+            ->arguments($dataDumpOptions)
+            ->argument('--add-drop-table')
+            ->argument($databaseName)
+            ->output($dataOutputFile)
+            ->toProcess();
 
         $dumpHeader = $this->getDumpHeader();
 
@@ -139,15 +150,20 @@ class Shell implements DatabaseInterface
         $this->logger->info('Starting structure and data dump finished.');
 
         // Once the exports have finished then start the compression.
-        $compressCommand = $this->createProcess(
-            sprintf(
-                'echo %s | cat - %s %s | gzip -9 --force > %s',
-                escapeshellarg($dumpHeader),
-                $structureOutputFile,
-                $dataOutputFile,
-                $compressedFinalFile
-            )
-        );
+        $compressCommand = (new Pipe())
+            ->command(
+                (new EchoPrint(escapeshellarg($dumpHeader)))
+            )->command(
+                (new Cat())
+                    ->argument('-')
+                    ->argument($structureOutputFile)
+                    ->argument($dataOutputFile)
+            )->command(
+                (new Gzip())
+                    ->argument('-9')
+                    ->argument('--force')
+                    ->output($compressedFinalFile)
+            )->toProcess();
 
         $this->logger->info('Starting compress command.');
 
@@ -165,31 +181,12 @@ class Shell implements DatabaseInterface
     }
 
     /**
-     * @param $command
-     * @return Process
-     * @throws \Symfony\Component\Process\Exception\RuntimeException
+     * @return Mysqldump
      */
-    private function createProcess($command)
+    private function createDumpProcess()
     {
-        $commandString = is_array($command) ? implode(' ', $command) : $command;
-
-        $this->logger->debug($commandString);
-
-        return new Process($commandString, null, [], null, self::PROCESS_TIMEOUT_SECONDS);
-    }
-
-    /**
-     * @param $command
-     * @return Process
-     * @throws \Symfony\Component\Process\Exception\RuntimeException
-     */
-    private function createDumpProcess($command)
-    {
-        $command = (is_array($command)) ? $command : [$command];
-
-        return $this->createProcess(
-            array_merge(['mysqldump'], $this->getCredentialOptions(), $command)
-        );
+        return (new Mysqldump())
+            ->arguments($this->getCredentialOptions());
     }
 
     /**
@@ -250,18 +247,7 @@ class Shell implements DatabaseInterface
      */
     private function getPdo()
     {
-        $creds = $this->config->getDatabaseCredentials();
-
-        return new \PDO(
-            sprintf(
-                'mysql:dbname=%s;host=%s;port=%s',
-                $creds->getName(),
-                $creds->getHost(),
-                $creds->getPort()
-            ),
-            $creds->getUsername(),
-            $creds->getPassword()
-        );
+        return $this->config->getDatabaseCredentials()->createPDO();
     }
 
     /**
@@ -347,6 +333,6 @@ class Shell implements DatabaseInterface
      */
     private function getTempFile($filename)
     {
-        return $this->config->getTmpDir() . DIRECTORY_SEPARATOR . $filename;
+        return $this->config->get(Application\Config\Option::TEMPORARY_DIR) . DIRECTORY_SEPARATOR . $filename;
     }
 }

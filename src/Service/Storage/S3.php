@@ -4,18 +4,26 @@ namespace Meanbee\Magedbm2\Service\Storage;
 
 use Aws\S3\S3Client;
 use Meanbee\Magedbm2\Application;
+use Meanbee\Magedbm2\Application\Config\Option;
+use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Exception\ConfigurationException;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\StorageInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Input\InputOption;
 
-class S3 implements StorageInterface
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
+class S3 implements StorageInterface, LoggerAwareInterface
 {
     /** @var Application */
     protected $app;
 
-    /** @var Application\ConfigInterface */
+    /** @var ConfigInterface */
     protected $config;
 
     /** @var S3Client */
@@ -30,10 +38,21 @@ class S3 implements StorageInterface
         "version" => "latest",
     ];
 
-    public function __construct(Application $app, Application\ConfigInterface $config = null, S3Client $client = null)
+    /**
+     * @var string
+     */
+    private $purpose;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(Application $app, ConfigInterface $config, S3Client $client = null)
     {
         $this->app = $app;
         $this->config = $config;
+        $this->logger = new NullLogger();
 
         if ($client) {
             $this->client = $client;
@@ -47,9 +66,11 @@ class S3 implements StorageInterface
      */
     public function listProjects()
     {
-        $bucket = $this->getConfig()->get("bucket");
+        $bucket = $this->getBucket();
 
         try {
+            $this->logger->debug(sprintf("Calling ListObjects on %s", $bucket));
+
             $objects = $this->getClient()->getIterator("ListObjects", [
                 "Bucket" => $bucket,
             ]);
@@ -72,10 +93,12 @@ class S3 implements StorageInterface
      */
     public function listFiles($project)
     {
-        $bucket = $this->getConfig()->get("bucket");
+        $bucket = $this->getBucket();
         $prefix = $this->getFileKey($project, "");
 
         try {
+            $this->logger->debug(sprintf("Calling ListObjects on %s with prefix %s", $bucket, $prefix));
+
             $objects = $this->getClient()->getIterator("ListObjects", [
                 "Bucket" => $bucket,
                 "Prefix" => $prefix,
@@ -124,7 +147,7 @@ class S3 implements StorageInterface
     public function upload($project, $file)
     {
         $key = $this->getFileKey($project, basename($file));
-        $bucket = $this->getConfig()->get("bucket");
+        $bucket = $this->getBucket();
 
         try {
             $result = $this->getClient()->putObject([
@@ -145,9 +168,9 @@ class S3 implements StorageInterface
     public function download($project, $file)
     {
         $key = $this->getFileKey($project, $file);
-        $bucket = $this->getConfig()->get("bucket");
+        $bucket = $this->getBucket();
         $local_file = implode(DIRECTORY_SEPARATOR, [
-            $this->getConfig()->getTmpDir(),
+            $this->getConfig()->get(Option::TEMPORARY_DIR),
             $file
         ]);
 
@@ -170,7 +193,7 @@ class S3 implements StorageInterface
     public function delete($project, $file)
     {
         $key = $this->getFileKey($project, $file);
-        $bucket = $this->getConfig()->get("bucket");
+        $bucket = $this->getBucket();
 
         try {
             $this->getClient()->deleteObject([
@@ -187,7 +210,7 @@ class S3 implements StorageInterface
      */
     public function clean($project, $keep = 5)
     {
-        $bucket = $this->getConfig()->get("bucket");
+        $bucket = $this->getBucket();
         $files = $this->listFiles($project);
 
         // Sort files by last_modified ascending
@@ -229,14 +252,10 @@ class S3 implements StorageInterface
     /**
      * Get the configuration model.
      *
-     * @return Application\ConfigInterface
+     * @return ConfigInterface
      */
     protected function getConfig()
     {
-        if (!$this->config instanceof Application\ConfigInterface) {
-            $this->config = $this->app->getConfig();
-        }
-
         return $this->config;
     }
 
@@ -288,6 +307,7 @@ class S3 implements StorageInterface
      * @param Application $app
      *
      * @return void
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
      */
     protected function addInputOptions(Application $app)
     {
@@ -318,7 +338,14 @@ class S3 implements StorageInterface
             "bucket",
             null,
             InputOption::VALUE_REQUIRED,
-            "S3 bucket"
+            "S3 bucket for stripped databases"
+        ));
+
+        $definition->addOption(new InputOption(
+            "data-bucket",
+            null,
+            InputOption::VALUE_REQUIRED,
+            "S3 bucket for anonymised data exports"
         ));
     }
 
@@ -327,8 +354,12 @@ class S3 implements StorageInterface
      */
     public function validateConfiguration(): bool
     {
-        if (!$this->getConfig()->get('bucket')) {
+        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->getConfig()->get('bucket')) {
             throw new ConfigurationException('A bucket needs to be defined');
+        }
+
+        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->getConfig()->get('data-bucket')) {
+            throw new ConfigurationException('A data bucket needs to be defined');
         }
 
         try {
@@ -340,5 +371,40 @@ class S3 implements StorageInterface
         }
 
         return true;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getBucket()
+    {
+        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
+            return $this->getConfig()->get('data-bucket');
+        }
+
+        return $this->getConfig()->get('bucket');
+    }
+
+    /**
+     * Define the purpose of this instantiation.
+     *
+     * @param $purpose
+     * @return mixed
+     */
+    public function setPurpose($purpose)
+    {
+        $this->purpose = $purpose;
+    }
+
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
@@ -15,9 +17,10 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class GetCommand extends BaseCommand
 {
-    const RETURN_CODE_DOWNLOAD_ERROR = 1;
+    const RETURN_CODE_DOWNLOAD_ERROR   = 1;
     const RETURN_CODE_FILESYSTEM_ERROR = 2;
-    const RETURN_CODE_DATABASE_ERROR = 3;
+    const RETURN_CODE_DATABASE_ERROR   = 3;
+    const NAME                         = "get";
 
     /** @var DatabaseInterface */
     protected $database;
@@ -28,13 +31,27 @@ class GetCommand extends BaseCommand
     /** @var FilesystemInterface */
     protected $filesystem;
 
-    public function __construct(DatabaseInterface $database, StorageInterface $storage, FilesystemInterface $filesystem)
-    {
-        parent::__construct();
+    /**
+     * GetCommand constructor.
+     *
+     * @param ConfigInterface $config
+     * @param DatabaseInterface $database
+     * @param StorageInterface $storage
+     * @param FilesystemInterface $filesystem
+     */
+    public function __construct(
+        ConfigInterface $config,
+        DatabaseInterface $database,
+        StorageInterface $storage,
+        FilesystemInterface $filesystem
+    ) {
+        parent::__construct($config, self::NAME);
 
         $this->database = $database;
         $this->storage = $storage;
         $this->filesystem = $filesystem;
+
+        $storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
 
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
@@ -45,7 +62,7 @@ class GetCommand extends BaseCommand
     protected function configure()
     {
         $this
-            ->setName("get")
+            ->setName(self::NAME)
             ->setDescription("Download and import a database backup.")
             ->addArgument(
                 "project",
@@ -58,13 +75,13 @@ class GetCommand extends BaseCommand
                 "Backup file to import. If not specified, imports the latest available file."
             )
             ->addOption(
-                "download-only",
+                Option::DOWNLOAD_ONLY,
                 "o",
                 InputOption::VALUE_NONE,
                 "Output the back up file into the current directory, instead of importing it."
             )
             ->addOption(
-                "force",
+                Option::FORCE,
                 "f",
                 InputOption::VALUE_NONE,
                 "Skip database import confirmation."
@@ -73,6 +90,7 @@ class GetCommand extends BaseCommand
 
     /**
      * @inheritdoc
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -80,7 +98,7 @@ class GetCommand extends BaseCommand
             $this->ensureServiceConfigurationValidated('database', $this->database);
         }
 
-        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_NO_ERROR) {
+        if (($parentExitCode = parent::execute($input, $output)) !== self::RETURN_CODE_SUCCESS) {
             return $parentExitCode;
         }
 
@@ -90,7 +108,7 @@ class GetCommand extends BaseCommand
         $file = $input->getArgument("file");
 
         if ($this->needsUserConfirmation() && !$this->confirmUserIsOkToProceed()) {
-            return static::RETURN_CODE_NO_ERROR;
+            return static::RETURN_CODE_SUCCESS;
         }
 
         try {
@@ -110,7 +128,7 @@ class GetCommand extends BaseCommand
             return static::RETURN_CODE_DOWNLOAD_ERROR;
         }
 
-        if ($input->getOption("download-only")) {
+        if ($input->getOption(Option::DOWNLOAD_ONLY)) {
             $output_file = getcwd() . DIRECTORY_SEPARATOR . $file;
 
             if ($this->filesystem->move($local_file, $output_file)) {
@@ -146,7 +164,7 @@ class GetCommand extends BaseCommand
 
         $this->filesystem->delete($local_file);
 
-        return static::RETURN_CODE_NO_ERROR;
+        return static::RETURN_CODE_SUCCESS;
     }
 
     /**
@@ -154,8 +172,8 @@ class GetCommand extends BaseCommand
      */
     private function needsUserConfirmation(): bool
     {
-        $isForced = $this->input->getOption("force");
-        $isDownloadOnly = $this->input->getOption("download-only");
+        $isForced = $this->input->getOption(Option::FORCE);
+        $isDownloadOnly = $this->input->getOption(Option::DOWNLOAD_ONLY);
 
         // Require confirm if we're not forcing and if we're importing a database (not just downloading)
         return !$isForced && !$isDownloadOnly;

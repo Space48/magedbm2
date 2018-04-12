@@ -4,47 +4,28 @@ namespace Meanbee\Magedbm2\Application;
 
 use Meanbee\Magedbm2\Application\Config\DatabaseCredentials;
 use Meanbee\Magedbm2\Application\Config\TableGroup;
-use Psr\Log\LoggerAwareInterface;
 
-interface ConfigInterface extends LoggerAwareInterface
+interface ConfigInterface
 {
 
     /**
      * Get a config option value.
      *
      * @param string $option
+     * @param bool $graceful Whether or not throw an exception if a value is not found.
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
-    public function get($option);
+    public function get($option, $graceful = true);
 
     /**
-     * Get the path to the temporary directory.
+     * Get all config options in an array.
      *
-     * @return string
+     * @return array
      */
-    public function getTmpDir();
-
-    /**
-     * Get the working directory.
-     *
-     * @return string
-     */
-    public function getWorkingDir();
-
-    /**
-     * Get the root directory of Magento.
-     *
-     * @return string|null
-     */
-    public function getRootDir();
-
-    /**
-     * Get the path to the configuration file.
-     *
-     * @return string
-     */
-    public function getConfigFile();
+    public function all();
     
     /**
      * Get the defined table groups.
@@ -59,21 +40,10 @@ interface ConfigInterface extends LoggerAwareInterface
     public function getDatabaseCredentials();
 
     /**
-     * Set a config option value.
+     * Merge another configuration into this one.
      *
-     * @param string $option
-     * @param mixed  $value
-     *
-     * @return void
+     * @param ConfigInterface $config
+     * @return ConfigInterface
      */
-    public function set($option, $value);
-
-    /**
-     * Returns which service preference we should use for a given service, e.g.
-     *
-     * getServicePreference('storage') could return 's3' or 'local'.
-     *
-     * @return string
-     */
-    public function getServicePreference($service);
+    public function merge(ConfigInterface $config);
 }

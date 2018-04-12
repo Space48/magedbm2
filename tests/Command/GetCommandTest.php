@@ -11,7 +11,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class GetCommandTest extends TestCase
+class GetCommandTest extends AbstractCommandTest
 {
     /**
      * Test that the command attempts to import a backup file.
@@ -20,16 +20,16 @@ class GetCommandTest extends TestCase
      */
     public function testImport()
     {
-        $database = $this->createMock(DatabaseInterface::class);
+        $database = $this->getDatabaseMock();
         $database
             ->expects($this->once())
             ->method("import")
             ->with($this->equalTo("/tmp/backup-file.sql.gz"));
 
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage->method("download")->willReturn("/tmp/backup-file.sql.gz");
 
-        $filesystem = $this->createMock(FilesystemInterface::class);
+        $filesystem = $this->getFilesystemMock();
 
         $tester = $this->getCommandTester($database, $storage, $filesystem, true);
         $tester
@@ -46,15 +46,15 @@ class GetCommandTest extends TestCase
      */
     public function testDownloadOnly()
     {
-        $database = $this->createMock(DatabaseInterface::class);
+        $database = $this->getDatabaseMock();
         $database
             ->expects($this->never())
             ->method("import");
 
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage->method("download")->willReturn("/tmp/backup-file.sql.gz");
 
-        $filesystem = $this->createMock(FilesystemInterface::class);
+        $filesystem = $this->getFilesystemMock();
         $filesystem
             ->expects($this->once())
             ->method("move")
@@ -76,13 +76,13 @@ class GetCommandTest extends TestCase
      */
     public function testConfirmation()
     {
-        $database = $this->createMock(DatabaseInterface::class);
+        $database = $this->getDatabaseMock();
         $database
             ->expects($this->never())
             ->method("import");
 
-        $storage = $this->createMock(StorageInterface::class);
-        $filesystem = $this->createMock(FilesystemInterface::class);
+        $storage = $this->getStorageMock();
+        $filesystem = $this->getFilesystemMock();
 
         $tester = $this->getCommandTester($database, $storage, $filesystem, false);
         $tester
@@ -99,13 +99,13 @@ class GetCommandTest extends TestCase
      */
     public function testForce()
     {
-        $database = $this->createMock(DatabaseInterface::class);
+        $database = $this->getDatabaseMock();
         $database
             ->expects($this->once())
             ->method("import");
 
-        $storage = $this->createMock(StorageInterface::class);
-        $filesystem = $this->createMock(FilesystemInterface::class);
+        $storage = $this->getStorageMock();
+        $filesystem = $this->getFilesystemMock();
 
         $tester = $this->getCommandTester($database, $storage, $filesystem);
         $tester->execute([
@@ -122,9 +122,9 @@ class GetCommandTest extends TestCase
      */
     public function testLatestFile()
     {
-        $database = $this->createMock(DatabaseInterface::class);
+        $database = $this->getDatabaseMock();
 
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage
             ->expects($this->once())
             ->method("getLatestFile");
@@ -150,7 +150,7 @@ class GetCommandTest extends TestCase
      */
     protected function getCommandTester($database, $storage, $filesystem, $confirmation = false)
     {
-        $command = new GetCommand($database, $storage, $filesystem);
+        $command = new GetCommand($this->getConfigMock(), $database, $storage, $filesystem);
 
         $helper = $this->createMock(QuestionHelper::class);
         $helper

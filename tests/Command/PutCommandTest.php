@@ -14,7 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use VirtualFileSystem\FileSystem;
 use VirtualFileSystem\Structure\File;
 
-class PutCommandTest extends TestCase
+class PutCommandTest extends AbstractCommandTest
 {
     /**
      * @var FileSystem
@@ -39,7 +39,7 @@ class PutCommandTest extends TestCase
      */
     public function testUpload()
     {
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage
             ->expects($this->once())
             ->method("upload")
@@ -98,7 +98,7 @@ class PutCommandTest extends TestCase
      */
     public function testClean()
     {
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage
             ->expects($this->once())
             ->method("clean")
@@ -124,7 +124,7 @@ class PutCommandTest extends TestCase
      */
     public function testNoClean()
     {
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage
             ->expects($this->never())
             ->method("clean");
@@ -152,9 +152,9 @@ class PutCommandTest extends TestCase
      */
     protected function getCommandTester($config = null, $database = null, $storage = null, $filesystem = null, $tableexpander = null)
     {
-        $config        = $config ?? $this->createMock(ConfigInterface::class);
+        $config        = $config ?? $this->getConfigMock();
         $database      = $database ?? new Fake($this->vfs);
-        $storage       = $storage ?? $this->createMock(StorageInterface::class);
+        $storage       = $storage ?? $this->getStorageMock();
         $filesystem    = $filesystem ?? $this->createMock(FilesystemInterface::class);
         $tableexpander = $tableexpander ?? new TableGroupExpander();
 

@@ -3,17 +3,22 @@
 namespace Meanbee\Magedbm2;
 
 use Composer\Autoload\ClassLoader;
+use DI\ContainerBuilder;
+use Meanbee\Magedbm2\Application\Config;
+use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Application\ConfigInterface;
-use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
+use Meanbee\Magedbm2\Application\ConfigLoader\FileLoader;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
-use Symfony\Component\Console\Exception\LogicException;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class Application
@@ -30,17 +35,37 @@ class Application extends \Symfony\Component\Console\Application
     /** @var ClassLoader $autoloader */
     protected $autoloader;
 
-    /** @var ConfigInterface $config */
+    /** @var Config $config */
     protected $config;
 
     /** @var array */
     protected $services;
 
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * Application constructor.
+     * @param ClassLoader|null $autoloader
+     * @throws \Exception
+     */
     public function __construct(ClassLoader $autoloader = null)
     {
         parent::__construct(static::APP_NAME, static::APP_VERSION);
 
         $this->autoloader = $autoloader;
+
+        $builder = new ContainerBuilder();
+        $builder->addDefinitions(implode(DIRECTORY_SEPARATOR, [
+            __DIR__, '..', 'etc', 'di.php'
+        ]));
+
+        $this->container = $builder->build();
+        $this->container->set(Application::class, $this);
+
+        $this->configureGlobalOptions();
     }
 
     /**
@@ -68,128 +93,19 @@ class Application extends \Symfony\Component\Console\Application
     }
 
     /**
-     * Get the application config.
-     *
-     * @return ConfigInterface
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
-     * Get a service instance.
-     *
-     * @param string $name
-     *
-     * @return DatabaseInterface|StorageInterface|FilesystemInterface|null
-     */
-    public function getService($name)
-    {
-        if (!isset($this->services[$name])) {
-            throw new LogicException(sprintf("Requested service '%s' not found.", $name));
-        }
-
-        return $this->services[$name];
-    }
-
-    /**
      * @inheritdoc
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
-        $this->init($input, $output);
+        $this->container->set('logger', new ConsoleLogger($output));
+
+        $this->config = $this->container->get('config');
+
+        $this->loadProjectConfig($input);
+        $this->initCommands();
 
         return parent::doRun($input, $output);
     }
-
-    /**
-     * Initialise the application, including configuration, services and available commands.
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * return void
-     */
-    public function init(InputInterface $input, OutputInterface $output)
-    {
-        $this->initConfig($input, $output);
-        $this->initServices($output);
-        $this->initCommands();
-    }
-
-    /**
-     * Initialise the application config.
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return void
-     */
-    protected function initConfig(InputInterface $input, OutputInterface $output)
-    {
-        $this->config = new Application\Config\Combined($this, $input, new Yaml());
-        $this->config->setLogger(new ConsoleLogger($output));
-    }
-
-    /**
-     * Initialise the available services.
-     *
-     * @param OutputInterface $output
-     * @return void
-     */
-    protected function initServices(OutputInterface $output)
-    {
-        $this->services = [
-            'storage' => $this->getStorageImplementation(),
-            'database' => $this->getDatabaseImplementation(),
-            'filesystem' => $this->getFileSystemImplementation(),
-        ];
-
-        foreach ($this->services as $service) {
-            if ($service instanceof LoggerAwareInterface) {
-                $service->setLogger(new ConsoleLogger($output));
-            }
-        }
-    }
-
-    /**
-     * @return StorageInterface
-     */
-    protected function getStorageImplementation()
-    {
-        switch ($this->config->getServicePreference('storage')) {
-            case 'local':
-                return new Service\Storage\Local();
-            case 's3':
-            default:
-                return new Service\Storage\S3($this);
-        }
-    }
-
-    /**
-     * @return DatabaseInterface
-     */
-    protected function getDatabaseImplementation()
-    {
-        switch ($this->config->getServicePreference('database')) {
-            case 'shell':
-            default:
-                return new Service\Database\Shell($this, $this->getConfig());
-        }
-    }
-
-    /**
-     * @return FilesystemInterface
-     */
-    protected function getFileSystemImplementation()
-    {
-        switch ($this->config->getServicePreference('filesystem')) {
-            default:
-                return new Service\Filesystem\Simple();
-        }
-    }
-
     /**
      * Initialise the available commands.
      *
@@ -197,31 +113,106 @@ class Application extends \Symfony\Component\Console\Application
      */
     protected function initCommands()
     {
-        $this->add(new Command\ConfigureCommand(
-            $this->getConfig(),
-            $this->getService("filesystem"),
-            new Yaml()
-        ));
+        /** @var Command[] $commands */
+        $commands = $this->container->get('command_instances');
 
-        $this->add(new Command\GetCommand(
-            $this->getService("database"),
-            $this->getService("storage"),
-            $this->getService("filesystem")
-        ));
+        foreach ($commands as $command) {
+            $this->add($command);
+        }
+    }
 
-        $this->add(new Command\LsCommand(
-            $this->getService("storage")
-        ));
+    private function configureGlobalOptions()
+    {
+        $definition = $this->getDefinition();
 
-        $this->add(new Command\PutCommand(
-            $this->getConfig(),
-            $this->getService("database"),
-            $this->getService("storage"),
-            $this->getService("filesystem")
-        ));
+        $definition
+            ->addOption(new InputOption(
+                Option::GLOBAL_CONFIG_FILE,
+                null,
+                InputOption::VALUE_REQUIRED,
+                "Global configuration file to use",
+                $this->container->get('config_file.global')
+            ));
 
-        $this->add(new Command\RmCommand(
-            $this->getService("storage")
+        $definition
+            ->addOption(new InputOption(
+                Option::PROJECT_CONFIG_FILE,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                "Project configuration file to use (will search for .magedbm2.yml in your current working directory " .
+                "if not specified)"
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                Option::DB_HOST,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database host'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                Option::DB_PORT,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database port',
+                3306
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                Option::DB_USER,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database username'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                Option::DB_PASS,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database password'
+            ));
+
+        $definition
+            ->addOption(new InputOption(
+                Option::DB_NAME,
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Database name'
+            ));
+
+
+        $definition->addOption(new InputOption(
+            Option::ROOT_DIR,
+            null,
+            InputOption::VALUE_REQUIRED,
+            "Magento 2 root directory"
         ));
+    }
+
+    /**
+     * @param InputInterface $input
+     * @throws Exception\ConfigurationException
+     */
+    private function loadProjectConfig(InputInterface $input)
+    {
+        $canError = false;
+        $file = $this->container->get('config_file.project');
+
+        if ($input->hasOption(Option::PROJECT_CONFIG_FILE)) {
+            $canError = true;
+            $file = $input->getOption(Option::PROJECT_CONFIG_FILE);
+        }
+
+        if (file_exists($file) && is_readable($file)) {
+            $this->config->merge((new FileLoader($file))->asConfig());
+        } elseif ($canError) {
+            throw new \InvalidArgumentException(
+                sprintf('The project config file at %s could not be read', $file)
+            );
+        }
     }
 }

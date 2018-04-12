@@ -58,6 +58,7 @@ table-groups:
       product_alert*
       vault_payment_token*
       wishlist*
+
   - id: trade
     description: Current trade data (customers and orders). You usally do not want those in developer systems.
     tables: '@customers @sales @quotes'
@@ -77,3 +78,155 @@ table-groups:
   - id: idx
     description: Tables with _idx suffix
     tables: "*_idx"
+
+anonymizer:
+  tables:
+    - name: admin_user
+      columns:
+        firstname: Faker\Provider\en_US\Person::firstName
+        lastname: Faker\Provider\en_US\Person::lastName
+        email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        username: Faker\Provider\Internet::userName
+        password: Meanbee\Magedbm2\Anonymizer\Formatter\Password\Simple
+
+    - name: sales_order
+      columns:
+        customer_dob: Meanbee\Magedbm2\Anonymizer\Formatter\DateTime
+        customer_email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        customer_prefix: Faker\Provider\en_US\Person::title
+        customer_firstname: Meanbee\Magedbm2\Anonymizer\Formatter\Person\FirstName
+        customer_middlename: Faker\Provider\en_US\Person::lastName
+        customer_lastname: Faker\Provider\en_US\Person::lastName
+        customer_suffix: Faker\Provider\en_US\Person::suffix
+        remote_ip: Faker\Provider\Internet::ipv4
+        x_forwarded_for: Faker\Provider\Internet::ipv4
+
+    - name: sales_order_address
+      columns:
+        region: Faker\Provider\en_US\Address::state
+        postcode: Faker\Provider\en_US\Address::postcode
+        lastname: Faker\Provider\en_US\Person::lastName
+        street: Faker\Provider\en_US\Address::streetAddress
+        city: Faker\Provider\en_US\Address::city
+        email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        telephone: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        firstname: Faker\Provider\en_US\Person::firstName
+        prefix: Faker\Provider\en_US\Person::title
+        middlename: Faker\Provider\en_US\Person::lastName
+        suffix: Faker\Provider\en_US\Person::suffix
+        company: Faker\Provider\en_US\Company::company
+
+    - name: newsletter_subscriber
+      columns:
+        subscriber_email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        subscriber_confirm_code: Faker\Provider\Miscellaneous::md5
+
+    - name: quote
+      columns:
+        customer_email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        customer_prefix: Faker\Provider\en_US\Person::title
+        customer_firstname: Faker\Provider\en_US\Person::firstName
+        customer_middlename: Faker\Provider\en_US\Person::firstName
+        customer_lastname: Faker\Provider\en_US\Person::lastName
+        customer_suffix: Faker\Provider\en_US\Person::suffix
+        customer_dob: Meanbee\Magedbm2\Anonymizer\Formatter\DateTime
+        customer_note: Faker\Provider\Lorem::paragraph
+        remote_ip: Faker\Provider\Internet::ipv4
+
+    - name: quote_address
+      columns:
+        email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        prefix: Faker\Provider\en_US\Person::title
+        firstname: Faker\Provider\en_US\Person::firstName
+        middlename: Faker\Provider\en_US\Person::firstName
+        lastname: Faker\Provider\en_US\Person::lastName
+        suffix: Faker\Provider\en_US\Person::suffix
+        company: Faker\Provider\en_US\Company::company
+        street: Faker\Provider\en_US\Address::streetAddress
+        city: Faker\Provider\en_US\Address::city
+        region: Faker\Provider\en_US\Address::stateAbbr
+        region_id: Meanbee\Magedbm2\Anonymizer\Formatter\Address\RegionId
+        postcode: Faker\Provider\en_US\Address::postcode
+        country_id: Faker\Provider\Miscellaneous::countryCode
+        telephone: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        fax: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        vat_id: Meanbee\Magedbm2\Anonymizer\Formatter\Company\VatNumber
+
+    - name: rating_option_vote
+      columns:
+        remote_ip: Faker\Provider\Internet::ipv4
+
+    - name: review_detail
+      columns:
+        title: Faker\Provider\Lorem::sentence
+        detail: Faker\Provider\Lorem::paragraph
+        nickname: Faker\Provider\Internet::userName
+
+    - name: sales_order
+      columns:
+        customer_email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        customer_firstname: Faker\Provider\en_US\Person::firstName
+        customer_lastname: Faker\Provider\en_US\Person::lastName
+        customer_middlename: Faker\Provider\en_US\Person::firstName
+        customer_prefix: Faker\Provider\en_US\Person::title
+        customer_suffix: Faker\Provider\en_US\Person::suffix
+        customer_taxvat: Meanbee\Magedbm2\Anonymizer\Formatter\Company\VatNumber
+
+    - name: sales_order_address
+      columns:
+        region_id: Meanbee\Magedbm2\Anonymizer\Formatter\Address\RegionId
+        fax: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        region: Faker\Provider\en_US\Address::stateAbbr
+        postcode: Faker\Provider\en_US\Address::postcode
+        lastname: Faker\Provider\en_US\Person::lastName
+        street: Faker\Provider\en_US\Address::streetAddress
+        city: Faker\Provider\en_US\Address::city
+        email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        telephone: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        country_id: Faker\Provider\Miscellaneous::countryCode
+        firstname: Faker\Provider\en_US\Person::firstName
+        prefix: Faker\Provider\en_US\Person::title
+        middlename: Faker\Provider\en_US\Person::firstName
+        suffix: Faker\Provider\en_US\Person::suffix
+        company: Faker\Provider\en_US\Company::company
+        vat_id: Meanbee\Magedbm2\Anonymizer\Formatter\Company\VatNumber
+
+    - name: sendfriend_log
+      columns:
+        ip: Faker\Provider\Internet::ipv4
+
+    - name: wishlist_item
+      columns:
+        description: Faker\Provider\Lorem::paragraph
+
+  eav:
+    - entity: customer
+      attributes:
+        email: Meanbee\Magedbm2\Anonymizer\Formatter\Person\UniqueEmail
+        prefix: Faker\Provider\en_US\Person::title
+        firstname: Faker\Provider\en_US\Person::firstName
+        middlename: Faker\Provider\en_US\Person::firstName
+        lastname: Faker\Provider\en_US\Person::lastName
+        suffix: Faker\Provider\en_US\Person::suffix
+        dob: Meanbee\Magedbm2\Anonymizer\Formatter\DateTime
+        password_hash: Meanbee\Magedbm2\Anonymizer\Formatter\Password\Simple
+        taxvat: Meanbee\Magedbm2\Anonymizer\Formatter\Company\VatNumber
+        gender: Meanbee\Magedbm2\Anonymizer\Formatter\Person\Gender
+
+    - entity: customer_address
+      attributes:
+        city: Faker\Provider\en_US\Address::city
+        company: Faker\Provider\en_US\Company::company
+        country_id: Faker\Provider\Miscellaneous::countryCode
+        fax: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        firstname: Faker\Provider\en_US\Person::firstName
+        lastname: Faker\Provider\en_US\Person::lastName
+        middlename: Faker\Provider\en_US\Person::firstName
+        postcode: Faker\Provider\en_US\Address::postcode
+        prefix: Faker\Provider\en_US\Person::title
+        region: Faker\Provider\en_US\Address::stateAbbr
+        region_id: Meanbee\Magedbm2\Anonymizer\Formatter\Address\RegionId
+        street: Faker\Provider\en_US\Address::streetAddress
+        suffix: Faker\Provider\en_US\Person::suffix
+        telephone: Faker\Provider\en_US\PhoneNumber::phoneNumber
+        vat_id: Meanbee\Magedbm2\Anonymizer\Formatter\Company\VatNumber

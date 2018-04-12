@@ -6,6 +6,7 @@ use Aws\S3\S3Client;
 use Meanbee\Magedbm2\Application;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\Storage\S3;
+use Meanbee\Magedbm2\Service\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
 class S3Test extends TestCase
@@ -20,7 +21,7 @@ class S3Test extends TestCase
     {
         $app = new Application();
 
-        $service = new S3($app);
+        $service = new S3($app, $this->getConfigMock());
 
         $options = [
             "access-key",
@@ -46,10 +47,9 @@ class S3Test extends TestCase
     {
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn("test-bucket");
+        $config = new Application\Config([
+            'bucket' => 'test-bucket'
+        ]);
 
         $client = $this->createMock(S3Client::class);
         $client
@@ -91,10 +91,9 @@ class S3Test extends TestCase
     {
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn("test-bucket");
+        $config = new Application\Config([
+            'bucket' => 'test-bucket'
+        ]);
 
         $client = $this->createMock(S3Client::class);
         $client
@@ -152,10 +151,9 @@ class S3Test extends TestCase
     {
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn("test-bucket");
+        $config = new Application\Config([
+            'bucket' => 'test-bucket'
+        ]);
 
         $client = $this->createMock(S3Client::class);
         $client
@@ -210,10 +208,9 @@ class S3Test extends TestCase
 
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn($bucket);
+        $config = new Application\Config([
+            'bucket' => $bucket
+        ]);
 
         $client = $this->getMockBuilder(S3Client::class)
             ->disableOriginalConstructor()
@@ -257,13 +254,10 @@ class S3Test extends TestCase
 
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn($bucket);
-        $config
-            ->method("getTmpDir")
-            ->willReturn($tmp_dir);
+        $config = new Application\Config([
+            'bucket' => $bucket,
+            'tmp_dir' => $tmp_dir
+        ]);
 
         $client = $this->getMockBuilder(S3Client::class)
             ->disableOriginalConstructor()
@@ -272,6 +266,7 @@ class S3Test extends TestCase
             ->disallowMockingUnknownTypes()
             ->setMethods(["getObject"])
             ->getMock();
+
         $client
             ->expects($this->once())
             ->method("getObject")
@@ -302,10 +297,9 @@ class S3Test extends TestCase
 
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn($bucket);
+        $config = new Application\Config([
+            'bucket' => $bucket
+        ]);
 
         $client = $this->getMockBuilder(S3Client::class)
             ->disableOriginalConstructor()
@@ -381,10 +375,9 @@ class S3Test extends TestCase
 
         $app = new Application();
 
-        $config = $this->createMock(Application\ConfigInterface::class);
-        $config
-            ->method("get")
-            ->willReturn($bucket);
+        $config = new Application\Config([
+            'bucket' => $bucket
+        ]);
 
         $client = $this->getMockBuilder(S3Client::class)
             ->disableOriginalConstructor()
@@ -404,5 +397,13 @@ class S3Test extends TestCase
         $service = new S3($app, $config, $client);
 
         $service->clean($project, $keep);
+    }
+
+    /**
+     * @return \PHPUnit\Framework\MockObject\MockObject|Application\ConfigInterface
+     */
+    protected function getConfigMock(): \PHPUnit\Framework\MockObject\MockObject
+    {
+        return $this->createMock(Application\ConfigInterface::class);
     }
 }

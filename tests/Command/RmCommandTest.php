@@ -2,12 +2,13 @@
 
 namespace Meanbee\Magedbm2\Tests\Command;
 
+use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Command\RmCommand;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class RmCommandTest extends TestCase
+class RmCommandTest extends AbstractCommandTest
 {
     /**
      * Test that running the command deletes a file from storage.
@@ -16,7 +17,7 @@ class RmCommandTest extends TestCase
      */
     public function testDelete()
     {
-        $storage = $this->createMock(StorageInterface::class);
+        $storage = $this->getStorageMock();
         $storage
             ->expects($this->once())
             ->method("delete")
@@ -27,6 +28,7 @@ class RmCommandTest extends TestCase
 
         $tester = $this->getCommandTester($storage);
         $tester->execute([
+            "type" => "database",
             "project" => "test",
             "file"    => "backup-file.sql.gz",
         ]);
@@ -41,10 +43,8 @@ class RmCommandTest extends TestCase
      */
     protected function getCommandTester($storage)
     {
-        $command = new RmCommand($storage);
+        $command = new RmCommand($this->getConfigMock(), $storage);
 
-        $tester = new CommandTester($command);
-
-        return $tester;
+        return new CommandTester($command);
     }
 }

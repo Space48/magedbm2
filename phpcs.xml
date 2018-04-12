@@ -3,4 +3,7 @@
     <description>Custom Code Standard for magedbm2</description>
 
     <rule ref="PSR2"/>
+    <rule ref="./vendor/wimg/php-compatibility/PHPCompatibility/ruleset.xml"/>
+
+    <config name="testVersion" value="7.0-" />
 </ruleset>
