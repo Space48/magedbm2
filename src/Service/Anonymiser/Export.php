@@ -85,6 +85,7 @@ class Export implements LoggerAwareInterface
      *
      * @param $inputFile
      * @param $outputFile
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function processFile($inputFile, $outputFile)
     {

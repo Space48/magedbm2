@@ -15,6 +15,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class S3 implements StorageInterface, LoggerAwareInterface
 {
     /** @var Application */

@@ -16,6 +16,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use XMLReader;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ImportCommand extends BaseCommand
 {
     const NAME            = 'import';
@@ -112,6 +115,7 @@ class ImportCommand extends BaseCommand
     /**
      * @throws ConfigurationException
      * @throws \Exception
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     private function readXml()
     {

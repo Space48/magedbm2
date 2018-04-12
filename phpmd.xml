@@ -12,12 +12,7 @@
         <exclude name="ElseExpression"/>
         <exclude name="StaticAccess"/>
     </rule>
-    <rule ref="rulesets/codesize.xml">
-        <exclude name="CyclomaticComplexity" />
-    </rule>
-    <rule ref="rulesets/design.xml">
-        <exclude name="CouplingBetweenObjects" />
-
-    </rule>
+    <rule ref="rulesets/codesize.xml"/>
+    <rule ref="rulesets/design.xml"/>
     <rule ref="rulesets/unusedcode.xml"/>
 </ruleset>
