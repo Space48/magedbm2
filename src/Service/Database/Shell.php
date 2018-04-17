@@ -14,6 +14,7 @@ use Meanbee\Magedbm2\Shell\Command\Gzip;
 use Meanbee\Magedbm2\Shell\Command\Mysql;
 use Meanbee\Magedbm2\Shell\Command\Mysqldump;
 use Meanbee\Magedbm2\Shell\Command\Sed;
+use Meanbee\Magedbm2\Shell\CommandInterface;
 use Meanbee\Magedbm2\Shell\Pipe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -120,8 +121,7 @@ class Shell implements DatabaseInterface
                 ->argument('--add-drop-table')
                 ->argument($databaseName)
                 ->argument($strip_tables)
-                ->output($structureOutputFile)
-                ->toProcess();
+                ->output($structureOutputFile);
         } else {
             // Empty structure file to make the rest of the code more consistent.
             file_put_contents($structureOutputFile, '');
@@ -135,18 +135,22 @@ class Shell implements DatabaseInterface
             ->arguments($dataDumpOptions)
             ->argument('--add-drop-table')
             ->argument($databaseName)
-            ->output($dataOutputFile)
-            ->toProcess();
+            ->output($dataOutputFile);
+
+        $commandProcesses = array_map(function (CommandInterface $command) {
+            $this->logger->debug($command->toString());
+            return $command->toProcess();
+        }, $commands);
 
         $dumpHeader = $this->getDumpHeader();
 
         $this->logger->info('Starting structure and data dump commands.');
 
         // Kick the commands off
-        $this->startCommands($commands);
+        $this->startCommands($commandProcesses);
 
         // Wait for all commands to finish before carrying on
-        $this->waitToFinish($commands);
+        $this->waitToFinish($commandProcesses);
 
         $this->logger->info('Starting structure and data dump finished.');
 
@@ -167,12 +171,15 @@ class Shell implements DatabaseInterface
                     ->argument('-9')
                     ->argument('--force')
                     ->output($compressedFinalFile)
-            )->toProcess();
+            );
 
-        $this->logger->info('Starting compress command.');
+        $compressCommandProcess = $compressCommand->toProcess();
 
-        $compressCommand->start();
-        $compressCommand->wait();
+        $this->logger->info('Starting compress command');
+        $this->logger->debug($compressCommand->toString());
+
+        $compressCommandProcess->start();
+        $compressCommandProcess->wait();
 
         $this->logger->info('Compress command finished.');
 
