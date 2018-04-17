@@ -13,6 +13,7 @@ use Meanbee\Magedbm2\Shell\Command\Gunzip;
 use Meanbee\Magedbm2\Shell\Command\Gzip;
 use Meanbee\Magedbm2\Shell\Command\Mysql;
 use Meanbee\Magedbm2\Shell\Command\Mysqldump;
+use Meanbee\Magedbm2\Shell\Command\Sed;
 use Meanbee\Magedbm2\Shell\Pipe;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -158,6 +159,9 @@ class Shell implements DatabaseInterface
                     ->argument('-')
                     ->argument($structureOutputFile)
                     ->argument($dataOutputFile)
+            )->command(
+                (new Sed())
+                    ->argument("-e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/'")
             )->command(
                 (new Gzip())
                     ->argument('-9')
