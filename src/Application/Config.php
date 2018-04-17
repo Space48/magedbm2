@@ -96,11 +96,11 @@ class Config implements ConfigInterface, LoggerAwareInterface
                 );
 
                 $this->databaseCredentials = new DatabaseCredentials(
-                    $this->get(Option::DB_NAME) ?? '',
-                    $this->get(Option::DB_USER) ?? '',
-                    $this->get(Option::DB_PASS) ?? '',
-                    $this->get(Option::DB_HOST) ?? 'localhost',
-                    $this->get(Option::DB_PORT) ?? '3306'
+                    $this->get(Option::DB_NAME, true) ?? '',
+                    $this->get(Option::DB_USER, true) ?? '',
+                    $this->get(Option::DB_PASS, true) ?? '',
+                    $this->get(Option::DB_HOST, true) ?? 'localhost',
+                    $this->get(Option::DB_PORT, true) ?? '3306'
                 );
             }
         }
