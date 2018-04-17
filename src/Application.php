@@ -147,7 +147,7 @@ class Application extends \Symfony\Component\Console\Application
             ->addOption(new InputOption(
                 Option::DB_HOST,
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Database host'
             ));
 
@@ -155,7 +155,7 @@ class Application extends \Symfony\Component\Console\Application
             ->addOption(new InputOption(
                 Option::DB_PORT,
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Database port',
                 3306
             ));
@@ -164,7 +164,7 @@ class Application extends \Symfony\Component\Console\Application
             ->addOption(new InputOption(
                 Option::DB_USER,
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Database username'
             ));
 
@@ -172,7 +172,7 @@ class Application extends \Symfony\Component\Console\Application
             ->addOption(new InputOption(
                 Option::DB_PASS,
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Database password'
             ));
 
@@ -180,7 +180,7 @@ class Application extends \Symfony\Component\Console\Application
             ->addOption(new InputOption(
                 Option::DB_NAME,
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Database name'
             ));
 
