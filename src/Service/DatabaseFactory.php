@@ -7,21 +7,30 @@ use DI\Container;
 class DatabaseFactory
 {
     /**
-     * @param Container $container
+     * @var Container
+     */
+    private $container;
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * @return DatabaseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public static function create(Container $container)
+    public function create()
     {
-        switch ($container->get('database_adapter')) {
+        switch ($this->container->get('database_adapter')) {
             case 'shell':
             default:
-                $instance = $container->make(\Meanbee\Magedbm2\Service\Database\Shell::class);
+                $instance = $this->container->make(\Meanbee\Magedbm2\Service\Database\Shell::class);
         }
 
         if ($instance instanceof \Psr\Log\LoggerAwareInterface) {
-            $instance->setLogger($container->get('logger'));
+            $instance->setLogger($this->container->get('logger'));
         }
 
         return $instance;

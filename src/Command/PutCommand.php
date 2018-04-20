@@ -5,9 +5,12 @@ namespace Meanbee\Magedbm2\Command;
 use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Helper\TableGroupExpander;
+use Meanbee\Magedbm2\Service\DatabaseFactory;
 use Meanbee\Magedbm2\Service\DatabaseInterface;
+use Meanbee\Magedbm2\Service\FilesystemFactory;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
+use Meanbee\Magedbm2\Service\StorageFactory;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,25 +39,25 @@ class PutCommand extends BaseCommand
 
     /**
      * @param ConfigInterface $config
-     * @param DatabaseInterface $database
-     * @param StorageInterface $storage
-     * @param FilesystemInterface $filesystem
+     * @param DatabaseFactory $databaseFactory
+     * @param StorageFactory $storageFactory
+     * @param FilesystemFactory $filesystemFactory
      * @param TableGroupExpander $tableGroupExpander
      */
     public function __construct(
         ConfigInterface $config,
-        DatabaseInterface $database,
-        StorageInterface $storage,
-        FilesystemInterface $filesystem,
+        DatabaseFactory $databaseFactory,
+        StorageFactory $storageFactory,
+        FilesystemFactory $filesystemFactory,
         TableGroupExpander $tableGroupExpander = null
     ) {
-        $this->database = $database;
-        $this->storage = $storage;
-        $this->filesystem = $filesystem;
+        $this->database = $databaseFactory->create();
+        $this->storage = $storageFactory->create();
+        $this->filesystem = $filesystemFactory->create();
         $this->tableExpander = $tableGroupExpander ?? new TableGroupExpander();
         $this->config = $config;
 
-        $storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
+        $this->storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
 
         parent::__construct($config, self::NAME);
 

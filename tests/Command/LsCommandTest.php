@@ -117,7 +117,7 @@ class LsCommandTest extends AbstractCommandTest
      */
     protected function getCommandTester($storage, $dataStorage)
     {
-        $command = new LsCommand($this->getConfigMock(), $storage, $dataStorage);
+        $command = new LsCommand($this->getConfigMock(), $this->getStorageFactoryMock([$storage, $dataStorage]));
 
         return new CommandTester($command);
     }

@@ -43,7 +43,7 @@ class RmCommandTest extends AbstractCommandTest
      */
     protected function getCommandTester($storage)
     {
-        $command = new RmCommand($this->getConfigMock(), $storage);
+        $command = new RmCommand($this->getConfigMock(), $this->getStorageFactoryMock($storage));
 
         return new CommandTester($command);
     }

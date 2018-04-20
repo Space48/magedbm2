@@ -19,22 +19,7 @@ return [
         $commands = [];
 
         foreach ($c->get('commands') as $command) {
-            $manualArgs = [];
-
-            switch ($command) {
-                case 'Meanbee\Magedbm2\Command\LsCommand':
-                    // Ensure that we get two different instances of the object for our LsCommand. The default behaviour
-                    // of the container would give us the same instance.
-                    $manualArgs['dataStorage'] = $c->make(\Meanbee\Magedbm2\Service\StorageInterface::class);
-                case 'Meanbee\Magedbm2\Command\ExportCommand':
-                case 'Meanbee\Magedbm2\Command\GetCommand':
-                case 'Meanbee\Magedbm2\Command\ImportCommand':
-                case 'Meanbee\Magedbm2\Command\PutCommand':
-                case 'Meanbee\Magedbm2\Command\RmCommand':
-                    $manualArgs['storage'] = $c->make(\Meanbee\Magedbm2\Service\StorageInterface::class);
-            }
-
-            $commands[] = $c->make($command, $manualArgs);
+            $commands[] = $c->make($command);
         }
 
         foreach ($commands as $command) {
