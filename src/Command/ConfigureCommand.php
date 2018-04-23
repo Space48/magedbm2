@@ -4,6 +4,7 @@ namespace Meanbee\Magedbm2\Command;
 
 use Meanbee\Magedbm2\Application\ConfigFileResolver;
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Service\FilesystemFactory;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,21 +45,22 @@ class ConfigureCommand extends BaseCommand
 
     /**
      * @param ConfigInterface $config
-     * @param FilesystemInterface $filesystem
+     * @param ConfigFileResolver $configFileResolver
+     * @param FilesystemFactory $filesystemFactory
      * @param Yaml $yaml
      * @param array|null $excluded_options
      */
     public function __construct(
         ConfigInterface $config,
         ConfigFileResolver $configFileResolver,
-        FilesystemInterface $filesystem,
+        FilesystemFactory $filesystemFactory,
         Yaml $yaml,
         array $excluded_options = null
     ) {
         parent::__construct($config, self::NAME);
 
         $this->config = $config;
-        $this->filesystem = $filesystem;
+        $this->filesystem = $filesystemFactory->create();
         $this->yaml = $yaml;
 
         if ($excluded_options) {

@@ -158,7 +158,7 @@ class PutCommandTest extends AbstractCommandTest
         $filesystem    = $filesystem ?? $this->createMock(FilesystemInterface::class);
         $tableexpander = $tableexpander ?? new TableGroupExpander();
 
-        $command = new PutCommand($config, $database, $storage, $filesystem, $tableexpander);
+        $command = new PutCommand($config, $this->getDatabaseFactoryMock($database), $this->getStorageFactoryMock($storage), $this->getFilesystemFactoryMock($filesystem) , $tableexpander);
 
         return new CommandTester($command);
     }

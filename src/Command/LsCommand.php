@@ -5,6 +5,7 @@ namespace Meanbee\Magedbm2\Command;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
+use Meanbee\Magedbm2\Service\StorageFactory;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,14 +25,18 @@ class LsCommand extends BaseCommand
      */
     private $dataStorage;
 
-    public function __construct(ConfigInterface $config, StorageInterface $storage, StorageInterface $dataStorage)
+    /**
+     * @param ConfigInterface $config
+     * @param StorageFactory $storageFactory
+     */
+    public function __construct(ConfigInterface $config, StorageFactory $storageFactory)
     {
         parent::__construct($config, self::NAME);
 
-        $this->storage = $storage;
+        $this->storage = $storageFactory->create();
         $this->storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
 
-        $this->dataStorage = $dataStorage;
+        $this->dataStorage = $storageFactory->create();
         $this->dataStorage->setPurpose(StorageInterface::PURPOSE_ANONYMISED_DATA);
     }
 

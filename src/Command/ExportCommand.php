@@ -5,7 +5,9 @@ namespace Meanbee\Magedbm2\Command;
 use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Service\Anonymiser\Export;
+use Meanbee\Magedbm2\Service\FilesystemFactory;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
+use Meanbee\Magedbm2\Service\StorageFactory;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Meanbee\Magedbm2\Shell\Command\Gzip;
 use Meanbee\Magedbm2\Shell\Command\Mysqldump;
@@ -34,17 +36,17 @@ class ExportCommand extends BaseCommand
 
     /**
      * @param ConfigInterface $config
-     * @param StorageInterface $storage
-     * @param FilesystemInterface $filesystem
+     * @param StorageFactory $storageFactory
+     * @param FilesystemFactory $filesystemFactory
      */
-    public function __construct(ConfigInterface $config, StorageInterface $storage, FilesystemInterface $filesystem)
+    public function __construct(ConfigInterface $config, StorageFactory $storageFactory, FilesystemFactory $filesystemFactory)
     {
         parent::__construct($config, self::NAME);
         $this->anonymiser = new Export();
-        $this->storage = $storage;
-        $this->filesystem = $filesystem;
+        $this->storage = $storageFactory->create();
+        $this->filesystem = $filesystemFactory->create();
 
-        $storage->setPurpose(StorageInterface::PURPOSE_ANONYMISED_DATA);
+        $this->storage->setPurpose(StorageInterface::PURPOSE_ANONYMISED_DATA);
 
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }

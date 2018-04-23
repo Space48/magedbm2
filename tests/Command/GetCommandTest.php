@@ -150,7 +150,7 @@ class GetCommandTest extends AbstractCommandTest
      */
     protected function getCommandTester($database, $storage, $filesystem, $confirmation = false)
     {
-        $command = new GetCommand($this->getConfigMock(), $database, $storage, $filesystem);
+        $command = new GetCommand($this->getConfigMock(), $this->getDatabaseFactoryMock($database), $this->getStorageFactoryMock($storage), $this->getFilesystemFactoryMock($filesystem));
 
         $helper = $this->createMock(QuestionHelper::class);
         $helper

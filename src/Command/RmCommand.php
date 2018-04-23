@@ -4,6 +4,7 @@ namespace Meanbee\Magedbm2\Command;
 
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Exception\ServiceException;
+use Meanbee\Magedbm2\Service\StorageFactory;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +25,15 @@ class RmCommand extends BaseCommand
     /** @var StorageInterface */
     protected $storage;
 
-    public function __construct(ConfigInterface $config, StorageInterface $storage)
+    /**
+     * @param ConfigInterface $config
+     * @param StorageFactory $storageFactory
+     */
+    public function __construct(ConfigInterface $config, StorageFactory $storageFactory)
     {
         parent::__construct($config, self::NAME);
 
-        $this->storage = $storage;
+        $this->storage = $storageFactory->create();
 
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }

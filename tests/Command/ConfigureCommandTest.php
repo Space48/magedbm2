@@ -134,7 +134,7 @@ class ConfigureCommandTest extends AbstractCommandTest
         $configResolver->method('getUserFilePath')
             ->willReturn($this->configPath);
 
-        $command = new ConfigureCommand($config, $configResolver, $filesystem, new Yaml());
+        $command = new ConfigureCommand($config, $configResolver, $this->getFilesystemFactoryMock($filesystem), new Yaml());
         $command->setApplication($application);
 
         return new CommandTester($command);
