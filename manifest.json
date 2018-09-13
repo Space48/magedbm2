@@ -1,8 +1,14 @@
 [
   {
     "name": "magedbm2.phar",
+    "sha1": "112be2d7bc7e78cc001102656b5b8ac7e964e5f6",
+    "url": "https://github.com/meanbee/magedbm2/releases/download/2.0.1/magedbm2.phar",
+    "version": "2.0.1"
+  },
+  {
+    "name": "magedbm2.phar",
     "sha1": "db70d3a07c3ef7794f909c1929ad6e10d9208382",
-    "url": "https://s3.eu-west-2.amazonaws.com/magedbm2-releases/magedbm2-1.0.0.phar",
+    "url": "https://github.com/meanbee/magedbm2/releases/download/1.0.0/magedbm2.phar",
     "version": "1.0.0"
   }
 ]

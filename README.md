@@ -185,9 +185,11 @@ You can build the magedbm2 phar archive with [Box](https://github.com/box-projec
 To release a new version of magedbm2:
 
 1. Build the phar archive
-2. Upload `magedbm2.phar` and `magedbm2-<version>.phar` to the [magedbm2-releases](https://s3.eu-west-2.amazonaws.com/magedbm2-releases/) S3 bucket
-3. Update the `manifest.json` file with the new version information and upload a copy of the file to the S3 bucket
+2. Update the `manifest.json` file with the new version information
 
-    To calculate the sha1 checksum of the phar archive, run: `sha1sum -a 1 magedbm2.phar`
+    - Use `https://github.com/meanbee/magedbm2/releases/download/<version>/magedbm2.phar` as the URL
+    
+    - To calculate the sha1 checksum of the phar archive, run: `sha1sum magedbm2.phar`
 
+3. Update the Installation instructions above with the new version
 4. Create a release on [Github](https://github.com/meanbee/magedbm2/releases)
