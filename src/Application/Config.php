@@ -76,33 +76,37 @@ class Config implements ConfigInterface, LoggerAwareInterface
     public function getDatabaseCredentials()
     {
         if ($this->databaseCredentials === null) {
-            $rootDir = $this->get(Option::ROOT_DIR, true) ?? getcwd();
-            $rootDiscovery = new RootDiscovery($rootDir);
-            $configReader = $rootDiscovery->getConfigReader();
+            if (!$this->get(Option::DB_NAME, true) || !$this->get(Option::DB_USER, true)) {
+                $rootDir = $this->get(Option::ROOT_DIR, true) ?? getcwd();
+                $rootDiscovery = new RootDiscovery($rootDir);
+                $configReader = $rootDiscovery->getConfigReader();
 
-            if (\Meanbee\LibMageConf\MagentoType::UNKNOWN !== $rootDiscovery->getInstallationType()) {
-                $this->logger->info('Found Magento installation at ' . $rootDiscovery->getRootDirectory());
+                if (\Meanbee\LibMageConf\MagentoType::UNKNOWN !== $rootDiscovery->getInstallationType()) {
+                    $this->logger->info('Found Magento installation at ' . $rootDiscovery->getRootDirectory());
 
-                $this->databaseCredentials = new DatabaseCredentials(
-                    $configReader->getDatabaseName(),
-                    $configReader->getDatabaseUsername(),
-                    $configReader->getDatabasePassword(),
-                    $configReader->getDatabaseHost(),
-                    $configReader->getDatabasePort()
-                );
-            } else {
-                $this->logger->warning(
-                    'Unable to find a Magento installation, using database credentials from configuration.'
-                );
+                    $this->databaseCredentials = new DatabaseCredentials(
+                        $configReader->getDatabaseName(),
+                        $configReader->getDatabaseUsername(),
+                        $configReader->getDatabasePassword(),
+                        $configReader->getDatabaseHost(),
+                        $configReader->getDatabasePort()
+                    );
 
-                $this->databaseCredentials = new DatabaseCredentials(
-                    $this->get(Option::DB_NAME, true) ?? '',
-                    $this->get(Option::DB_USER, true) ?? '',
-                    $this->get(Option::DB_PASS, true) ?? '',
-                    $this->get(Option::DB_HOST, true) ?? 'localhost',
-                    $this->get(Option::DB_PORT, true) ?? '3306'
-                );
+                    return $this->databaseCredentials;
+                } else {
+                    $this->logger->warning(
+                        'Unable to find a Magento installation, using database credentials from configuration.'
+                    );
+                }
             }
+
+            $this->databaseCredentials = new DatabaseCredentials(
+                $this->get(Option::DB_NAME, true) ?? '',
+                $this->get(Option::DB_USER, true) ?? '',
+                $this->get(Option::DB_PASS, true) ?? '',
+                $this->get(Option::DB_HOST, true) ?? 'localhost',
+                $this->get(Option::DB_PORT, true) ?? '3306'
+            );
         }
 
         return $this->databaseCredentials;
