@@ -1,8 +1,8 @@
 table-groups:
   # Source: https://github.com/netz98/n98-magerun2/blob/f16429d5c86fcbcb2a686e92ebc89d0125f06da0/config.yaml
   - id: admin
-    description: Admin tables
-    tables: admin* authorization*
+    description: Admin User tables
+    tables: admin*
 
   - id: log
     description: Log tables
