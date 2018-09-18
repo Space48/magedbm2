@@ -18,9 +18,8 @@ magedbm2 requires PHP 7.0+ with permission to run the `exec` and `passthru` func
 
 ## Installation
 
-Run the following commands to install the latest version of `magedbm2` globally:
+Download the Phar file from the [latest Github release](https://github.com/meanbee/magedbm2/releases/latest). Then run:
 
-    curl -LO https://s3.eu-west-2.amazonaws.com/magedbm2-releases/magedbm2.phar
     mv magedbm2.phar /usr/local/bin/magedbm2
     chmod +x /usr/local/bin/magedbm2
 
