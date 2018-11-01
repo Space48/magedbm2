@@ -21,11 +21,19 @@ class StorageFactory
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function create()
+    public function create($adapter = null)
     {
-        switch ($this->container->get('storage_adapter')) {
+
+        if ($adapter == null) {
+            $adapter = $this->container->get('storage_adapter');
+        }
+
+        switch ($adapter) {
             case 's3':
                 $instance = $this->container->make(\Meanbee\Magedbm2\Service\Storage\S3::class);
+                break;
+            case 'digitalocean-spaces':
+                $instance = $this->container->make(\Meanbee\Magedbm2\Service\Storage\DigitalOceanSpaces::class);
                 break;
             case 'local':
             default:

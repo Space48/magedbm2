@@ -49,7 +49,11 @@ class GetCommand extends BaseCommand
         parent::__construct($config, self::NAME);
 
         $this->database = $databaseFactory->create();
-        $this->storage = $storageFactory->create();
+
+        $adapter = $config->get('storage_adapter') ?? null;
+
+        $this->storage = $storageFactory->create($adapter);
+
         $this->filesystem = $filesystemFactory->create();
 
         $this->storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);

@@ -56,7 +56,9 @@ class ImportCommand extends BaseCommand
     public function __construct(ConfigInterface $config, StorageFactory $storageFactory, FilesystemFactory $filesystemFactory)
     {
         parent::__construct($config, self::NAME);
-        $this->storage = $storageFactory->create();
+
+        $adapter = $config->get('storage_adapter') ?? null;
+        $this->storage = $storageFactory->create($adapter);
         $this->filesystem = $filesystemFactory->create();
 
         $this->storage->setPurpose(StorageInterface::PURPOSE_ANONYMISED_DATA);
