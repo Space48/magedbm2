@@ -33,7 +33,9 @@ class LsCommand extends BaseCommand
     {
         parent::__construct($config, self::NAME);
 
-        $this->storage = $storageFactory->create();
+        $adapter = $config->get('storage_adapter') ?? null;
+
+        $this->storage = $storageFactory->create($adapter);
         $this->storage->setPurpose(StorageInterface::PURPOSE_STRIPPED_DATABASE);
 
         $this->dataStorage = $storageFactory->create();

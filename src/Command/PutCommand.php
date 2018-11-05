@@ -52,7 +52,8 @@ class PutCommand extends BaseCommand
         TableGroupExpander $tableGroupExpander = null
     ) {
         $this->database = $databaseFactory->create();
-        $this->storage = $storageFactory->create();
+        $adapter = $config->get('storage_adapter') ?? null;
+        $this->storage = $storageFactory->create($adapter);
         $this->filesystem = $filesystemFactory->create();
         $this->tableExpander = $tableGroupExpander ?? new TableGroupExpander();
         $this->config = $config;
