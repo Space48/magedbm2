@@ -16,7 +16,7 @@ class DOTest extends TestCase
     /** @var Application\Config */
     public $config;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->config = new Application\Config([
             'selected-storage-adapter' => 'digitalocean-spaces',
