@@ -29,6 +29,8 @@ class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
     /** @var S3Client */
     protected $client;
 
+    public $storageAdapterConfig;
+
     /**
      * Default S3 client parameters.
      *
@@ -57,6 +59,7 @@ class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
     {
         $this->app = $app;
         $this->config = $config;
+        $this->storageAdapterConfig = $config->getStorageAdapter();
         $this->logger = new NullLogger();
 
         if ($client) {
@@ -131,6 +134,7 @@ class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
      * @inheritdoc
      *
      * @return string|null
+     * @throws ServiceException
      */
     public function getLatestFile($project)
     {
@@ -274,16 +278,16 @@ class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
         if (!$this->client instanceof S3Client) {
             $params = $this->default_params;
 
-            if ($region = $this->getConfig()->get("region")) {
+            if ($region = $this->storageAdapterConfig['region']) {
                 $params["region"] = $region;
             }
 
-            if ($space = $this->getConfig()->get("space")) {
+            if ($space = $this->storageAdapterConfig['space']) {
                 $params["space"] = $space;
             }
 
-            if (($access_key = $this->getConfig()->get("access-key"))
-                && ($secret_key = $this->getConfig()->get("secret-key"))
+            if (($access_key = $this->storageAdapterConfig['access-key'])
+                && ($secret_key = $this->storageAdapterConfig['secret-key'])
             ) {
                 $params["credentials"] = [
                     "key"    => $access_key,
@@ -358,11 +362,11 @@ class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
      */
     public function validateConfiguration(): bool
     {
-        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->getConfig()->get('bucket')) {
+        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->storageAdapterConfig['bucket']) {
             throw new ConfigurationException('A bucket needs to be defined');
         }
 
-        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->getConfig()->get('data-bucket')) {
+        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->storageAdapterConfig['data-bucket']) {
             throw new ConfigurationException('A data bucket needs to be defined');
         }
 
@@ -383,10 +387,10 @@ class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
     private function getBucket()
     {
         if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
-            return $this->getConfig()->get('data-bucket');
+            return $this->storageAdapterConfig['data-bucket'];
         }
 
-        return $this->getConfig()->get('bucket');
+        return $this->storageAdapterConfig['bucket'];
     }
 
     /**

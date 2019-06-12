@@ -33,8 +33,7 @@ class RmCommand extends BaseCommand
     {
         parent::__construct($config, self::NAME);
 
-        $adapter = $config->get('storage_adapter') ?? null;
-        $this->storage = $storageFactory->create($adapter);
+        $this->storage = $storageFactory->create();
         $this->ensureServiceConfigurationValidated('storage', $this->storage);
     }
 

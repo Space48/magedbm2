@@ -26,8 +26,15 @@ class Local implements StorageInterface
     public function __construct()
     {
         $this->tmpDir = implode(DIRECTORY_SEPARATOR, [sys_get_temp_dir(), 'magedbm2']);
-
         $this->ensureDirectoryExists($this->tmpDir);
+    }
+
+    /**
+     * @param $tmpDir
+     */
+    public function setTmpDir($tmpDir)
+    {
+        $this->tmpDir = $tmpDir;
     }
 
     /**
@@ -47,9 +54,10 @@ class Local implements StorageInterface
         $projectDirs = scandir($this->tmpDir, SCANDIR_SORT_NONE);
 
         foreach ($projectDirs as $projectDir) {
-            if (is_dir($projectDir)) {
+            if (is_dir($this->tmpDir . "/". $projectDir) ) {
                 $projects[] = $projectDir;
             }
+
         }
 
         return $projects;
@@ -194,8 +202,8 @@ class Local implements StorageInterface
      */
     private function ensureDirectoryExists($dir)
     {
-        if (!is_dir($dir)) {
-            if (!mkdir($dir) && !is_dir($dir)) {
+        if ( ! is_dir($dir)) {
+            if ( ! mkdir($dir) && ! is_dir($dir)) {
                 throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
             }
         }

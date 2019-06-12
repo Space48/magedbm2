@@ -17,6 +17,9 @@ final class Option
 
     const TABLE_GROUPS = 'table-groups';
 
+    const STORAGE_ADAPTERS = 'storage-adapters';
+    const SELECTED_STORAGE_ADAPTER = 'selected-storage-adapter';
+
     const TEMPORARY_DIR = 'tmp_dir';
 
     const FORCE = 'force';

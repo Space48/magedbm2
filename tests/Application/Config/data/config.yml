@@ -1,4 +1,19 @@
 ---
+selected-storage-adapter: digitalocean-spaces
+
+storage-adapters:
+  digitalocean-spaces:
+    space: test
+    access-key: 12345
+    secret-key: 12345
+    region: ams3
+    bucket: test-bucket
+    data-bucket: test
+  s3:
+    region: eu-west-2
+    access-key: 12345
+    secret-key: 12345
+
 test-option: test-value
 
 table-groups:

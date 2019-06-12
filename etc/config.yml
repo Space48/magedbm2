@@ -1,3 +1,16 @@
+selected-storage-adapter: local
+
+storage-adapters:
+  digitalocean-spaces:
+    region: ams3
+    space: backups
+    access-key: 12345
+    secret-key: 12345
+  s3:
+    region: eu-west-2
+    access-key: 12345
+    secret-key: 12345
+
 table-groups:
   # Source: https://github.com/netz98/n98-magerun2/blob/f16429d5c86fcbcb2a686e92ebc89d0125f06da0/config.yaml
   - id: admin
