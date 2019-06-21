@@ -1,4 +1,4 @@
-selected-storage-adapter: local
+selected-storage-adapter: s3
 
 storage-adapters:
   digitalocean-spaces:
