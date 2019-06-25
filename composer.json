@@ -1,7 +1,7 @@
 {
-  "name": "meanbee/magedbm2",
+  "name": "space48/magedbm2",
   "description": "Magento 2 database backup and import tool",
-  "homepage": "https://github.com/meanbee/magedbm2",
+  "homepage": "https://github.com/space48/magedbm2",
   "license": "OSL-3.0",
   "keywords": [
     "magento2",
@@ -14,11 +14,11 @@
   "authors": [
     {
       "name": "Tomas Gerulaitis",
-      "email": "tomas.gerulaitis@meanbee.com"
+      "email": "tomas.gerulaitis@space48.com"
     },
     {
       "name": "Nick Jones",
-      "email": "nick@nicksays.co.uk"
+      "email": "nick@space48.com"
     }
   ],
   "bin": [

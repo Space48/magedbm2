@@ -2,7 +2,7 @@
 
 Looking for Magento 1.x support? Head over to [magedbm](https://github.com/meanbee/magedbm).
 
-[![Build Status](https://travis-ci.org/meanbee/magedbm2.svg?branch=master)](https://travis-ci.org/meanbee/magedbm2)
+[![Build Status](https://travis-ci.org/space48/magedbm2.svg?branch=master)](https://travis-ci.org/space48/magedbm2)
 
 magedbm2 is a database backup manager for Magento 2.
 
@@ -18,7 +18,7 @@ magedbm2 requires PHP 7.0+ with permission to run the `exec` and `passthru` func
 
 ## Installation
 
-Download the Phar file from the [latest Github release](https://github.com/meanbee/magedbm2/releases/latest). Then run:
+Download the Phar file from the [latest Github release](https://github.com/space48/magedbm2/releases/latest). Then run:
 
     mv magedbm2.phar /usr/local/bin/magedbm2
     chmod +x /usr/local/bin/magedbm2
@@ -139,7 +139,7 @@ The `import` command allows you to import an anonymised export of your database.
 
 While there is no formal contribution process, feel free to contribute by:
 
-1. Creating issues, bug reports or feature requests on [Github](https://github.com/meanbee/magedbm2/issues)
+1. Creating issues, bug reports or feature requests on [Github](https://github.com/space48/magedbm2/issues)
 2. Submitting pull requests for improvements
 
 Pull requests should be submitted to the `develop` branch to be included in the next release.
@@ -186,9 +186,9 @@ To release a new version of magedbm2:
 1. Build the phar archive
 2. Update the `manifest.json` file with the new version information
 
-    - Use `https://github.com/meanbee/magedbm2/releases/download/<version>/magedbm2.phar` as the URL
+    - Use `https://github.com/space48/magedbm2/releases/download/<version>/magedbm2.phar` as the URL
     
     - To calculate the sha1 checksum of the phar archive, run: `sha1sum magedbm2.phar`
 
 3. Update the Installation instructions above with the new version
-4. Create a release on [Github](https://github.com/meanbee/magedbm2/releases)
+4. Create a release on [Github](https://github.com/space48/magedbm2/releases)

@@ -2,19 +2,19 @@
   {
     "name": "magedbm2.phar",
     "sha1": "65960e29152d914ee3d04d80d4a3c1f33afecb21",
-    "url": "https://github.com/meanbee/magedbm2/releases/download/2.0.2/magedbm2.phar",
+    "url": "https://github.com/space48/magedbm2/releases/download/2.0.2/magedbm2.phar",
     "version": "2.0.2"
   },
   {
     "name": "magedbm2.phar",
     "sha1": "112be2d7bc7e78cc001102656b5b8ac7e964e5f6",
-    "url": "https://github.com/meanbee/magedbm2/releases/download/2.0.1/magedbm2.phar",
+    "url": "https://github.com/space48/magedbm2/releases/download/2.0.1/magedbm2.phar",
     "version": "2.0.1"
   },
   {
     "name": "magedbm2.phar",
     "sha1": "db70d3a07c3ef7794f909c1929ad6e10d9208382",
-    "url": "https://github.com/meanbee/magedbm2/releases/download/1.0.0/magedbm2.phar",
+    "url": "https://github.com/space48/magedbm2/releases/download/1.0.0/magedbm2.phar",
     "version": "1.0.0"
   }
 ]
