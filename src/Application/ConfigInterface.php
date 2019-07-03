@@ -35,6 +35,12 @@ interface ConfigInterface
     public function getTableGroups();
 
     /**
+     *  Get the defined config of selected storage adapter.
+     * @return array
+     */
+    public function getStorageAdapter();
+
+    /**
      * @return DatabaseCredentials
      */
     public function getDatabaseCredentials();

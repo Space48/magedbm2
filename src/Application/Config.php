@@ -55,7 +55,7 @@ class Config implements ConfigInterface, LoggerAwareInterface
             return $this->values->get($path);
         }
 
-        if (!$graceful) {
+        if ( ! $graceful) {
             throw new InvalidArgumentException(sprintf('No value set for %s found', $path));
         }
 
@@ -76,7 +76,7 @@ class Config implements ConfigInterface, LoggerAwareInterface
     public function getDatabaseCredentials()
     {
         if ($this->databaseCredentials === null) {
-            if (!$this->get(Option::DB_NAME, true) || !$this->get(Option::DB_USER, true)) {
+            if ( ! $this->get(Option::DB_NAME, true) || ! $this->get(Option::DB_USER, true)) {
                 $rootDir = $this->get(Option::ROOT_DIR, true) ?? getcwd();
                 $rootDiscovery = new RootDiscovery($rootDir);
                 $configReader = $rootDiscovery->getConfigReader();
@@ -145,9 +145,43 @@ class Config implements ConfigInterface, LoggerAwareInterface
         return $tableGroups;
     }
 
+    /** Return config of selected storage adapter
+     * @return array
+     */
+    public function getStorageAdapter()
+    {
+        $storageAdapterConfig = $this->get(Option::STORAGE_ADAPTERS);
+        $selectedAdapter = $this->get(Option::SELECTED_STORAGE_ADAPTER);
+
+        if (array_key_exists($selectedAdapter, $storageAdapterConfig)) {
+            $config = $storageAdapterConfig[$selectedAdapter];
+
+            //TODO: Perhaps check for certain minimum requirements per storage adapter
+            $region = $config['region'] ?? null;
+            $accessKey = $config['access-key'] ?? null;
+            $secretKey = $config['secret-key'] ?? null;
+
+            if ($region === null) {
+                throw new \RuntimeException("Expected storage adapter to have a region");
+            }
+
+            if ($accessKey === null) {
+                throw new \RuntimeException("Expected storage adapter to have an access-key");
+            }
+
+            if ($secretKey === null) {
+                throw new \RuntimeException("Expected storage adapter to have a secret-key");
+            }
+
+            return $storageAdapterConfig[$selectedAdapter];
+        } else {
+            throw new \RuntimeException("No configuration found for selected adapter " . $selectedAdapter);
+        }
+    }
+
     private function initialiseCalculatedValues()
     {
-        if (!$this->values->has(Option::TEMPORARY_DIR)) {
+        if ( ! $this->values->has(Option::TEMPORARY_DIR)) {
             $this->values->set(Option::TEMPORARY_DIR, $this->generateTmpDir());
         }
     }
@@ -193,7 +227,7 @@ class Config implements ConfigInterface, LoggerAwareInterface
     private function doMerge($oldValues, $newValues)
     {
         foreach ($newValues as $key => $value) {
-            if (!isset($oldValues[$key]) || is_scalar($oldValues[$key])) {
+            if ( ! isset($oldValues[$key]) || is_scalar($oldValues[$key])) {
                 $oldValues[$key] = $value;
             } elseif ($this->arrayDepth($value) === 1) {
                 $oldValues[$key] = array_merge($oldValues[$key], $newValues[$key]);

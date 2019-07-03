@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class S3 implements StorageInterface, LoggerAwareInterface
+class DigitalOceanSpaces implements StorageInterface, LoggerAwareInterface
 {
     /** @var Application */
     protected $app;
@@ -31,7 +31,6 @@ class S3 implements StorageInterface, LoggerAwareInterface
 
     public $storageAdapterConfig;
 
-
     /**
      * Default S3 client parameters.
      *
@@ -39,6 +38,11 @@ class S3 implements StorageInterface, LoggerAwareInterface
      */
     protected $default_params = [
         "version" => "latest",
+        "region"  => "ams3",
+        "bucket_endpoint" => true,
+        "scheme" => "https",
+        "uri" => "digitaloceanspaces.com",
+        "space" => ""
     ];
 
     /**
@@ -130,6 +134,7 @@ class S3 implements StorageInterface, LoggerAwareInterface
      * @inheritdoc
      *
      * @return string|null
+     * @throws ServiceException
      */
     public function getLatestFile($project)
     {
@@ -277,6 +282,10 @@ class S3 implements StorageInterface, LoggerAwareInterface
                 $params["region"] = $region;
             }
 
+            if ($space = $this->storageAdapterConfig['space']) {
+                $params["space"] = $space;
+            }
+
             if (($access_key = $this->storageAdapterConfig['access-key'])
                 && ($secret_key = $this->storageAdapterConfig['secret-key'])
             ) {
@@ -285,6 +294,8 @@ class S3 implements StorageInterface, LoggerAwareInterface
                     "secret" => $secret_key,
                 ];
             }
+
+            $params['endpoint'] = $params['scheme'] . '://' . implode(".", array_filter([$params['space'],$params['region'],$params['uri']]));
 
             $this->client = new S3Client($params);
         }
@@ -318,38 +329,31 @@ class S3 implements StorageInterface, LoggerAwareInterface
         $definition = $app->getDefinition();
 
         $definition->addOption(new InputOption(
+            "space",
+            null,
+            InputOption::VALUE_REQUIRED,
+            "Digital Ocean Spacename"
+        ));
+
+        $definition->addOption(new InputOption(
             "access-key",
             null,
             InputOption::VALUE_REQUIRED,
-            "S3 Access Key ID"
+            "Digital Ocean Access Key ID"
         ));
 
         $definition->addOption(new InputOption(
             "secret-key",
             null,
             InputOption::VALUE_REQUIRED,
-            "S3 Secret Access Key"
+            "Digital Ocean Secret Access Key"
         ));
 
         $definition->addOption(new InputOption(
             "region",
             null,
             InputOption::VALUE_REQUIRED,
-            "S3 region"
-        ));
-
-        $definition->addOption(new InputOption(
-            "bucket",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 bucket for stripped databases"
-        ));
-
-        $definition->addOption(new InputOption(
-            "data-bucket",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 bucket for anonymised data exports"
+            "Digital Ocean region"
         ));
     }
 

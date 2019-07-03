@@ -3,6 +3,7 @@
 namespace Meanbee\Magedbm2\Service;
 
 use DI\Container;
+use Meanbee\Magedbm2\Application\ConfigInterface;
 
 class StorageFactory
 {
@@ -10,10 +11,15 @@ class StorageFactory
      * @var Container
      */
     private $container;
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
 
-    public function __construct(Container $container)
+    public function __construct(Container $container, ConfigInterface $config)
     {
         $this->container = $container;
+        $this->config = $config;
     }
 
     /**
@@ -23,9 +29,12 @@ class StorageFactory
      */
     public function create()
     {
-        switch ($this->container->get('storage_adapter')) {
+        switch ($this->config->get('selected-storage-adapter')) {
             case 's3':
                 $instance = $this->container->make(\Meanbee\Magedbm2\Service\Storage\S3::class);
+                break;
+            case 'digitalocean-spaces':
+                $instance = $this->container->make(\Meanbee\Magedbm2\Service\Storage\DigitalOceanSpaces::class);
                 break;
             case 'local':
             default:

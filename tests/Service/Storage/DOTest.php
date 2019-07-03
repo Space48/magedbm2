@@ -3,26 +3,29 @@
 namespace Meanbee\Magedbm2\Tests\Service\Storage;
 
 use Aws\S3\S3Client;
+use Meanbee\Magedbm2\Service\Storage\DigitalOceanSpaces;
 use Meanbee\Magedbm2\Application;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\Storage\S3;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
-class S3Test extends TestCase
+class DOTest extends TestCase
 {
 
+    /** @var Application\Config */
     public $config;
 
     protected function setUp()
     {
         $this->config = new Application\Config([
-            'selected-storage-adapter' => 's3',
+            'selected-storage-adapter' => 'digitalocean-spaces',
             'storage-adapters' => [
-                's3' => [
+                'digitalocean-spaces' => [
                     'bucket' => 'test-bucket',
                     'data-bucket' => 'test',
-                    'region' => 'eu-west-2',
+                    'region' => 'ams3',
+                    'space' => 'test',
                     'access-key' => 12345,
                     'secret-key' => 12345
                 ]
@@ -39,13 +42,13 @@ class S3Test extends TestCase
     {
         $app = new Application();
 
-        $service = new S3($app, $this->getConfigMock());
+        $service = new DigitalOceanSpaces($app, $this->getConfigMock());
 
         $options = [
             "access-key",
             "secret-key",
             "region",
-            "bucket",
+            "space"
         ];
 
         foreach ($options as $option) {
@@ -82,7 +85,7 @@ class S3Test extends TestCase
                 ["Key" => "test-project-bar/backup-file-1.sql.gz"],
             ]);
 
-        $service = new S3($app, $this->config, $client);
+        $service = new DigitalOceanSpaces($app, $this->config, $client);
 
         $this->assertEquals(
             [
@@ -118,13 +121,13 @@ class S3Test extends TestCase
             )
             ->willReturn([
                 [
-                    "Key"          => "test-project-1/backup-file-1.sql.gz",
-                    "Size"         => 1000000000,
+                    "Key" => "test-project-1/backup-file-1.sql.gz",
+                    "Size" => 1000000000,
                     "LastModified" => new \DateTime("1999-09-05 12:34:56"),
                 ],
                 [
-                    "Key"          => "test-project-1/backup-file-2.sql.gz",
-                    "Size"         => 1000000000,
+                    "Key" => "test-project-1/backup-file-2.sql.gz",
+                    "Size" => 1000000000,
                     "LastModified" => new \DateTime("2017-05-22 12:34:56"),
                 ],
             ]);
@@ -174,23 +177,23 @@ class S3Test extends TestCase
             )
             ->willReturn([
                 [
-                    "Key"          => "test-project-1/backup-file-1.sql.gz",
-                    "Size"         => 1000000000,
+                    "Key" => "test-project-1/backup-file-1.sql.gz",
+                    "Size" => 1000000000,
                     "LastModified" => new \DateTime("1999-09-05 12:34:56"),
                 ],
                 [
-                    "Key"          => "test-project-1/backup-file-2.sql.gz",
-                    "Size"         => 1000000000,
+                    "Key" => "test-project-1/backup-file-2.sql.gz",
+                    "Size" => 1000000000,
                     "LastModified" => new \DateTime("2017-05-22 12:34:56"),
                 ],
                 [
-                    "Key"          => "test-project-1/backup-file-3.sql.gz",
-                    "Size"         => 1000000000,
+                    "Key" => "test-project-1/backup-file-3.sql.gz",
+                    "Size" => 1000000000,
                     "LastModified" => new \DateTime("2012-01-15 12:34:56"),
                 ],
             ]);
 
-        $service = new S3($app, $this->config, $client);
+        $service = new DigitalOceanSpaces($app, $this->config, $client);
 
         $this->assertEquals(
             "backup-file-2.sql.gz",
@@ -225,15 +228,15 @@ class S3Test extends TestCase
             ->expects($this->once())
             ->method("putObject")
             ->with($this->equalTo([
-                "Bucket"     => $bucket,
-                "Key"        => sprintf("%s/%s", $project, $filename),
+                "Bucket" => $bucket,
+                "Key" => sprintf("%s/%s", $project, $filename),
                 "SourceFile" => sprintf("%s/%s", $dir, $filename),
             ]))
             ->willReturn([
                 "ObjectURL" => $expected_result
             ]);
 
-        $service = new S3($app, $this->config, $client);
+        $service = new DigitalOceanSpaces($app, $this->config, $client);
 
         $this->assertEquals(
             $expected_result,
@@ -275,11 +278,11 @@ class S3Test extends TestCase
             ->method("getObject")
             ->with($this->equalTo([
                 "Bucket" => $bucket,
-                "Key"    => sprintf("%s/%s", $project, $filename),
+                "Key" => sprintf("%s/%s", $project, $filename),
                 "SaveAs" => $result,
             ]));
 
-        $service = new S3($app, $this->config, $client);
+        $service = new DigitalOceanSpaces($app, $this->config, $client);
 
         $this->assertEquals(
             $result,
@@ -312,10 +315,10 @@ class S3Test extends TestCase
             ->method("deleteObject")
             ->with($this->equalTo([
                 "Bucket" => $bucket,
-                "Key"    => sprintf("%s/%s", $project, $filename),
+                "Key" => sprintf("%s/%s", $project, $filename),
             ]));
 
-        $service = new S3($app, $this->config, $client);
+        $service = new DigitalOceanSpaces($app, $this->config, $client);
 
         $service->delete($project, $filename);
     }
@@ -332,33 +335,33 @@ class S3Test extends TestCase
         $bucket = "test-bucket";
         $files = [
             [
-                "Key"          => "test-project-1/backup-file-1.sql.gz",
-                "Size"         => 1000000000,
+                "Key" => "test-project-1/backup-file-1.sql.gz",
+                "Size" => 1000000000,
                 "LastModified" => new \DateTime("1999-01-01"),
             ],
             [
-                "Key"          => "test-project-1/backup-file-2.sql.gz",
-                "Size"         => 1000000000,
+                "Key" => "test-project-1/backup-file-2.sql.gz",
+                "Size" => 1000000000,
                 "LastModified" => new \DateTime("2017-01-01"),
             ],
             [
-                "Key"          => "test-project-1/backup-file-3.sql.gz",
-                "Size"         => 1000000000,
+                "Key" => "test-project-1/backup-file-3.sql.gz",
+                "Size" => 1000000000,
                 "LastModified" => new \DateTime("2016-01-01"),
             ],
             [
-                "Key"          => "test-project-1/backup-file-4.sql.gz",
-                "Size"         => 1000000000,
+                "Key" => "test-project-1/backup-file-4.sql.gz",
+                "Size" => 1000000000,
                 "LastModified" => new \DateTime("2001-01-01"),
             ],
             [
-                "Key"          => "",
-                "Size"         => 1000000000,
+                "Key" => "",
+                "Size" => 1000000000,
                 "LastModified" => new \DateTime("2002-01-01"),
             ],
             [
-                "Key"          => "test-project-1/backup-file-6.sql.gz",
-                "Size"         => 1000000000,
+                "Key" => "test-project-1/backup-file-6.sql.gz",
+                "Size" => 1000000000,
                 "LastModified" => new \DateTime("2004-01-01"),
             ],
         ];
@@ -389,7 +392,7 @@ class S3Test extends TestCase
             ->method("deleteObjects")
             ->with($this->equalTo($expected_query));
 
-        $service = new S3($app, $this->config, $client);
+        $service = new DigitalOceanSpaces($app, $this->config, $client);
 
         $service->clean($project, $keep);
     }
@@ -401,5 +404,4 @@ class S3Test extends TestCase
     {
         return $this->createMock(Application\ConfigInterface::class);
     }
-
 }

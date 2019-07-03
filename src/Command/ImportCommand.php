@@ -56,6 +56,7 @@ class ImportCommand extends BaseCommand
     public function __construct(ConfigInterface $config, StorageFactory $storageFactory, FilesystemFactory $filesystemFactory)
     {
         parent::__construct($config, self::NAME);
+
         $this->storage = $storageFactory->create();
         $this->filesystem = $filesystemFactory->create();
 
