@@ -170,7 +170,7 @@ class S3 implements StorageInterface, LoggerAwareInterface
         $key = $this->getFileKey($project, $file);
         $bucket = $this->getBucket();
         $local_file = implode(DIRECTORY_SEPARATOR, [
-            $this->getConfig()->get(Option::TEMPORARY_DIR),
+            $this->config->getTmpDir(),
             $file
         ]);
 

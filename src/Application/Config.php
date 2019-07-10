@@ -37,8 +37,6 @@ class Config implements ConfigInterface, LoggerAwareInterface
     {
         $this->values = new Dot($values);
         $this->logger = new NullLogger();
-
-        $this->initialiseCalculatedValues();
     }
 
     /**
@@ -145,11 +143,15 @@ class Config implements ConfigInterface, LoggerAwareInterface
         return $tableGroups;
     }
 
-    private function initialiseCalculatedValues()
+    /**
+    * @return String
+    */
+    public function getTmpDir()
     {
         if (!$this->values->has(Option::TEMPORARY_DIR)) {
             $this->values->set(Option::TEMPORARY_DIR, $this->generateTmpDir());
         }
+        return $this->values->get(Option::TEMPORARY_DIR);
     }
 
     /**

@@ -69,7 +69,7 @@ class ExportCommand extends BaseCommand
         $tablesToExport = $this->configureAnonymiser();
 
         $outputFileName = $project . '-' . date('Y-m-d_His') . '.xml.gz';
-        $outputFilePath = $this->config->get(Option::TEMPORARY_DIR) . DIRECTORY_SEPARATOR . $outputFileName;
+        $outputFilePath = $this->config->getTmpDir() . DIRECTORY_SEPARATOR . $outputFileName;
         $temporaryFileName = $this->generateTemporaryFile();
 
         $this->getLogger()->info('Generating initial XML database dump');
@@ -139,7 +139,7 @@ class ExportCommand extends BaseCommand
      */
     private function generateTemporaryFile()
     {
-        $file = tempnam($this->config->get(Option::TEMPORARY_DIR), 'export');
+        $file = tempnam($this->config->getTmpDir(), 'export');
 
         if ($file === false) {
             throw new \RuntimeException('Unable to create temporary file');

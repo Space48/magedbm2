@@ -256,7 +256,7 @@ class S3Test extends TestCase
 
         $config = new Application\Config([
             'bucket' => $bucket,
-            'tmp_dir' => $tmp_dir
+            'tmp-dir' => $tmp_dir
         ]);
 
         $client = $this->getMockBuilder(S3Client::class)

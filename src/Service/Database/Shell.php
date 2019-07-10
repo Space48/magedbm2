@@ -344,6 +344,6 @@ class Shell implements DatabaseInterface
      */
     private function getTempFile($filename)
     {
-        return $this->config->get(Application\Config\Option::TEMPORARY_DIR) . DIRECTORY_SEPARATOR . $filename;
+        return $this->config->getTmpDir() . DIRECTORY_SEPARATOR . $filename;
     }
 }

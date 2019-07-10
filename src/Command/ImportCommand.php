@@ -363,7 +363,7 @@ class ImportCommand extends BaseCommand
      */
     private function generateTemporaryFile()
     {
-        $file = tempnam($this->config->get(Option::TEMPORARY_DIR), 'export');
+        $file = tempnam($this->config->getTmpDir(), 'export');
 
         if ($file === false) {
             throw new \RuntimeException('Unable to create temporary file');
