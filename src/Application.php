@@ -100,11 +100,11 @@ class Application extends \Symfony\Component\Console\Application
         $this->container->set('logger', new ConsoleLogger($output));
 
         $this->config = $this->container->get('config');
-
-        $this->loadProjectConfig($input);
         $this->initCommands();
+        $applicationRun = parent::doRun($input, $output);
+        $this->loadProjectConfig($input);
 
-        return parent::doRun($input, $output);
+        return $applicationRun;
     }
     /**
      * Initialise the available commands.
@@ -196,6 +196,8 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * @param InputInterface $input
      * @throws Exception\ConfigurationException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     private function loadProjectConfig(InputInterface $input)
     {
@@ -211,7 +213,7 @@ class Application extends \Symfony\Component\Console\Application
             $this->config->merge((new FileLoader($file))->asConfig());
         } elseif ($canError) {
             throw new \InvalidArgumentException(
-                sprintf('The project config file at %s could not be read', $file)
+                sprintf('The project config file at %s could not be read or doesn\'t exist', $file)
             );
         }
     }
