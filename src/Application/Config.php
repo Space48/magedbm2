@@ -85,11 +85,11 @@ class Config implements ConfigInterface, LoggerAwareInterface
                     $this->logger->info('Found Magento installation at ' . $rootDiscovery->getRootDirectory());
 
                     $this->databaseCredentials = new DatabaseCredentials(
-                        $configReader->getDatabaseName(),
-                        $configReader->getDatabaseUsername(),
-                        $configReader->getDatabasePassword(),
-                        $configReader->getDatabaseHost(),
-                        $configReader->getDatabasePort()
+                        $configReader->getDatabaseName() ?? '',
+                        $configReader->getDatabaseUsername() ?? '',
+                        $configReader->getDatabasePassword() ?? '',
+                        $configReader->getDatabaseHost() ?? '',
+                        $configReader->getDatabasePort() ?? ''
                     );
 
                     return $this->databaseCredentials;

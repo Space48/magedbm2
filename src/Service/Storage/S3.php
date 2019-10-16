@@ -300,11 +300,11 @@ class S3 implements StorageInterface, LoggerAwareInterface
      */
     public function validateConfiguration(): bool
     {
-        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->getConfig()->get(Option::STORAGE_BUCKET)) {
+        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->getConfig()->get(Option::STORAGE_BUCKET, true)) {
             throw new ConfigurationException('A bucket needs to be defined');
         }
 
-        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->getConfig()->get(Option::STORAGE_DATA_BUCKET)) {
+        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->getConfig()->get(Option::STORAGE_DATA_BUCKET, true)) {
             throw new ConfigurationException('A data bucket needs to be defined');
         }
 
