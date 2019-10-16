@@ -2,21 +2,29 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Application\ConfigFileResolver;
 use Meanbee\Magedbm2\Application\ConfigInterface;
 use Meanbee\Magedbm2\Service\FilesystemFactory;
 use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigureCommand extends BaseCommand
 {
     const RETURN_CODE_SAVE_ERROR = 1;
-    const NAME                   = 'configure';
+    const NAME = 'configure';
+
+    const ARG_CONFIG_FILE = 'config-file';
 
     /** @var FilesystemInterface */
     protected $filesystem;
@@ -56,7 +64,8 @@ class ConfigureCommand extends BaseCommand
         FilesystemFactory $filesystemFactory,
         Yaml $yaml,
         array $excluded_options = null
-    ) {
+    )
+    {
         parent::__construct($config, self::NAME);
 
         $this->config = $config;
@@ -75,6 +84,8 @@ class ConfigureCommand extends BaseCommand
      */
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName(self::NAME)
             ->setDescription("Create or update the application configuration file.")
@@ -86,6 +97,12 @@ option. If executed with the `-n` flag, will save the option values provided
 to the command, or the default values if none provided.
 HELP
             );
+
+        $this->addArgument(
+            self::ARG_CONFIG_FILE,
+            InputArgument::OPTIONAL,
+            'The configuration file to manage.'
+        );
     }
 
     /**
@@ -97,71 +114,100 @@ HELP
             return $parentExitCode;
         }
 
-        $options = $this->getConfigOptions();
+        $style = new SymfonyStyle($input, $output);
+
         $data = [];
-        $file = $this->configFileResolver->getUserFilePath();
 
-        if (file_exists($file)) {
-            $this->output->writeln(sprintf(
-                '<info>Your current configuration file (%s) has the following content:</info>',
-                $file
-            ));
+        $configFileArgument = $this->input->getArgument(self::ARG_CONFIG_FILE);
 
-            $this->output->writeln(file_get_contents($file));
-        }
+        if ($this->input->isInteractive() ) {
+            $style->note('MageDBM2 uses a number of files to manage its configuration, merging them together in a specific order to support managing multiple projects on a single machine. Consult the documentation for details.');
 
-        $this->output->writeln('<info>Please provide your new values for the following options:</info>');
-
-        /** @var QuestionHelper $question_helper */
-        $question_helper = $this->getHelper("question");
-
-        foreach ($options as $option) {
-            $name = $option->getName();
-            $value = $this->config->get($name, true);
-
-            if ($input->isInteractive()) {
-                $value = $question_helper->ask(
-                    $input,
-                    $output,
-                    new Question(sprintf("%s: ", $option->getDescription()))
-                );
+            if ($configFileArgument === null) {
+                $configurationFile = $style->askQuestion(new ChoiceQuestion(
+                    'Which of these configuration files would you like to edit?',
+                    [
+                        $this->configFileResolver->getUserFilePath(),
+                        $this->configFileResolver->getProjectFilePath()
+                    ]
+                ));
+            } else {
+                $configurationFile = $configFileArgument;
+            }
+        } else {
+            if ($configFileArgument === null) {
+                throw new \InvalidArgumentException("When in non-interactive mode, a configuration file must be provided.");
             }
 
-            $data[$name] = $value;
+            $configurationFile = $configFileArgument;
+        }
+
+        if (file_exists($configurationFile)) {
+            $fileContents = file_get_contents($configurationFile);
+
+            $style->text(sprintf(
+                '%s currently looks like this:',
+                $configurationFile
+            ));
+
+            $style->block($fileContents);
+        }
+
+        $style->text('<info>Please provide your new values for the following options:</info>');
+
+        foreach (Option::allowUserToPersist() as $optionName) {
+            $currentValue = $this->config->get($optionName, true);
+
+            if ($input->isInteractive()) {
+                if ($currentValue) {
+                    $question = new Question(sprintf('%s (currently: %s): ', $optionName, $currentValue));
+                } else {
+                    $question = new Question(sprintf('%s: ', $optionName));
+                }
+
+                $question->setValidator(function ($value) {
+                    return $value;
+                });
+
+                $value = $style->askQuestion($question) ?: null;
+            } else {
+                $value = $this->input->getOption($optionName);
+            }
+
+            if ($value !== null) {
+                $data[$optionName] = $value;
+            }
+        }
+
+        $style->table(
+            ['Name', 'Value'],
+            array_map(function ($k, $v) {
+                return [new TableCell($k), new TableCell($v)];
+            }, array_keys($data), array_values($data))
+        );
+
+        if ($this->input->isInteractive()) {
+            if (!$style->confirm(sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile), false)) {
+                return 0;
+            }
         }
 
         $yaml = $this->yaml->dump($data);
 
-        if ($this->filesystem->write($file, $yaml)) {
+        if ($this->filesystem->write($configurationFile, $yaml)) {
             $output->writeln(sprintf(
                 "<info>Configuration saved in %s.</info>",
-                $file
+                $configurationFile
             ));
 
             return static::RETURN_CODE_SUCCESS;
         } else {
             $output->writeln(sprintf(
                 "<error>Failed to save configuration in %s!</error>",
-                $file
+                $configurationFile
             ));
 
             return static::RETURN_CODE_SAVE_ERROR;
         }
-    }
-
-    /**
-     * Get the options available for configuration.
-     *
-     * @return InputOption[]
-     */
-    protected function getConfigOptions()
-    {
-        if ($app = $this->getApplication()) {
-            return array_filter($app->getDefinition()->getOptions(), function (InputOption $option) {
-                return !in_array($option->getName(), $this->excluded_options);
-            });
-        }
-
-        return [];
     }
 }

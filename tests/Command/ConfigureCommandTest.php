@@ -48,11 +48,25 @@ class ConfigureCommandTest extends AbstractCommandTest
             ->method("write")
             ->with(
                 $this->equalTo($this->configPath),
-                $this->equalTo("test-option: test-option-value\nother-option: other-option-value\n")
+                $this->equalTo("db-host: 127.0.0.1\ndb-port: '3333'\n")
             );
 
         $tester = $this->getCommandTester($filesystem);
-        $tester->execute([], ["interactive" => true]);
+        $tester->setInputs([
+            0, // File selection,
+            '127.0.0.1',
+            '',
+            '',
+            '',
+            '3333',
+            '',
+            '',
+            '',
+            '',
+            'yes' // Confirm write
+        ]);
+
+        $tester->execute([''], ["interactive" => true]);
     }
 
     /**
@@ -68,11 +82,15 @@ class ConfigureCommandTest extends AbstractCommandTest
             ->method("write")
             ->with(
                 $this->equalTo($this->configPath),
-                $this->equalTo("test-option: default-test-option-value\nother-option: null\n")
+                $this->equalTo("db-host: 127.0.0.1\ndb-port: '3333'\n")
             );
 
         $tester = $this->getCommandTester($filesystem);
-        $tester->execute([], ["interactive" => false]);
+        $tester->execute([
+            'config-file' => $this->configPath,
+            '--db-host' => '127.0.0.1',
+            '--db-port' => '3333'
+        ], ["interactive" => false]);
     }
 
     /**

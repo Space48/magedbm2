@@ -97,6 +97,8 @@ class ExportCommand extends BaseCommand
 
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName(self::NAME)
             ->setDescription('Create an anonymised data export of sensitive tables');

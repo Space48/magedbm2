@@ -11,33 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class S3Test extends TestCase
 {
-
-    /**
-     * Test that the service sets the required options on the application.
-     *
-     * @test
-     */
-    public function testConsoleOptions()
-    {
-        $app = new Application();
-
-        $service = new S3($app, $this->getConfigMock());
-
-        $options = [
-            "access-key",
-            "secret-key",
-            "region",
-            "bucket",
-        ];
-
-        foreach ($options as $option) {
-            $this->assertTrue(
-                $app->getDefinition()->hasOption($option),
-                sprintf("Expected application option '%s' not found.", $option)
-            );
-        }
-    }
-
     /**
      * Test that project names are extracted from available objects.
      *
@@ -68,7 +41,7 @@ class S3Test extends TestCase
                 ["Key" => "test-project-bar/backup-file-1.sql.gz"],
             ]);
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $this->assertEquals(
             [
@@ -119,7 +92,7 @@ class S3Test extends TestCase
                 ],
             ]);
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $file1 = new File();
         $file1->name = "backup-file-1.sql.gz";
@@ -184,7 +157,7 @@ class S3Test extends TestCase
                 ],
             ]);
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $this->assertEquals(
             "backup-file-2.sql.gz",
@@ -231,7 +204,7 @@ class S3Test extends TestCase
                 "ObjectURL" => $expected_result
             ]);
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $this->assertEquals(
             $expected_result,
@@ -276,7 +249,7 @@ class S3Test extends TestCase
                 "SaveAs" => $result,
             ]));
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $this->assertEquals(
             $result,
@@ -316,7 +289,7 @@ class S3Test extends TestCase
                 "Key"    => sprintf("%s/%s", $project, $filename),
             ]));
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $service->delete($project, $filename);
     }
@@ -394,7 +367,7 @@ class S3Test extends TestCase
             ->method("deleteObjects")
             ->with($this->equalTo($expected_query));
 
-        $service = new S3($app, $config, $client);
+        $service = new S3($config, $client);
 
         $service->clean($project, $keep);
     }

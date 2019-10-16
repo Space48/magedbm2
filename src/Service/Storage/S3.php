@@ -20,9 +20,6 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class S3 implements StorageInterface, LoggerAwareInterface
 {
-    /** @var Application */
-    protected $app;
-
     /** @var ConfigInterface */
     protected $config;
 
@@ -48,17 +45,14 @@ class S3 implements StorageInterface, LoggerAwareInterface
      */
     private $logger;
 
-    public function __construct(Application $app, ConfigInterface $config, S3Client $client = null)
+    public function __construct(ConfigInterface $config, S3Client $client = null)
     {
-        $this->app = $app;
         $this->config = $config;
         $this->logger = new NullLogger();
 
         if ($client) {
             $this->client = $client;
         }
-
-        $this->addInputOptions($app);
     }
 
     /**
@@ -269,12 +263,12 @@ class S3 implements StorageInterface, LoggerAwareInterface
         if (!$this->client instanceof S3Client) {
             $params = $this->default_params;
 
-            if ($region = $this->getConfig()->get("region")) {
-                $params["region"] = $region;
+            if ($region = $this->getConfig()->get(Option::STORAGE_REGION)) {
+                $params['region'] = $region;
             }
 
-            if (($access_key = $this->getConfig()->get("access-key"))
-                && ($secret_key = $this->getConfig()->get("secret-key"))
+            if (($access_key = $this->getConfig()->get(Option::STORAGE_ACCESS_KEY))
+                && ($secret_key = $this->getConfig()->get(Option::STORAGE_SECRET_KEY))
             ) {
                 $params["credentials"] = [
                     "key"    => $access_key,
@@ -302,63 +296,15 @@ class S3 implements StorageInterface, LoggerAwareInterface
     }
 
     /**
-     * Add service input options to the application.
-     *
-     * @param Application $app
-     *
-     * @return void
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
-     */
-    protected function addInputOptions(Application $app)
-    {
-        $definition = $app->getDefinition();
-
-        $definition->addOption(new InputOption(
-            "access-key",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 Access Key ID"
-        ));
-
-        $definition->addOption(new InputOption(
-            "secret-key",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 Secret Access Key"
-        ));
-
-        $definition->addOption(new InputOption(
-            "region",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 region"
-        ));
-
-        $definition->addOption(new InputOption(
-            "bucket",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 bucket for stripped databases"
-        ));
-
-        $definition->addOption(new InputOption(
-            "data-bucket",
-            null,
-            InputOption::VALUE_REQUIRED,
-            "S3 bucket for anonymised data exports"
-        ));
-    }
-
-    /**
      * @inheritdoc
      */
     public function validateConfiguration(): bool
     {
-        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->getConfig()->get('bucket')) {
+        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE && !$this->getConfig()->get(Option::STORAGE_BUCKET)) {
             throw new ConfigurationException('A bucket needs to be defined');
         }
 
-        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->getConfig()->get('data-bucket')) {
+        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA && !$this->getConfig()->get(Option::STORAGE_DATA_BUCKET)) {
             throw new ConfigurationException('A data bucket needs to be defined');
         }
 
@@ -379,10 +325,10 @@ class S3 implements StorageInterface, LoggerAwareInterface
     private function getBucket()
     {
         if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
-            return $this->getConfig()->get('data-bucket');
+            return $this->getConfig()->get(Option::STORAGE_DATA_BUCKET);
         }
 
-        return $this->getConfig()->get('bucket');
+        return $this->getConfig()->get(Option::STORAGE_BUCKET);
     }
 
     /**
