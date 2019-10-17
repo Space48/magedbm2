@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- New command `view-config` to dump the current YAML configuration to stdout.
+
 ### Changed
 
 - The `configure` command now presents the user will files to edit and a preview of the changes before writing to file.
