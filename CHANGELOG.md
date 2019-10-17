@@ -9,9 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - New command `view-config` to dump the current YAML configuration to stdout.
+- Added `platform_shopware` and `platform_magento_one` table groups because we're using this for more than just Magento 2.x!
 
 ### Changed
 
+- **BREAKING**: Renamed `tmp_dir` configuration option to `tmp-dir`.
 - The `configure` command now presents the user will files to edit and a preview of the changes before writing to file.
 
 ### Fixed

@@ -79,6 +79,57 @@ table-groups:
     description: Tables with _idx suffix
     tables: "*_idx"
 
+  - id: platform_shopware
+    description: Shopware tables
+    tables: >
+      s_user*
+      s_order*
+      s_core_log
+      s_statistics*
+      s_search*
+      b2b_accepted_order_clearances
+      b2b_acl*
+      b2b_audit*
+      b2b_budget*
+      b2b_contact_contingent_group
+      b2b_contingent*
+      b2b_debtor_contact
+      b2b_offer
+      b2b_order*
+      b2b_role*
+      b2b_s_order_change_queue
+      b2b_sales_representative_clients b2b_sales_representative_orders
+      b2b_store_front_auth
+      swag_payment*
+      s_core_customergroups*
+      s_core_customerpricegroups
+      s_core_payment*
+      jett_mailchimp*
+      s_campaigns*
+
+  - id: platform_magento_one
+    description: Magento 1.x tables
+    tables: >
+      admin*
+      customer_address* customer_entity* wishlist* customer_discount_rule
+      sales_order_aggregated* sales_order_tax* sales_flat* sales_recurring_* sales_refunded_* sales_payment_* enterprise_sales_* enterprise_customer_sales_* sales_bestsellers_* salesrule_coupon_usage salesrule_customer
+      log_url log_url_info log_visitor log_visitor_info log_visitor_online log_customer log_quote report_event report_compared_product_index report_viewed_*
+      dataflow_batch dataflow_batch_export dataflow_batch_import dataflow_import_data dataflow_session
+      importexport_importdata
+      core_session
+      catalogsearch_*
+      newsletter_problem newsletter_queue* newsletter_subscriber*
+      core_email_queue*
+      cron_schedule
+      customer_flowpassword
+      index_event
+      intraship_*
+      mailchimp_*
+      sales_shipping_*
+      tax_order_aggregated_*
+      ves_pdfpro_apikey
+      z_livewatch
+
 anonymizer:
   tables:
     - name: admin_user

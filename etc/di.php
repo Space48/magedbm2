@@ -84,6 +84,12 @@ return [
             );
         }
 
+        if (!$config->get(\Meanbee\Magedbm2\Application\Config\Option::TEMPORARY_DIR, true)) {
+            $config->merge(new \Meanbee\Magedbm2\Application\Config([
+                \Meanbee\Magedbm2\Application\Config\Option::TEMPORARY_DIR => sys_get_temp_dir()
+            ]));
+        }
+
         return $config;
     },
 ];

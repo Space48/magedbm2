@@ -97,4 +97,14 @@ class ConfigTest extends TestCase
         $this->assertCount(10, $config_1->get('deep_nesting.level_1.level_2.level_3'));
         $this->assertCount(5, $config_1->get('deep_nesting.level_1.level_2a'));
     }
+
+    public function testOverrideInitialisedValue()
+    {
+        $initialConfig = new Config();
+        $initialConfig->merge(new Config([
+            'tmp-dir' => '/not/tmp'
+        ]));
+
+        $this->assertEquals('/not/tmp', $initialConfig->get('tmp-dir'));
+    }
 }
