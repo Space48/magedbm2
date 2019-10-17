@@ -54,22 +54,12 @@ return [
         return $resolver->getDistFilePath();
     },
 
-    'config_file.global' => function (\Meanbee\Magedbm2\Application\ConfigFileResolver $resolver) {
-        return $resolver->getUserFilePath();
-    },
-
-    'config_file.project' => function (\Meanbee\Magedbm2\Application\ConfigFileResolver $resolver) {
-        return $resolver->getProjectFilePath();
-    },
-
     'config' => function (\DI\Container $c) {
         /** @var \Psr\Log\LoggerInterface $logger */
         $logger = $c->get('logger');
 
         $files = [
-            $c->get('config_file.dist'),
-            $c->get('config_file.global'),
-            $c->get('config_file.project'),
+            $c->get('config_file.dist')
         ];
 
         $config = new \Meanbee\Magedbm2\Application\Config();

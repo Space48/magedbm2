@@ -2,7 +2,11 @@
 
 namespace Meanbee\Magedbm2\Command;
 
+use DI\Container;
+use Meanbee\Magedbm2\Application\Config\Option;
+use Meanbee\Magedbm2\Application\ConfigFileResolver;
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Application\ConfigLoader\FileLoader;
 use Meanbee\Magedbm2\Application\ConfigLoader\InputLoader;
 use Meanbee\Magedbm2\Service\ConfigurableServiceInterface;
 use Meanbee\Magedbm2\Exception\ConfigurationException;
@@ -11,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command implements LoggerAwareInterface
@@ -41,16 +46,23 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
     protected $config;
 
     /**
+     * @var ConfigFileResolver
+     */
+    private $configFileResolver;
+
+    /**
      * @param ConfigInterface $config
      * @param $name
-     * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(ConfigInterface $config, $name)
     {
-        parent::__construct($name);
-
         $this->logger = new NullLogger();
         $this->config = $config;
+
+        // Note: we can't use the container to get this as it's not been applied to the object yet.
+        $this->configFileResolver = new ConfigFileResolver();
+
+        parent::__construct($name);
     }
 
     /**
@@ -64,6 +76,12 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
         $this->input = $input;
         $this->output = $output;
 
+        /*
+         * Load our configuration values in order such that it can come gradually more specific. The parsing of $ARGV
+         * has been done by this point, so we can safely read from $input for overrides.
+         */
+        $this->loadGlobalConfig($input);
+        $this->loadProjectConfig($input);
         $this->loadAdditionalConfig();
 
         $serviceExceptions = $this->validateServices();
@@ -81,6 +99,107 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
         }
 
         return self::RETURN_CODE_SUCCESS;
+    }
+
+    /**
+     * Define our global options that can be used by any subcommand.
+     */
+    protected function configure()
+    {
+        $this->getDefinition()
+            ->addOptions([
+                new InputOption(
+                    Option::PROJECT_CONFIG_FILE,
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+
+                    // Note: Don't use the default parameter for the fall back file location as we want to distinguish
+                    //       between a user defined override and the actual default.
+                    sprintf(
+                        "Project configuration file to use (will search for .magedbm2.yml in your current working directory if not specified, currently: %s)",
+                        $this->configFileResolver->getProjectFilePath()
+                    )
+                ),
+                new InputOption(
+                    Option::GLOBAL_CONFIG_FILE,
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+
+                    // Note: Don't use the default parameter for the fall back file location as we want to distinguish
+                    //       between a user defined override and the actual default.
+                    sprintf(
+                        "User configuration file to use (will search for ~/.magedbm2/config.yml if not specified, currently: %s)",
+                        $this->configFileResolver->getUserFilePath()
+                    )
+                ),
+                new InputOption(
+                    Option::DB_HOST,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Database host'
+                ),
+                new InputOption(
+                    Option::DB_PORT,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Database port',
+                    3306
+                ),
+                new InputOption(
+                    Option::DB_USER,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Database username'
+                ),
+                new InputOption(
+                    Option::DB_PASS,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Database password'
+                ),
+                new InputOption(
+                    Option::DB_NAME,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Database name'
+                ),
+                new InputOption(
+                    Option::ROOT_DIR,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    "Magento 2 root directory"
+                ),
+                new InputOption(
+                    Option::STORAGE_ACCESS_KEY,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    "S3 Access Key ID"
+                ),
+                new InputOption(
+                    Option::STORAGE_SECRET_KEY,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    "S3 Secret Access Key"
+                ),
+                new InputOption(
+                    Option::STORAGE_REGION,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    "S3 region"
+                ),
+                new InputOption(
+                    Option::STORAGE_BUCKET,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    "S3 bucket for stripped databases"
+                ),
+                new InputOption(
+                    Option::STORAGE_DATA_BUCKET,
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    "S3 bucket for anonymised data exports"
+                )
+            ]);
     }
 
     /**
@@ -145,5 +264,65 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
     {
         $this->logger->info('Loading config from input');
         $this->config->merge((new InputLoader($this->input))->asConfig());
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return void
+     * @throws ConfigurationException
+     */
+    private function loadProjectConfig(InputInterface $input)
+    {
+        return $this->tryConfigLoadFromFiles(
+            $input->getOption(Option::PROJECT_CONFIG_FILE),
+            $this->configFileResolver->getProjectFilePath()
+        );
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return void
+     * @throws ConfigurationException
+     */
+    private function loadGlobalConfig(InputInterface $input)
+    {
+        return $this->tryConfigLoadFromFiles(
+            $input->getOption(Option::GLOBAL_CONFIG_FILE),
+            $this->configFileResolver->getUserFilePath()
+        );
+    }
+
+    /**
+     * Try to load and merge a configuration file. If the ARGV version is defined then load than, errorring if it can't.
+     * Otherwise, fallback to the regular file.
+     *
+     * @param $argvFileName
+     * @param $fallbackFileName
+     * @throws ConfigurationException
+     */
+    private function tryConfigLoadFromFiles($argvFileName, $fallbackFileName)
+    {
+        if ($argvFileName !== null) {
+            if (!file_exists($argvFileName)) {
+                throw new \InvalidArgumentException(
+                    sprintf('The config file at %s doesn\'t exist', $argvFileName)
+                );
+            }
+
+            if (!is_readable($argvFileName)) {
+                throw new \InvalidArgumentException(
+                    sprintf('The config file at %s cannot be read', $argvFileName)
+                );
+            }
+
+            $this->config->merge((new FileLoader($argvFileName))->asConfig());
+        } else {
+            if (file_exists($fallbackFileName) && is_readable($fallbackFileName)) {
+                $this->getLogger()->info(sprintf('Loading config from %s', $fallbackFileName));
+                $this->config->merge((new FileLoader($fallbackFileName))->asConfig());
+            } else {
+                $this->getLogger()->info(sprintf('Did not load config from %s - did not exist', $fallbackFileName));
+            }
+        }
     }
 }

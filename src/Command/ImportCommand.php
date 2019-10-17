@@ -83,6 +83,8 @@ class ImportCommand extends BaseCommand
 
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName(self::NAME)
             ->setDescription('Import a magedbm2-generated anonymised data export.');

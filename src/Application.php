@@ -64,8 +64,6 @@ class Application extends \Symfony\Component\Console\Application
 
         $this->container = $builder->build();
         $this->container->set(Application::class, $this);
-
-        $this->configureGlobalOptions();
     }
 
     /**
@@ -100,12 +98,11 @@ class Application extends \Symfony\Component\Console\Application
         $this->container->set('logger', new ConsoleLogger($output));
 
         $this->config = $this->container->get('config');
-
-        $this->loadProjectConfig($input);
         $this->initCommands();
 
         return parent::doRun($input, $output);
     }
+
     /**
      * Initialise the available commands.
      *
@@ -118,101 +115,6 @@ class Application extends \Symfony\Component\Console\Application
 
         foreach ($commands as $command) {
             $this->add($command);
-        }
-    }
-
-    private function configureGlobalOptions()
-    {
-        $definition = $this->getDefinition();
-
-        $definition
-            ->addOption(new InputOption(
-                Option::GLOBAL_CONFIG_FILE,
-                null,
-                InputOption::VALUE_REQUIRED,
-                "Global configuration file to use",
-                $this->container->get('config_file.global')
-            ));
-
-        $definition
-            ->addOption(new InputOption(
-                Option::PROJECT_CONFIG_FILE,
-                null,
-                InputOption::VALUE_OPTIONAL,
-                "Project configuration file to use (will search for .magedbm2.yml in your current working directory " .
-                "if not specified)"
-            ));
-
-        $definition
-            ->addOption(new InputOption(
-                Option::DB_HOST,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Database host'
-            ));
-
-        $definition
-            ->addOption(new InputOption(
-                Option::DB_PORT,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Database port',
-                3306
-            ));
-
-        $definition
-            ->addOption(new InputOption(
-                Option::DB_USER,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Database username'
-            ));
-
-        $definition
-            ->addOption(new InputOption(
-                Option::DB_PASS,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Database password'
-            ));
-
-        $definition
-            ->addOption(new InputOption(
-                Option::DB_NAME,
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Database name'
-            ));
-
-
-        $definition->addOption(new InputOption(
-            Option::ROOT_DIR,
-            null,
-            InputOption::VALUE_REQUIRED,
-            "Magento 2 root directory"
-        ));
-    }
-
-    /**
-     * @param InputInterface $input
-     * @throws Exception\ConfigurationException
-     */
-    private function loadProjectConfig(InputInterface $input)
-    {
-        $canError = false;
-        $file = $this->container->get('config_file.project');
-
-        if ($input->hasOption(Option::PROJECT_CONFIG_FILE)) {
-            $canError = true;
-            $file = $input->getOption(Option::PROJECT_CONFIG_FILE);
-        }
-
-        if (file_exists($file) && is_readable($file)) {
-            $this->config->merge((new FileLoader($file))->asConfig());
-        } elseif ($canError) {
-            throw new \InvalidArgumentException(
-                sprintf('The project config file at %s could not be read', $file)
-            );
         }
     }
 }

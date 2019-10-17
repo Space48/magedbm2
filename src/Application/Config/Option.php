@@ -26,26 +26,18 @@ final class Option
     const CLEAN_COUNT = 'clean';
     const NO_CLEAN = 'no-clean';
 
-    /**
-     * Get the options that are allowed to be defined in the global configuration file.
-     *
-     * @return array
-     */
-    public static function getAllowedGlobalConfig(): array
-    {
-        return [
-            self::TABLE_GROUPS,
-            self::TEMPORARY_DIR,
-            self::CLEAN_COUNT,
-        ];
-    }
+    const STORAGE_SECRET_KEY = 'secret-key';
+    const STORAGE_DATA_BUCKET = 'data-bucket';
+    const STORAGE_BUCKET = 'bucket';
+    const STORAGE_REGION = 'region';
+    const STORAGE_ACCESS_KEY = 'access-key';
 
     /**
-     * Get the options that are allowed to be defined in the project configuration file.
+     * Options that a user is allowed to save in a configuration file.
      *
      * @return array
      */
-    public static function getAllowedProjectConfig(): array
+    public static function allowUserToPersist()
     {
         return [
             self::DB_HOST,
@@ -54,11 +46,10 @@ final class Option
             self::DB_PASS,
             self::DB_PORT,
 
-            self::TABLE_GROUPS,
-
-            self::TEMPORARY_DIR,
-            self::STRIP,
-            self::CLEAN_COUNT
+            self::STORAGE_ACCESS_KEY,
+            self::STORAGE_SECRET_KEY,
+            self::STORAGE_BUCKET,
+            self::STORAGE_REGION
         ];
     }
 

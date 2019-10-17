@@ -3,6 +3,7 @@
 namespace Meanbee\Magedbm2\Command;
 
 use Meanbee\Magedbm2\Application\ConfigInterface;
+use Meanbee\Magedbm2\Exception\ConfigurationException;
 use Meanbee\Magedbm2\Exception\ServiceException;
 use Meanbee\Magedbm2\Service\Storage\Data\File;
 use Meanbee\Magedbm2\Service\StorageFactory;
@@ -73,10 +74,14 @@ class LsCommand extends BaseCommand
             $this->output->writeln('');
         }
 
-        if ($this->dataStorage->validateConfiguration()) {
-            $this->output->writeln("Storage: Data Exports");
-            $this->output->writeln("========================================");
-            $this->renderStorage($this->dataStorage, $input, $output);
+        try {
+            if ($this->dataStorage->validateConfiguration()) {
+                $this->output->writeln("Storage: Data Exports");
+                $this->output->writeln("========================================");
+                $this->renderStorage($this->dataStorage, $input, $output);
+            }
+        } catch (ConfigurationException $configurationException) {
+            $this->output->writeln('Not rendering data exports due to: ' . $configurationException->getMessage());
         }
 
         return static::RETURN_CODE_SUCCESS;

@@ -62,6 +62,8 @@ class GetCommand extends BaseCommand
      */
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName(self::NAME)
             ->setDescription("Download and import a database backup.")
