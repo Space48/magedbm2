@@ -79,6 +79,34 @@ table-groups:
     description: Tables with _idx suffix
     tables: "*_idx"
 
+  - id: platform_shopware
+    description: Shopware tables
+    tables: >
+      s_user*
+      s_order*
+      s_core_log
+      s_statistics*
+      s_search*
+      b2b_accepted_order_clearances
+      b2b_acl*
+      b2b_audit*
+      b2b_budget*
+      b2b_contact_contingent_group
+      b2b_contingent*
+      b2b_debtor_contact
+      b2b_offer
+      b2b_order*
+      b2b_role*
+      b2b_s_order_change_queue
+      b2b_sales_representative_clients b2b_sales_representative_orders
+      b2b_store_front_auth
+      swag_payment*
+      s_core_customergroups*
+      s_core_customerpricegroups
+      s_core_payment*
+      jett_mailchimp*
+      s_campaigns*
+
 anonymizer:
   tables:
     - name: admin_user
