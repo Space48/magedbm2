@@ -107,6 +107,29 @@ table-groups:
       jett_mailchimp*
       s_campaigns*
 
+  - id: platform_magento_one
+    description: Magento 1.x tables
+    tables: >
+      admin*
+      customer_address* customer_entity* wishlist* customer_discount_rule
+      sales_order_aggregated* sales_order_tax* sales_flat* sales_recurring_* sales_refunded_* sales_payment_* enterprise_sales_* enterprise_customer_sales_* sales_bestsellers_* salesrule_coupon_usage salesrule_customer
+      log_url log_url_info log_visitor log_visitor_info log_visitor_online log_customer log_quote report_event report_compared_product_index report_viewed_*
+      dataflow_batch dataflow_batch_export dataflow_batch_import dataflow_import_data dataflow_session
+      importexport_importdata
+      core_session
+      catalogsearch_*
+      newsletter_problem newsletter_queue* newsletter_subscriber*
+      core_email_queue*
+      cron_schedule
+      customer_flowpassword
+      index_event
+      intraship_*
+      mailchimp_*
+      sales_shipping_*
+      tax_order_aggregated_*
+      ves_pdfpro_apikey
+      z_livewatch
+
 anonymizer:
   tables:
     - name: admin_user
