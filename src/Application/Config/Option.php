@@ -16,8 +16,8 @@ final class Option
     const DB_PORT = 'db-port';
 
     const TABLE_GROUPS = 'table-groups';
-
-    const TEMPORARY_DIR = 'tmp_dir';
+    
+    const TEMPORARY_DIR = 'tmp-dir';
 
     const FORCE = 'force';
     const DOWNLOAD_ONLY = 'download-only';
