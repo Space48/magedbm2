@@ -1,8 +1,8 @@
 table-groups:
-  # Source: https://github.com/netz98/n98-magerun2/blob/f16429d5c86fcbcb2a686e92ebc89d0125f06da0/config.yaml
+  # Source: https://github.com/netz98/n98-magerun2/blob/3260cab7770e80b8db66c996d50d60b7ef76774c/config.yaml
   - id: admin
-    description: Admin User tables
-    tables: admin*
+    description: Admin tables
+    tables: admin* magento_logging_event magento_logging_event_changes
 
   - id: log
     description: Log tables
@@ -10,11 +10,11 @@ table-groups:
 
   - id: sessions
     description: Database session tables
-    tables: core_session
+    tables: session persistent_session
 
   - id: stripped
-    description: Standard definition for a stripped dump (logs, sessions)
-    tables: '@log @sessions'
+    description: Standard definition for a stripped dump (logs, sessions, dotmailer)
+    tables: "@log @sessions @dotmailer @newrelic_reporting"
 
   - id: sales
     description: Sales data (orders, invoices, creditmemos etc)
@@ -38,10 +38,13 @@ table-groups:
       sales_creditmemo
         sales_creditmemo_*
       sales_recurring_* sales_refunded_* sales_payment_*
-      enterprise_sales_* enterprise_customer_sales_* sales_bestsellers_*
+      enterprise_sales_* enterprise_customer_sales_* sales_bestsellers_* magento_customercustomattributes_sales_flat_*
       paypal_billing_agreement*
       paypal_payment_transaction
       paypal_settlement_report*
+      magento_rma magento_rma_grid magento_rma_status_history magento_rma_shipping_label magento_rma_item_entity
+      magento_sales_order_grid_archive magento_sales_creditmemo_grid_archive magento_sales_invoice_grid_archive magento_sales_shipment_grid_archive
+
   - id: quotes
     description: Cart (quote) data
     tables: quote quote_*
@@ -50,22 +53,31 @@ table-groups:
     description: Customer data - Should not be used without @sales
     tables: >
       customer_address*
-      customer_entity*
+      customer_entity
+        customer_entity_*
       customer_grid_flat
       customer_log
       customer_visitor
       newsletter_subscriber
       product_alert*
-      vault_payment_token*
-      wishlist*
+      vault_payment_token
+        vault_payment_token_*
+      wishlist
+        wishlist_*
+      company
+        company_*
+      magento_giftcardaccount
+      magento_customerbalance magento_customerbalance_history
+      magento_customersegment_customer
+      magento_reward magento_reward_history
 
   - id: trade
     description: Current trade data (customers and orders). You usally do not want those in developer systems.
-    tables: '@customers @sales @quotes'
+    tables: "@customers @sales @quotes"
 
   - id: development
     description: Removes logs and trade data so developers do not have to work with real customer data
-    tables: '@admin @trade @stripped @search'
+    tables: "@admin @trade @stripped @search @2fa @aggregated"
 
   - id: ee_changelog
     description: Changelog tables of new indexer since EE 1.13
@@ -73,11 +85,42 @@ table-groups:
 
   - id: search
     description: Search related tables
-    tables: "catalogsearch_*"
+    tables: >
+      catalogsearch_*
+      search_query
+      search_synonyms
 
   - id: idx
     description: Tables with _idx suffix
     tables: "*_idx"
+
+  - id: dotmailer
+    description: Dotmailer tables
+    tables: email_abandoned_cart email_automation email_campaign email_contact
+
+  - id: 2fa
+    description: Two Factor Auth tables
+    tables: >
+      msp_tfa_user_config
+      msp_tfa_trusted
+  - id: newrelic_reporting
+    description: New Relic reporting tables
+    tables: "reporting_*"
+
+  - id: aggregated
+    description: Aggregated tables
+    tables: >
+      *_aggregated
+      *_aggregated_updated
+      *_aggregated_created
+      *_aggregated_daily
+      *_aggregated_monthly
+      *_aggregated_yearly
+      *_aggregated_order
+
+  - id: replica
+    description: Replica tables
+    tables: "*_replica"
 
   - id: platform_shopware
     description: Shopware tables

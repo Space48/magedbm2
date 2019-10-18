@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **BREAKING**: Renamed `tmp_dir` configuration option to `tmp-dir`.
 - The `configure` command now presents the user will files to edit and a preview of the changes before writing to file.
+- Updated table groups from [netz98/n98-magerun2](https://github.com/netz98/n98-magerun2/blob/3260cab7770e80b8db66c996d50d60b7ef76774c/config.yaml) for Magento 2.x.
 
 ### Fixed
 
