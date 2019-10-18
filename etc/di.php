@@ -12,7 +12,8 @@ return [
         'Meanbee\Magedbm2\Command\PutCommand',
         'Meanbee\Magedbm2\Command\RmCommand',
         'Meanbee\Magedbm2\Command\ExportCommand',
-        'Meanbee\Magedbm2\Command\ImportCommand'
+        'Meanbee\Magedbm2\Command\ImportCommand',
+        'Meanbee\Magedbm2\Command\ViewConfigurationCommand',
     ],
 
     'command_instances' => function (\DI\Container $c) {
