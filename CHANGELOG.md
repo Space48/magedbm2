@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - **BREAKING**: Renamed `tmp_dir` configuration option to `tmp-dir`.
+- **BREAKING**: All MySQL interactions now use `utf-8` as the default charset, potentially making backups created with an older versions unimportable. Use `--download-only` and import manually if you run into this or update on your server and `put` a new database backup.
 - The `configure` command now presents the user will files to edit and a preview of the changes before writing to file.
 
 ### Fixed
