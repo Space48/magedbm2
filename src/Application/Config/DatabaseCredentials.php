@@ -90,7 +90,7 @@ class DatabaseCredentials
     {
         return new \PDO(
             sprintf(
-                'mysql:dbname=%s;host=%s;port=%s',
+                'mysql:dbname=%s;host=%s;port=%s;charset=utf8',
                 $this->getName(),
                 $this->getHost(),
                 $this->getPort()
