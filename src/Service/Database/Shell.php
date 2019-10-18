@@ -69,7 +69,7 @@ class Shell implements DatabaseInterface
      */
     public function import($file)
     {
-        $process = (new Pipe())
+        $command = (new Pipe())
             ->command(
                 (new Gunzip())
                     ->argument('-c')
@@ -77,8 +77,12 @@ class Shell implements DatabaseInterface
             )->command(
                 (new Mysql())
                     ->arguments($this->getCredentialOptions())
+                    ->argument('--default-character-set=utf8')
                     ->argument($this->config->getDatabaseCredentials()->getName())
-            )->toProcess();
+            );
+        $process = $command->toProcess();
+
+        $this->logger->debug($command->toString());
 
         $process->start();
 
@@ -119,6 +123,7 @@ class Shell implements DatabaseInterface
             $commands[] = $this->createDumpProcess()
                 ->argument('--no-data')
                 ->argument('--add-drop-table')
+                ->argument('--default-character-set=utf8')
                 ->argument($databaseName)
                 ->argument($strip_tables)
                 ->output($structureOutputFile);
@@ -134,6 +139,7 @@ class Shell implements DatabaseInterface
         $commands[] = $this->createDumpProcess()
             ->arguments($dataDumpOptions)
             ->argument('--add-drop-table')
+            ->argument('--default-character-set=utf8')
             ->argument($databaseName)
             ->output($dataOutputFile);
 
