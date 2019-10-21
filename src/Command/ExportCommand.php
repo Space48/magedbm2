@@ -126,7 +126,7 @@ class ExportCommand extends BaseCommand
 
         foreach ($map as $key => $value) {
             if ($value) {
-                $args[] = sprintf('--%s=%s', $key, $value);
+                $args[] = sprintf('--%s=%s', $key, escapeshellarg($value));
             }
         }
 
@@ -164,9 +164,9 @@ class ExportCommand extends BaseCommand
         $command = (new Mysqldump())
             ->arguments($this->getCredentialOptions())
             ->argument('--xml')
-            ->argument($this->config->getDatabaseCredentials()->getName())
-            ->arguments($tables)
-            ->output($exportFile);
+            ->argument(escapeshellarg($this->config->getDatabaseCredentials()->getName()))
+            ->arguments(array_map('escapeshellarg', $tables))
+            ->output(escapeshellarg($exportFile));
 
         $this->getLogger()->debug($command->toString());
 
@@ -204,8 +204,8 @@ class ExportCommand extends BaseCommand
             ->argument('-9')
             ->argument('--force')
             ->argument('--to-stdout')
-            ->argument($inputFile)
-            ->output($outputFile);
+            ->argument(escapeshellarg($inputFile))
+            ->output(escapeshellarg($outputFile));
 
         $gzipProcess = $gzip->toProcess();
 
