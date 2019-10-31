@@ -103,19 +103,19 @@ The `rm` command allows you to delete specific backup files from S3.
 
     magedbm2 export <project>
 
-The `export` command allows you generate an anonymised export of your database, based on your anonymisation rules.
+Requires version >= 2.0.0. The `export` command allows you generate an anonymised export of your database, based on your anonymisation rules.
 
 ### Importing sensitive data
 
     magedbm2 import [--no-progress] [--download-only] <project> [<file>]
 
-The `import` command allows you to import an anonymised export of your database.
+Requires version >= 2.0.0. The `import` command allows you to import an anonymised export of your database.
 
 ### Viewing Configuration
 
     magedbm2 view-config
     
-The `view-config` command will show you the result of the merged configuration files for debugging.
+Requires version > 2.0.2. The `view-config` command will show you the result of the merged configuration files for debugging.
 
 # Contributing
 
