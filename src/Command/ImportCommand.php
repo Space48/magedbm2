@@ -387,8 +387,8 @@ class ImportCommand extends BaseCommand
 
         $uncompress = (new Gunzip())
             ->argument('-c')
-            ->argument($file)
-            ->output($uncompressedFile);
+            ->argument(escapeshellarg($file))
+            ->output(escapeshellarg($uncompressedFile));
 
         $this->getLogger()->debug($uncompress->toString());
 

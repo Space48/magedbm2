@@ -105,7 +105,7 @@ class Shell implements DatabaseInterface
      */
     public function dump($identifier, $strip_tables_patterns = '')
     {
-        $strip_tables = implode(' ', $this->getStripTables($strip_tables_patterns));
+        $stripTables = array_filter($this->getStripTables($strip_tables_patterns));
 
         $fileNamePrefix = $identifier . '-' . date('Y-m-d_His');
 
@@ -118,15 +118,15 @@ class Shell implements DatabaseInterface
         /** @var Process[] $commands */
         $commands = [];
 
-        if (trim($strip_tables) !== '') {
+        if (count($stripTables) > 0) {
             // Create the structure-only dump for tables that we don't want the data from.
             $commands[] = $this->createDumpProcess()
                 ->argument('--no-data')
                 ->argument('--add-drop-table')
                 ->argument('--default-character-set=utf8')
-                ->argument($databaseName)
-                ->argument($strip_tables)
-                ->output($structureOutputFile);
+                ->argument(escapeshellarg($databaseName))
+                ->arguments(array_map('escapeshellarg', $stripTables))
+                ->output(escapeshellarg($structureOutputFile));
         } else {
             // Empty structure file to make the rest of the code more consistent.
             file_put_contents($structureOutputFile, '');
@@ -134,14 +134,14 @@ class Shell implements DatabaseInterface
 
         $dataDumpOptions = array_map(function ($table) use ($databaseName) {
             return sprintf('--ignore-table=%s', escapeshellarg($databaseName . '.' . $table));
-        }, explode(' ', $strip_tables));
+        }, $stripTables);
 
         $commands[] = $this->createDumpProcess()
             ->arguments($dataDumpOptions)
             ->argument('--add-drop-table')
             ->argument('--default-character-set=utf8')
-            ->argument($databaseName)
-            ->output($dataOutputFile);
+            ->argument(escapeshellarg($databaseName))
+            ->output(escapeshellarg($dataOutputFile));
 
         $commandProcesses = array_map(function (CommandInterface $command) {
             $this->logger->debug($command->toString());
@@ -167,8 +167,8 @@ class Shell implements DatabaseInterface
             )->command(
                 (new Cat())
                     ->argument('-')
-                    ->argument($structureOutputFile)
-                    ->argument($dataOutputFile)
+                    ->argument(escapeshellarg($structureOutputFile))
+                    ->argument(escapeshellarg($dataOutputFile))
             )->command(
                 (new Sed())
                     ->argument("-e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/'")
@@ -176,7 +176,7 @@ class Shell implements DatabaseInterface
                 (new Gzip())
                     ->argument('-9')
                     ->argument('--force')
-                    ->output($compressedFinalFile)
+                    ->output(escapeshellarg($compressedFinalFile))
             );
 
         $compressCommandProcess = $compressCommand->toProcess();
@@ -222,7 +222,7 @@ class Shell implements DatabaseInterface
 
         foreach ($map as $key => $value) {
             if ($value) {
-                $args[] = sprintf('--%s=%s', $key, $value);
+                $args[] = sprintf('--%s=%s', $key, escapeshellarg($value));
             }
         }
 
@@ -296,7 +296,7 @@ class Shell implements DatabaseInterface
     private function getDumpHeader(): string
     {
         $dumpHeader = sprintf(
-            '-- Generator: %s (%s) at %s on %s by %s\n--',
+            "-- Generator: %s (%s) at %s on %s by %s\n--",
             Application::APP_NAME,
             Application::APP_VERSION,
             date('c'),
