@@ -55,6 +55,13 @@ class ConfigTest extends TestCase
                     'level_2' => [
                         'level_3' => [
                             1, 2, 3, 4, 5
+                        ],
+                        'level_3a' => [
+                            [
+                                [
+                                    ['a']
+                                ]
+                            ]
                         ]
                     ],
                     'level_2a' => [
@@ -71,6 +78,13 @@ class ConfigTest extends TestCase
                     'level_2' => [
                         'level_3' => [
                             6, 7, 8, 9, 10
+                        ],
+                        'level_3a' => [
+                            [
+                                [
+                                    ['b']
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -96,6 +110,55 @@ class ConfigTest extends TestCase
 
         $this->assertCount(10, $config_1->get('deep_nesting.level_1.level_2.level_3'));
         $this->assertCount(5, $config_1->get('deep_nesting.level_1.level_2a'));
+
+        $this->assertCount(2, $config_1->get('deep_nesting.level_1.level_2.level_3a'));
+        $this->assertEquals('a', $config_1->get('deep_nesting.level_1.level_2.level_3a.0.0.0.0'));
+        $this->assertEquals('b', $config_1->get('deep_nesting.level_1.level_2.level_3a.1.0.0.0'));
+    }
+
+    public function testMergeNestedArrays()
+    {
+        $config_1 = new Config([
+            'numeric' => [
+                [ 'name' => 'first' ]
+            ]
+        ]);
+
+        $config_2 = new Config([
+            'numeric' => [
+                [
+                    'name' => 'second',
+                    'additional_assoc_array' => [
+                        'a' => 1234,
+                        'b' => 4567
+                    ]
+                ],
+                [
+                    'name' => 'third',
+                    'additional_array' => [0,1,2,3,4,5,6,7,8,9]
+                ]
+            ]
+        ]);
+
+        $config_1->merge($config_2);
+
+        $this->assertCount(3, $config_1->get('numeric'));
+        $this->assertEquals([
+            [
+                'name' => 'first'
+            ],
+            [
+                'name' => 'second',
+                'additional_assoc_array' => [
+                    'a' => 1234,
+                    'b' => 4567
+                ]
+            ],
+            [
+                'name' => 'third',
+                'additional_array' => [0,1,2,3,4,5,6,7,8,9]
+            ]
+        ], $config_1->get('numeric'));
     }
 
     public function testOverrideInitialisedValue()
