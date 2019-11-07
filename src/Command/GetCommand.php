@@ -115,14 +115,14 @@ class GetCommand extends BaseCommand
         }
 
         try {
-            if ($this->storage->checkIfProjectExists($project) === false){
+            if ($this->storage->checkIfProjectExists($project) === false) {
                 $output->writeln(sprintf("<error>Requested project does not exist: %s </error>", $project));
                 return static::RETURN_CODE_DOWNLOAD_ERROR;
             }
 
             if (!$file) {
                 $file = $this->storage->getLatestFile($project);
-                if (!$file){
+                if (!$file) {
                     $output->writeln(sprintf("<error>Requested file does not exist: %s </error>", $file));
                     return static::RETURN_CODE_DOWNLOAD_ERROR;
                 }
