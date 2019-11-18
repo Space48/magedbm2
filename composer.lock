@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c997d789d5cbe8d5d8d64dc9d9fc1b29",
+    "content-hash": "eed088d9f99934c4a066034d9e694b77",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -366,7 +366,7 @@
             "time": "2017-03-20T17:10:46+00:00"
         },
         {
-            "name": "jeremeamia/SuperClosure",
+            "name": "jeremeamia/superclosure",
             "version": "2.4.0",
             "source": {
                 "type": "git",
@@ -2314,6 +2314,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2018-01-06T05:45:45+00:00"
         },
         {
@@ -2990,16 +2991,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v3.4.4",
+            "version": "v3.4.35",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "4b2717ee2499390e371e1fc7abaf886c1c83e83d"
+                "reference": "0ea4d39ca82409a25a43b61ce828048a90000920"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/4b2717ee2499390e371e1fc7abaf886c1c83e83d",
-                "reference": "4b2717ee2499390e371e1fc7abaf886c1c83e83d",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/0ea4d39ca82409a25a43b61ce828048a90000920",
+                "reference": "0ea4d39ca82409a25a43b61ce828048a90000920",
                 "shasum": ""
             },
             "require": {
@@ -3057,7 +3058,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2018-01-29T09:16:57+00:00"
+            "time": "2019-11-08T16:18:30+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -3248,6 +3249,7 @@
                 "phpcs",
                 "standards"
             ],
+            "abandoned": "phpcompatibility/php-compatibility",
             "time": "2017-12-27T21:58:38+00:00"
         }
     ],
