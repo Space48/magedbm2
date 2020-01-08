@@ -179,6 +179,8 @@ class Config implements ConfigInterface, LoggerAwareInterface
                 $oldValues[$key] = $value;
             } elseif ($this->arrayDepth($value) === 1) {
                 $oldValues[$key] = array_merge($oldValues[$key], $newValues[$key]);
+            } elseif (!$this->isAssocArray($oldValues[$key]) && !$this->isAssocArray($newValues[$key])) {
+                $oldValues[$key] = array_merge($oldValues[$key], $newValues[$key]);
             } else {
                 $oldValues[$key] = $this->doMerge($oldValues[$key], $newValues[$key]);
             }
@@ -208,6 +210,17 @@ class Config implements ConfigInterface, LoggerAwareInterface
         }
 
         return $max_depth;
+    }
+
+    /**
+     * Does the array contain exclusively numeric keys?
+     *
+     * @param $array
+     * @return bool
+     */
+    private function isAssocArray($array)
+    {
+        return count(array_filter(array_keys($array), 'is_string')) !== 0;
     }
 
     /**
