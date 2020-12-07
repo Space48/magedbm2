@@ -6,7 +6,7 @@ clean:
 	rm -rf vendor box.phar composer.phar magedbm2.phar
 
 test: install
-	./vendor/bin/phpunit
+	php -derror_reporting=E_ERROR ./vendor/bin/phpunit
 
 install: composer.phar composer.lock
 	./composer.phar install
