@@ -9,17 +9,11 @@ While there is no formal contribution process, feel free to contribute by:
 
 Pull requests should be submitted to the `develop` branch to be included in the next release.
 
-## Requirements
-
-Developing magedbm2 requires:
-
-- [Phing](https://www.phing.info/)
-
 ## Installation
 
 To install development dependencies for magedbm2, run:
 
-    phing install
+    make install
 
 ## Code style
 
@@ -27,7 +21,7 @@ magedbm2 follows PSR-2 for code style and a set of rules from [phpmd](https://ph
 
 You should run the following to check for any potential issues with the code before committing it:
 
-    phing lint
+    make lint
 
 ## Testing
 
@@ -35,7 +29,7 @@ magedbm2 is tested with [PHPUnit](https://phpunit.de). 100% code coverage is not
 
 Make sure that the full suite of tests passes before committing changes by running:
 
-    phing test
+    make test
 
 ## Changelog
 
@@ -45,7 +39,7 @@ If applicable, update the `CHANGELOG.md` with your change, following the [Keep a
 
 You can build the magedbm2 phar archive with [Box](https://github.com/box-project/box2) by running:
 
-    phing build
+    make build
 
 ## Releasing
 
