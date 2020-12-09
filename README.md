@@ -1,7 +1,5 @@
 # Magedbm2 - A Database Backup Manager
 
-[![Build Status](https://travis-ci.org/space48/magedbm2.svg?branch=master)](https://travis-ci.org/space48/magedbm2)
-
 Magedbm2 is a database backup manager designed to make the process of taking backups from one environment and moving them to another, easy. The backups can be stripped of sensitive tables and can even generate anonymised versions of the sensitive data. While it was originally developed to for Magento 2.x it can be used for any system.
 
 It was written with developers in mind and provides commands for:

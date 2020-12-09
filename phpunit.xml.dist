@@ -4,6 +4,9 @@
         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
         bootstrap="./tests/bootstrap.php"
         colors="true"
+        convertErrorsToExceptions="false"
+        convertNoticesToExceptions="false"
+        convertWarningsToExceptions="false">
 >
     <testsuites>
         <testsuite name="magedbm2">
