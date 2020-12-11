@@ -141,10 +141,10 @@ table-groups:
       b2b_order*
       b2b_role*
       b2b_s_order_change_queue
-      b2b_sales_representative_clients b2b_sales_representative_orders
+      b2b_sales_representative_clients
+      b2b_sales_representative_orders
       b2b_store_front_auth
       swag_payment*
-      s_core_customergroups*
       s_core_customerpricegroups
       s_core_payment*
       jett_mailchimp*
