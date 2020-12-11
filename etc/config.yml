@@ -149,6 +149,15 @@ table-groups:
       s_core_payment*
       jett_mailchimp*
       s_campaigns*
+      s_customer_search_index
+      s_emarketing_lastarticles
+      s_emarketing_referer
+      s_import_export_log
+      s_import_export_session
+      s_mail_*
+      s_multi_edit_queue
+      s_multi_edit_queue_articles
+      s_statistics_*
 
   - id: platform_magento_one
     description: Magento 1.x tables
