@@ -4,6 +4,16 @@ All notable changes will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] - 2020-12-11
+
+### Fixed
+
+- The `s_core_customergroups*` tables are no longer removed from when using the `platform_shopware` table group.
+
+### Changed
+
+- Additional tables that are not required for local development environments have been added to `platform_shopware` to minimmise database sizes.
+
 ## [3.0.0] - 2020-01-17
 
 ### Added

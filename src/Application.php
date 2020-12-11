@@ -30,7 +30,7 @@ class Application extends \Symfony\Component\Console\Application
 {
 
     const APP_NAME = "magedbm2";
-    const APP_VERSION = "3.0.0";
+    const APP_VERSION = "3.0.1";
 
     /** @var ClassLoader $autoloader */
     protected $autoloader;
