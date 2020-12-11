@@ -64,8 +64,7 @@ class ConfigureCommand extends BaseCommand
         FilesystemFactory $filesystemFactory,
         Yaml $yaml,
         array $excluded_options = null
-    )
-    {
+    ) {
         parent::__construct($config, self::NAME);
 
         $this->config = $config;
@@ -120,7 +119,7 @@ HELP
 
         $configFileArgument = $this->input->getArgument(self::ARG_CONFIG_FILE);
 
-        if ($this->input->isInteractive() ) {
+        if ($this->input->isInteractive()) {
             $style->note('MageDBM2 uses a number of files to manage its configuration, merging them together in a specific order to support managing multiple projects on a single machine. Consult the documentation for details.');
 
             if ($configFileArgument === null) {

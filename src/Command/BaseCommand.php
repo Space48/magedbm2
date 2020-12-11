@@ -112,7 +112,6 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     Option::PROJECT_CONFIG_FILE,
                     null,
                     InputOption::VALUE_OPTIONAL,
-
                     // Note: Don't use the default parameter for the fall back file location as we want to distinguish
                     //       between a user defined override and the actual default.
                     sprintf(
@@ -124,7 +123,6 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     Option::GLOBAL_CONFIG_FILE,
                     null,
                     InputOption::VALUE_OPTIONAL,
-
                     // Note: Don't use the default parameter for the fall back file location as we want to distinguish
                     //       between a user defined override and the actual default.
                     sprintf(
