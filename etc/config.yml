@@ -126,7 +126,17 @@ table-groups:
     description: Shopware tables
     tables: >
       s_user*
-      s_order*
+      s_order
+      s_order_attributes
+      s_order_basket*
+      s_order_billing*
+      s_order_comparisons
+      s_order_details*
+      s_order_documents*
+      s_order_esd
+      s_order_history
+      s_order_notes
+      s_order_shipping*
       s_core_log
       s_statistics*
       s_search*
@@ -146,7 +156,7 @@ table-groups:
       b2b_store_front_auth
       swag_payment*
       s_core_customerpricegroups
-      s_core_payment*
+      s_core_payment_*
       jett_mailchimp*
       s_campaigns*
       s_customer_search_index
