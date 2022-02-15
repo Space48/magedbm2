@@ -45,9 +45,9 @@ class LsCommandTest extends AbstractCommandTest
 
         $output = $tester->getDisplay();
 
-        $this->assertContains("Available projects", $output);
+        $this->assertStringContainsString("Available projects", $output);
         foreach ($projects as $project) {
-            $this->assertContains($project, $output);
+            $this->assertStringContainsString($project, $output);
         }
     }
 
@@ -100,10 +100,10 @@ class LsCommandTest extends AbstractCommandTest
 
         $output = $tester->getDisplay();
 
-        $this->assertContains("Available files", $output);
+        $this->assertStringContainsString("Available files", $output);
 
         foreach ($files as $file) {
-            $this->assertContains($file->name, $output);
+            $this->assertStringContainsString($file->name, $output);
         }
     }
 
