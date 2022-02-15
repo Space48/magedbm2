@@ -26,7 +26,7 @@ class PutCommandTest extends AbstractCommandTest
      */
     private $file;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->vfs = new FileSystem();
         $this->file = $this->vfs->path(Fake::DUMP_FILE_LOCATION);

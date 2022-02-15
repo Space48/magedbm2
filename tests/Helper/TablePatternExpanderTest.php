@@ -12,7 +12,7 @@ class TablePatternExpanderTest extends TestCase
 
     private $allTables = [];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new TablePatternExpander();
         $this->allTables = [

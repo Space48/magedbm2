@@ -9,7 +9,7 @@ class SimpleTest extends TestCase
 {
     protected $test_dir = __DIR__ . DIRECTORY_SEPARATOR . "tmp";
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -17,7 +17,7 @@ class SimpleTest extends TestCase
         mkdir($this->test_dir, 0777, true);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         // Remove test directory and files
         $iterator = new \RecursiveDirectoryIterator($this->test_dir, \RecursiveDirectoryIterator::SKIP_DOTS);

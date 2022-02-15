@@ -13,7 +13,7 @@ class EavRowProcessorTest extends TestCase
      */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = new EavRowProcessor();
         $this->subject->addRule('customer_address', 'email', 'Meanbee\Magedbm2\Anonymizer\Formatter\Rot13');

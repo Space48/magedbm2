@@ -14,7 +14,7 @@ class InputLoaderTest extends TestCase
     /** @var ConfigInterface */
     protected $config;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $input = new ArrayInput([
             '--test' => 123

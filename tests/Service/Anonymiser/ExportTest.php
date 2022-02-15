@@ -19,7 +19,7 @@ class ExportTest extends TestCase
     private $inputFile;
     private $outputFile;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = new Export();
 
