@@ -43,7 +43,7 @@ class SimpleTest extends TestCase
         $file = implode(DIRECTORY_SEPARATOR, [$this->test_dir, "output-file.txt"]);
         $contents = sprintf("Test file output. Timestamp %s.", time());
 
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
 
         $filesystem->write($file, $contents);
 
@@ -65,12 +65,12 @@ class SimpleTest extends TestCase
         file_put_contents($source, sprintf("Test file written by %s", __METHOD__));
 
         $this->assertFileExists($source);
-        $this->assertFileNotExists($destination);
+        $this->assertFileDoesNotExist($destination);
 
         $filesystem->move($source, $destination);
 
         $this->assertFileExists($destination);
-        $this->assertFileNotExists($source);
+        $this->assertFileDoesNotExist($source);
     }
 
     /**
@@ -90,6 +90,6 @@ class SimpleTest extends TestCase
 
         $filesystem->delete($file);
 
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
     }
 }
