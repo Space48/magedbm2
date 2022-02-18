@@ -120,7 +120,7 @@ HELP
         $configFileArgument = $this->input->getArgument(self::ARG_CONFIG_FILE);
 
         if ($this->input->isInteractive()) {
-            $style->note('MageDBM2 uses a number of files to manage its configuration, merging them together in a specific order to support managing multiple projects on a single machine. Consult the documentation for details.');
+            $style->note('MageDBM2 uses a number of files to manage its configuration, merging them together in a specific order to support managing multiple projects on a single machine. Consult the documentation for details.'); //phpcs:ignore
 
             if ($configFileArgument === null) {
                 $configurationFile = $style->askQuestion(new ChoiceQuestion(
@@ -135,7 +135,8 @@ HELP
             }
         } else {
             if ($configFileArgument === null) {
-                throw new \InvalidArgumentException("When in non-interactive mode, a configuration file must be provided.");
+                $exceptionMessage = "When in non-interactive mode, a configuration file must be provided.";
+                throw new \InvalidArgumentException($exceptionMessage);
             }
 
             $configurationFile = $configFileArgument;
@@ -186,7 +187,10 @@ HELP
         );
 
         if ($this->input->isInteractive()) {
-            if (!$style->confirm(sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile), false)) {
+            if (!$style->confirm(
+                sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile),
+                false
+            )) {
                 return 0;
             }
         }
