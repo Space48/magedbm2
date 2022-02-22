@@ -19,6 +19,9 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ConfigureCommand extends BaseCommand
 {
     const RETURN_CODE_SAVE_ERROR = 1;
@@ -155,29 +158,7 @@ HELP
 
         $style->text('<info>Please provide your new values for the following options:</info>');
 
-        foreach (Option::allowUserToPersist() as $optionName) {
-            $currentValue = $this->config->get($optionName, true);
-
-            if ($input->isInteractive()) {
-                if ($currentValue) {
-                    $question = new Question(sprintf('%s (currently: %s): ', $optionName, $currentValue));
-                } else {
-                    $question = new Question(sprintf('%s: ', $optionName));
-                }
-
-                $question->setValidator(function ($value) {
-                    return $value;
-                });
-
-                $value = $style->askQuestion($question) ?: null;
-            } else {
-                $value = $this->input->getOption($optionName);
-            }
-
-            if ($value !== null) {
-                $data[$optionName] = $value;
-            }
-        }
+        $data = $this->populateOptions($input, $style, $data);
 
         $style->table(
             ['Name', 'Value'],
@@ -212,5 +193,39 @@ HELP
 
             return static::RETURN_CODE_SAVE_ERROR;
         }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param SymfonyStyle $style
+     * @param array $data
+     * @return array
+     */
+    protected function populateOptions(InputInterface $input, SymfonyStyle $style, array $data): array
+    {
+        foreach (Option::allowUserToPersist() as $optionName) {
+            $currentValue = $this->config->get($optionName, true);
+
+            if ($input->isInteractive()) {
+                if ($currentValue) {
+                    $question = new Question(sprintf('%s (currently: %s): ', $optionName, $currentValue));
+                } else {
+                    $question = new Question(sprintf('%s: ', $optionName));
+                }
+
+                $question->setValidator(function ($value) {
+                    return $value;
+                });
+
+                $value = $style->askQuestion($question) ?: null;
+            } else {
+                $value = $this->input->getOption($optionName);
+            }
+
+            if ($value !== null) {
+                $data[$optionName] = $value;
+            }
+        }
+        return $data;
     }
 }
