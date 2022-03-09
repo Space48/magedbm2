@@ -19,6 +19,9 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ConfigureCommand extends BaseCommand
 {
     const RETURN_CODE_SAVE_ERROR = 1;
@@ -120,7 +123,7 @@ HELP
         $configFileArgument = $this->input->getArgument(self::ARG_CONFIG_FILE);
 
         if ($this->input->isInteractive()) {
-            $style->note('MageDBM2 uses a number of files to manage its configuration, merging them together in a specific order to support managing multiple projects on a single machine. Consult the documentation for details.');
+            $style->note('MageDBM2 uses a number of files to manage its configuration, merging them together in a specific order to support managing multiple projects on a single machine. Consult the documentation for details.'); //phpcs:ignore
 
             if ($configFileArgument === null) {
                 $configurationFile = $style->askQuestion(new ChoiceQuestion(
@@ -135,7 +138,8 @@ HELP
             }
         } else {
             if ($configFileArgument === null) {
-                throw new \InvalidArgumentException("When in non-interactive mode, a configuration file must be provided.");
+                $exceptionMessage = "When in non-interactive mode, a configuration file must be provided.";
+                throw new \InvalidArgumentException($exceptionMessage);
             }
 
             $configurationFile = $configFileArgument;
@@ -154,6 +158,51 @@ HELP
 
         $style->text('<info>Please provide your new values for the following options:</info>');
 
+        $data = $this->populateOptions($input, $style, $data);
+
+        $style->table(
+            ['Name', 'Value'],
+            array_map(function ($k, $v) {
+                return [new TableCell($k), new TableCell($v)];
+            }, array_keys($data), array_values($data))
+        );
+
+        if ($this->input->isInteractive()) {
+            if (!$style->confirm(
+                sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile),
+                false
+            )) {
+                return 0;
+            }
+        }
+
+        $yaml = $this->yaml->dump($data);
+
+        if ($this->filesystem->write($configurationFile, $yaml)) {
+            $output->writeln(sprintf(
+                "<info>Configuration saved in %s.</info>",
+                $configurationFile
+            ));
+
+            return static::RETURN_CODE_SUCCESS;
+        } else {
+            $output->writeln(sprintf(
+                "<error>Failed to save configuration in %s!</error>",
+                $configurationFile
+            ));
+
+            return static::RETURN_CODE_SAVE_ERROR;
+        }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param SymfonyStyle $style
+     * @param array $data
+     * @return array
+     */
+    protected function populateOptions(InputInterface $input, SymfonyStyle $style, array $data): array
+    {
         foreach (Option::allowUserToPersist() as $optionName) {
             $currentValue = $this->config->get($optionName, true);
 
@@ -177,36 +226,6 @@ HELP
                 $data[$optionName] = $value;
             }
         }
-
-        $style->table(
-            ['Name', 'Value'],
-            array_map(function ($k, $v) {
-                return [new TableCell($k), new TableCell($v)];
-            }, array_keys($data), array_values($data))
-        );
-
-        if ($this->input->isInteractive()) {
-            if (!$style->confirm(sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile), false)) {
-                return 0;
-            }
-        }
-
-        $yaml = $this->yaml->dump($data);
-
-        if ($this->filesystem->write($configurationFile, $yaml)) {
-            $output->writeln(sprintf(
-                "<info>Configuration saved in %s.</info>",
-                $configurationFile
-            ));
-
-            return static::RETURN_CODE_SUCCESS;
-        } else {
-            $output->writeln(sprintf(
-                "<error>Failed to save configuration in %s!</error>",
-                $configurationFile
-            ));
-
-            return static::RETURN_CODE_SAVE_ERROR;
-        }
+        return $data;
     }
 }

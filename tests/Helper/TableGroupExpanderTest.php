@@ -13,7 +13,7 @@ class TableGroupExpanderTest extends TestCase
      */
     protected $subject;
     
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new TableGroupExpander([
             new TableGroup('example', '', 'table1 table2 table3_ table4*'),

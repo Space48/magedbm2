@@ -18,6 +18,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 abstract class BaseCommand extends Command implements LoggerAwareInterface
 {
     const RETURN_CODE_SUCCESS             = 0;
@@ -115,7 +118,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     // Note: Don't use the default parameter for the fall back file location as we want to distinguish
                     //       between a user defined override and the actual default.
                     sprintf(
-                        "Project configuration file to use (will search for .magedbm2.yml in your current working directory if not specified, currently: %s)",
+                        "Project configuration file to use (will search for .magedbm2.yml in your current working directory if not specified, currently: %s)", //phpcs:ignore
                         $this->configFileResolver->getProjectFilePath()
                     )
                 ),
@@ -126,7 +129,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     // Note: Don't use the default parameter for the fall back file location as we want to distinguish
                     //       between a user defined override and the actual default.
                     sprintf(
-                        "User configuration file to use (will search for ~/.magedbm2/config.yml if not specified, currently: %s)",
+                        "User configuration file to use (will search for ~/.magedbm2/config.yml if not specified, currently: %s)", //phpcs:ignore
                         $this->configFileResolver->getUserFilePath()
                     )
                 ),

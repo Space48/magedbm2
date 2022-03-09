@@ -13,7 +13,7 @@ class FlatRowProcessorTest extends TestCase
      */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = new FlatRowProcessor();
         $this->subject->addRule('customer', 'email', 'Meanbee\Magedbm2\Anonymizer\Formatter\Rot13');

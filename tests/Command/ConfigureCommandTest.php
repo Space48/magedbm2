@@ -29,7 +29,7 @@ class ConfigureCommandTest extends AbstractCommandTest
      */
     private $configPath;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->vfs = new VirtualFileSystem();
         $this->configPath = $this->vfs->path('/example.yml');

@@ -15,6 +15,6 @@ class ViewConfigurationCommandTest extends AbstractCommandTest
 
         $tester->execute([]);
 
-        $this->assertContains('test: test123', $tester->getDisplay());
+        $this->assertStringContainsString('test: test123', $tester->getDisplay());
     }
 }

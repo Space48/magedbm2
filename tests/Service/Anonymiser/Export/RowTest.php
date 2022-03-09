@@ -10,7 +10,7 @@ class RowTest extends TestCase
     /** @var Row */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = Row::fromString('
 	<row>

@@ -19,11 +19,9 @@ class FileLoaderTest extends TestCase
         $this->assertEquals('six', $config->get('five'));
     }
 
-    /**
-     * @expectedException \Meanbee\Magedbm2\Exception\ConfigurationException
-     */
     public function testNonexistentFile()
     {
+        $this->expectException(\Meanbee\Magedbm2\Exception\ConfigurationException::class);
         (new FileLoader($this->getFilePath('idontexist.yml')))->asConfig();
     }
 

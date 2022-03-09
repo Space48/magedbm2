@@ -15,6 +15,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ExportCommand extends BaseCommand
 {
     const NAME = 'export';
@@ -39,8 +42,11 @@ class ExportCommand extends BaseCommand
      * @param StorageFactory $storageFactory
      * @param FilesystemFactory $filesystemFactory
      */
-    public function __construct(ConfigInterface $config, StorageFactory $storageFactory, FilesystemFactory $filesystemFactory)
-    {
+    public function __construct(
+        ConfigInterface $config,
+        StorageFactory $storageFactory,
+        FilesystemFactory $filesystemFactory
+    ) {
         parent::__construct($config, self::NAME);
         $this->anonymiser = new Export();
         $this->storage = $storageFactory->create();

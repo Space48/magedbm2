@@ -22,6 +22,10 @@ magedbm2 follows PSR-2 for code style and a set of rules from [phpmd](https://ph
 You should run the following to check for any potential issues with the code before committing it:
 
     make lint
+### Potential issues:
+Issue 1: `Cannot declare class PHPCompatibility\Sniffs\Lists\NewKeyedListSniff, because the name is already in use` This will appear if you've contributed before the upgrade to 4.0.0 having had phpcs set up and your next contribution was after the upgrade to 4.0.0.
+
+Fix: `./vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility`
 
 ## Testing
 

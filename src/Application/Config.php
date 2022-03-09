@@ -146,6 +146,8 @@ class Config implements ConfigInterface, LoggerAwareInterface
     /**
      * @param ConfigInterface $config
      * @return $this
+     *
+     * @SuppressWarnings(PHPMD.ErrorControlOperator)
      */
     public function merge(ConfigInterface $config)
     {

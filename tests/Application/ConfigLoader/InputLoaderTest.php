@@ -14,7 +14,7 @@ class InputLoaderTest extends TestCase
     /** @var ConfigInterface */
     protected $config;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $input = new ArrayInput([
             '--test' => 123
@@ -31,11 +31,9 @@ class InputLoaderTest extends TestCase
         $this->assertEquals(123, $this->config->get('test'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testMissingRequiredNotAdded()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $this->config->get('test-null');
     }
 }
