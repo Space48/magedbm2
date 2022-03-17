@@ -57,4 +57,21 @@ final class Option
     {
         // Don't allow instantiation.
     }
+
+    public static function getYamlOptionMap()
+    {
+        return [
+            'root_dir' => self::ROOT_DIR,
+            'db_host' => self::DB_HOST,
+            'db_name' => self::DB_NAME,
+            'db_user' => self::DB_USER,
+            'db_pass' => self::DB_PASS,
+            'db_port' => self::DB_PORT,
+            'table_groups' => self::TABLE_GROUPS,
+            'tmp_dir' => self::TEMPORARY_DIR,
+            'secret_key' => self::STORAGE_SECRET_KEY,
+            'data_bucket' => self::STORAGE_DATA_BUCKET,
+            'access_key' => self::STORAGE_ACCESS_KEY,
+        ];
+    }
 }
