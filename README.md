@@ -27,11 +27,11 @@ The configuration can either be provided through configuration files or as optio
 
 The basic configuration parameters required are the credentials for connecting to [Amazon S3](https://aws.amazon.com/s3/) and which buckets to store the different types of exports in.
 
-* `access-key`: Your AWS Access Key
-* `secret-key`: Your AWS Secret Key
+* `access_key`(`--access-key`): Your AWS Access Key
+* `secret_key`(`--secret-key`): Your AWS Secret Key
 * `region`: The region in which the S3 buckets are located
 * `bucket`: The bucket to store the database backups
-* `data-bucket`: The bucket to store the anonymised exports
+* `data_bucket`(`--data-bucket`): The bucket to store the anonymised exports
 
 ### Using without a Magento Installation
 

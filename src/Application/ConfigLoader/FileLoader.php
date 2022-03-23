@@ -33,10 +33,15 @@ class FileLoader implements ConfigLoaderInterface
 
         try {
             $values = Yaml::parseFile($this->filePath);
-            if (!$this->validateYamlVariables($values)) {
+
+            if (is_array($values) && !$this->validateYamlVariables($values)) {
                 $this->configurationError();
             }
-            $values = $this->formatConfigVariableNames($values);
+
+            if (is_array($values)) {
+                $values = $this->formatConfigVariableNames($values);
+            }
+
             return new Config($values);
         } catch (ParseException $exception) {
             $this->configurationError();
@@ -68,7 +73,8 @@ class FileLoader implements ConfigLoaderInterface
         return $variables;
     }
 
-    private function configurationError(): void
+    // the following line throws a void return not allowed for php <7.0, we do not support php 7.0
+    private function configurationError(): void //phpcs:ignore
     {
         throw new ConfigurationException(sprintf(
             'The configuration file at %s does not contain valid YAML',

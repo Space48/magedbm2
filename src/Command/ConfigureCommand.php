@@ -176,9 +176,11 @@ HELP
             }
         }
 
-        $yaml = $this->yaml->dump($data);
+        if (!empty($data)) {
+            $yaml = $this->yaml->dump($data);
+        }
 
-        if ($this->filesystem->write($configurationFile, $yaml)) {
+        if (isset($yaml) && $this->filesystem->write($configurationFile, $yaml)) {
             $output->writeln(sprintf(
                 "<info>Configuration saved in %s.</info>",
                 $configurationFile
@@ -203,10 +205,12 @@ HELP
      */
     protected function populateOptions(InputInterface $input, SymfonyStyle $style, array $data): array
     {
-        foreach (Option::allowUserToPersist() as $optionName) {
-            $currentValue = $this->config->get($optionName, true);
+        $yamlOptionMap = Option::getYamlOptionMap();
 
+        foreach (Option::allowUserToPersist() as $optionName) {
+            $configName = $yamlOptionMap[$optionName] ?? $optionName;
             if ($input->isInteractive()) {
+                $currentValue = $this->config->get($configName, true);
                 if ($currentValue) {
                     $question = new Question(sprintf('%s (currently: %s): ', $optionName, $currentValue));
                 } else {
@@ -219,7 +223,7 @@ HELP
 
                 $value = $style->askQuestion($question) ?: null;
             } else {
-                $value = $this->input->getOption($optionName);
+                $value = $this->input->getOption($configName);
             }
 
             if ($value !== null) {
