@@ -27,7 +27,7 @@ final class Option
     const NO_CLEAN = 'no-clean';
 
     const STORAGE_SECRET_KEY = 'secret-key';
-    const STORAGE_DATA_BUCKET = 'data-bucket';
+    const STORAGE_DATA_BUCKET = 'anonymised-data-bucket';
     const STORAGE_BUCKET = 'bucket';
     const STORAGE_REGION = 'region';
     const STORAGE_ACCESS_KEY = 'access-key';
