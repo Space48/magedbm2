@@ -195,7 +195,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     "S3 bucket for stripped databases"
                 ),
                 new InputOption(
-                    Option::STORAGE_DATA_BUCKET,
+                    Option::STORAGE_ANONYMISED_BUCKET,
                     null,
                     InputOption::VALUE_REQUIRED,
                     "S3 bucket for anonymised data exports"

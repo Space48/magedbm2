@@ -307,7 +307,7 @@ class S3 implements StorageInterface, LoggerAwareInterface
         }
 
         if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA
-            && !$this->getConfig()->get(Option::STORAGE_DATA_BUCKET, true)
+            && !$this->getConfig()->get(Option::STORAGE_ANONYMISED_BUCKET, true)
         ) {
             throw new ConfigurationException('A data bucket needs to be defined');
         }
@@ -329,7 +329,7 @@ class S3 implements StorageInterface, LoggerAwareInterface
     private function getBucket()
     {
         if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
-            return $this->getConfig()->get(Option::STORAGE_DATA_BUCKET);
+            return $this->getConfig()->get(Option::STORAGE_ANONYMISED_BUCKET);
         }
 
         return $this->getConfig()->get(Option::STORAGE_BUCKET);
