@@ -48,7 +48,7 @@ class ConfigureCommandTest extends AbstractCommandTest
             ->method("write")
             ->with(
                 $this->equalTo($this->configPath),
-                $this->equalTo("db-host: 127.0.0.1\ndb-port: '3333'\n")
+                $this->equalTo("db_host: 127.0.0.1\ndb_port: '3333'\n")
             );
 
         $tester = $this->getCommandTester($filesystem);
@@ -82,7 +82,7 @@ class ConfigureCommandTest extends AbstractCommandTest
             ->method("write")
             ->with(
                 $this->equalTo($this->configPath),
-                $this->equalTo("db-host: 127.0.0.1\ndb-port: '3333'\n")
+                $this->equalTo("db_host: 127.0.0.1\ndb_port: '3333'\n")
             );
 
         $tester = $this->getCommandTester($filesystem);
