@@ -31,7 +31,7 @@ The basic configuration parameters required are the credentials for connecting t
 * `secret_key`(`--secret-key`): Your AWS Secret Key
 * `region`: The region in which the S3 buckets are located
 * `bucket`: The bucket to store the database backups
-* `data_bucket`(`--data-bucket`): The bucket to store the anonymised exports
+* `anonymised_data_bucket`(`--anonymised-data-bucket`): The bucket to store the anonymised exports
 
 ### Using without a Magento Installation
 
@@ -51,7 +51,7 @@ This gives us the ability to use Magedbm2 without Magento at all, should we want
 
 While the ability to specify the credentials as command line options is useful in automated scenarios, for personal everyday usage Magedbm2 can be configured to remember your credentials by running:
 
-    magedbm2 configure [--access-key="..."] [--secret-key="..."] [--region="..."] [--bucket="..."] [--data-bucket="..."] [--db-host="..."] [--db-user="..."] [--db-pass="..."] [--db-port="..."] [--db-name="..."][-n] <file-name>
+    magedbm2 configure [--access-key="..."] [--secret-key="..."] [--region="..."] [--bucket="..."] [--anonymised-data-bucket="..."] [--db-host="..."] [--db-user="..."] [--db-pass="..."] [--db-port="..."] [--db-name="..."][-n] <file-name>
 
 By default, the configure command will interactively prompt you for each of the configuration details. Alternatively, you can run it in a non-interactive mode with the `-n` option and specify the credentials you want to save using the options.
 

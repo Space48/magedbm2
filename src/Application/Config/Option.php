@@ -33,7 +33,7 @@ final class Option
     const NO_CLEAN = 'no-clean';
 
     const STORAGE_SECRET_KEY = 'secret-key';
-    const STORAGE_DATA_BUCKET = 'data-bucket';
+    const STORAGE_ANONYMISED_BUCKET = 'anonymised-data-bucket';
     const STORAGE_BUCKET = 'bucket';
     const STORAGE_REGION = 'region';
     const STORAGE_ACCESS_KEY = 'access-key';
@@ -79,7 +79,7 @@ final class Option
             'table_groups' => self::TABLE_GROUPS,
             'tmp_dir' => self::TEMPORARY_DIR,
             self::YAML_STORAGE_SECRET_KEY => self::STORAGE_SECRET_KEY,
-            'data_bucket' => self::STORAGE_DATA_BUCKET,
+            'anonymised_data_bucket' => self::STORAGE_ANONYMISED_BUCKET,
             self::YAML_STORAGE_ACCESS_KEY => self::STORAGE_ACCESS_KEY,
         ];
     }
