@@ -32,7 +32,7 @@ The basic configuration parameters required are the credentials for connecting t
 * `region`: The region in which the S3 stripped data bucket is located
 * `bucket`: The bucket to store the database backups
 * `anonymised_data_bucket`(`--anonymised-data-bucket`): The bucket to store the anonymised exports
-* `anonymised_region`(`--anonymised-region`): The region in which the S3 anonymised data bucket is located
+* `anonymised_region`(`--anonymised-region`): The region in which the S3 anonymised data bucket is located. If not specified, the `region` parameter will be used. 
 ### Using without a Magento Installation
 
 It's not always possible to run Magedbm2 on the same server that a Magento installation is present, for example you might want to run a cron for Magedbm2 on your database server so that you don't clog the pipe to the application server with unnecessary export traffic.
