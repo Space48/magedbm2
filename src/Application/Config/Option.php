@@ -36,10 +36,13 @@ final class Option
     const STORAGE_ANONYMISED_BUCKET = 'anonymised-data-bucket';
     const STORAGE_BUCKET = 'bucket';
     const STORAGE_REGION = 'region';
+    const STORAGE_ANONYMISED_REGION = 'anonymised-region';
     const STORAGE_ACCESS_KEY = 'access-key';
 
     const YAML_STORAGE_SECRET_KEY = 'secret_key';
     const YAML_STORAGE_ACCESS_KEY = 'access_key';
+    const YAML_ANONYMISED_BUCKET = 'anonymised_data_bucket';
+    const YAML_ANONYMISED_REGION = 'anonymised_region';
 
     /**
      * Options that a user is allowed to save in a configuration file.
@@ -58,7 +61,9 @@ final class Option
             self::YAML_STORAGE_ACCESS_KEY,
             self::YAML_STORAGE_SECRET_KEY,
             self::STORAGE_BUCKET,
-            self::STORAGE_REGION
+            self::STORAGE_REGION,
+            self::YAML_ANONYMISED_BUCKET,
+            self::YAML_ANONYMISED_REGION
         ];
     }
 
@@ -79,8 +84,9 @@ final class Option
             'table_groups' => self::TABLE_GROUPS,
             'tmp_dir' => self::TEMPORARY_DIR,
             self::YAML_STORAGE_SECRET_KEY => self::STORAGE_SECRET_KEY,
-            'anonymised_data_bucket' => self::STORAGE_ANONYMISED_BUCKET,
+            self::YAML_ANONYMISED_BUCKET => self::STORAGE_ANONYMISED_BUCKET,
             self::YAML_STORAGE_ACCESS_KEY => self::STORAGE_ACCESS_KEY,
+            self::YAML_ANONYMISED_REGION => self::STORAGE_ANONYMISED_REGION
         ];
     }
 }
