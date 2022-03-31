@@ -263,7 +263,16 @@ class S3 implements StorageInterface, LoggerAwareInterface
         if (!$this->client instanceof S3Client) {
             $params = $this->default_params;
 
-            if ($region = $this->getConfig()->get(Option::STORAGE_REGION)) {
+            $region = null;
+            if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
+                $region = $this->getConfig()->get(Option::STORAGE_ANONYMISED_REGION, true);
+            }
+
+            if (!$region) {
+                $region = $this->getConfig()->get(Option::STORAGE_REGION);
+            }
+
+            if ($region) {
                 $params['region'] = $region;
             }
 

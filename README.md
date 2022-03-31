@@ -51,7 +51,7 @@ This gives us the ability to use Magedbm2 without Magento at all, should we want
 
 While the ability to specify the credentials as command line options is useful in automated scenarios, for personal everyday usage Magedbm2 can be configured to remember your credentials by running:
 
-    magedbm2 configure [--access-key="..."] [--secret-key="..."] [--region="..."] [--bucket="..."] [--anonymised-data-bucket="..."] [--db-host="..."] [--db-user="..."] [--db-pass="..."] [--db-port="..."] [--db-name="..."][-n] <file-name>
+    magedbm2 configure [--access-key="..."] [--secret-key="..."] [--region="..."] [--bucket="..."] [--anonymised-data-bucket="..."] [--anonymised-region][--db-host="..."] [--db-user="..."] [--db-pass="..."] [--db-port="..."] [--db-name="..."][-n] <file-name>
 
 By default, the configure command will interactively prompt you for each of the configuration details. Alternatively, you can run it in a non-interactive mode with the `-n` option and specify the credentials you want to save using the options.
 
