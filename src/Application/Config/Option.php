@@ -72,21 +72,8 @@ final class Option
         // Don't allow instantiation.
     }
 
-    public static function getYamlOptionMap()
+    public static function mapYamlOptionToConfigOption(string $yamlOption)
     {
-        return [
-            'root_dir' => self::ROOT_DIR,
-            self::YAML_DB_HOST => self::DB_HOST,
-            self::YAML_DB_NAME => self::DB_NAME,
-            self::YAML_DB_USER => self::DB_USER,
-            self::YAML_DB_PASS => self::DB_PASS,
-            self::YAML_DB_PORT => self::DB_PORT,
-            'table_groups' => self::TABLE_GROUPS,
-            'tmp_dir' => self::TEMPORARY_DIR,
-            self::YAML_STORAGE_SECRET_KEY => self::STORAGE_SECRET_KEY,
-            self::YAML_ANONYMISED_BUCKET => self::STORAGE_ANONYMISED_BUCKET,
-            self::YAML_STORAGE_ACCESS_KEY => self::STORAGE_ACCESS_KEY,
-            self::YAML_ANONYMISED_REGION => self::STORAGE_ANONYMISED_REGION
-        ];
+        return str_replace('_', '-', $yamlOption);
     }
 }
