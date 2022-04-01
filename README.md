@@ -27,12 +27,12 @@ The configuration can either be provided through configuration files or as optio
 
 The basic configuration parameters required are the credentials for connecting to [Amazon S3](https://aws.amazon.com/s3/) and which buckets to store the different types of exports in.
 
-* `access-key`: Your AWS Access Key
-* `secret-key`: Your AWS Secret Key
-* `region`: The region in which the S3 buckets are located
+* `access_key`(`--access-key`): Your AWS Access Key
+* `secret_key`(`--secret-key`): Your AWS Secret Key
+* `region`: The region in which the S3 stripped data bucket is located
 * `bucket`: The bucket to store the database backups
-* `data-bucket`: The bucket to store the anonymised exports
-
+* `anonymised_data_bucket`(`--anonymised-data-bucket`): The bucket to store the anonymised exports
+* `anonymised_region`(`--anonymised-region`): The region in which the S3 anonymised data bucket is located. If not specified, the `region` parameter will be used. 
 ### Using without a Magento Installation
 
 It's not always possible to run Magedbm2 on the same server that a Magento installation is present, for example you might want to run a cron for Magedbm2 on your database server so that you don't clog the pipe to the application server with unnecessary export traffic.
@@ -51,7 +51,7 @@ This gives us the ability to use Magedbm2 without Magento at all, should we want
 
 While the ability to specify the credentials as command line options is useful in automated scenarios, for personal everyday usage Magedbm2 can be configured to remember your credentials by running:
 
-    magedbm2 configure [--access-key="..."] [--secret-key="..."] [--region="..."] [--bucket="..."] [--data-bucket="..."] [--db-host="..."] [--db-user="..."] [--db-pass="..."] [--db-port="..."] [--db-name="..."][-n] <file-name>
+    magedbm2 configure [--access-key="..."] [--secret-key="..."] [--region="..."] [--bucket="..."] [--anonymised-data-bucket="..."] [--anonymised-region][--db-host="..."] [--db-user="..."] [--db-pass="..."] [--db-port="..."] [--db-name="..."][-n] <file-name>
 
 By default, the configure command will interactively prompt you for each of the configuration details. Alternatively, you can run it in a non-interactive mode with the `-n` option and specify the credentials you want to save using the options.
 

@@ -263,7 +263,16 @@ class S3 implements StorageInterface, LoggerAwareInterface
         if (!$this->client instanceof S3Client) {
             $params = $this->default_params;
 
-            if ($region = $this->getConfig()->get(Option::STORAGE_REGION)) {
+            $region = null;
+            if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
+                $region = $this->getConfig()->get(Option::STORAGE_ANONYMISED_REGION, true);
+            }
+
+            if (!$region) {
+                $region = $this->getConfig()->get(Option::STORAGE_REGION);
+            }
+
+            if ($region) {
                 $params['region'] = $region;
             }
 
@@ -307,9 +316,9 @@ class S3 implements StorageInterface, LoggerAwareInterface
         }
 
         if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA
-            && !$this->getConfig()->get(Option::STORAGE_DATA_BUCKET, true)
+            && !$this->getConfig()->get(Option::STORAGE_ANONYMISED_BUCKET, true)
         ) {
-            throw new ConfigurationException('A data bucket needs to be defined');
+            throw new ConfigurationException('A data bucket for anonymised exports needs to be defined');
         }
 
         try {
@@ -329,7 +338,7 @@ class S3 implements StorageInterface, LoggerAwareInterface
     private function getBucket()
     {
         if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA) {
-            return $this->getConfig()->get(Option::STORAGE_DATA_BUCKET);
+            return $this->getConfig()->get(Option::STORAGE_ANONYMISED_BUCKET);
         }
 
         return $this->getConfig()->get(Option::STORAGE_BUCKET);

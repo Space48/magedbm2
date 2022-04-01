@@ -67,12 +67,17 @@ class LsCommand extends BaseCommand
             return $parentExitCode;
         }
 
-        if ($this->storage->validateConfiguration()) {
-            $this->output->writeln("Storage: Stripped Databases");
-            $this->output->writeln("========================================");
-            $this->renderStorage($this->storage, $input, $output);
-            $this->output->writeln('');
+        try {
+            if ($this->storage->validateConfiguration()) {
+                $this->output->writeln("Storage: Stripped Databases");
+                $this->output->writeln("========================================");
+                $this->renderStorage($this->storage, $input, $output);
+                $this->output->writeln('');
+            }
+        } catch (ConfigurationException $configurationException) {
+            $this->output->writeln('Not rendering stripped exports due to: ' . $configurationException->getMessage());
         }
+
 
         try {
             if ($this->dataStorage->validateConfiguration()) {

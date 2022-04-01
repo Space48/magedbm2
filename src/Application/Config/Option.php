@@ -15,6 +15,12 @@ final class Option
     const DB_PASS = 'db-pass';
     const DB_PORT = 'db-port';
 
+    const YAML_DB_HOST = 'db_host';
+    const YAML_DB_NAME = 'db_name';
+    const YAML_DB_USER = 'db_user';
+    const YAML_DB_PASS = 'db_pass';
+    const YAML_DB_PORT = 'db_port';
+
     const TABLE_GROUPS = 'table-groups';
     
     const TEMPORARY_DIR = 'tmp-dir';
@@ -27,10 +33,16 @@ final class Option
     const NO_CLEAN = 'no-clean';
 
     const STORAGE_SECRET_KEY = 'secret-key';
-    const STORAGE_DATA_BUCKET = 'data-bucket';
+    const STORAGE_ANONYMISED_BUCKET = 'anonymised-data-bucket';
     const STORAGE_BUCKET = 'bucket';
     const STORAGE_REGION = 'region';
+    const STORAGE_ANONYMISED_REGION = 'anonymised-region';
     const STORAGE_ACCESS_KEY = 'access-key';
+
+    const YAML_STORAGE_SECRET_KEY = 'secret_key';
+    const YAML_STORAGE_ACCESS_KEY = 'access_key';
+    const YAML_ANONYMISED_BUCKET = 'anonymised_data_bucket';
+    const YAML_ANONYMISED_REGION = 'anonymised_region';
 
     /**
      * Options that a user is allowed to save in a configuration file.
@@ -40,21 +52,28 @@ final class Option
     public static function allowUserToPersist()
     {
         return [
-            self::DB_HOST,
-            self::DB_NAME,
-            self::DB_USER,
-            self::DB_PASS,
-            self::DB_PORT,
+            self::YAML_DB_HOST,
+            self::YAML_DB_NAME,
+            self::YAML_DB_USER,
+            self::YAML_DB_PASS,
+            self::YAML_DB_PORT,
 
-            self::STORAGE_ACCESS_KEY,
-            self::STORAGE_SECRET_KEY,
+            self::YAML_STORAGE_ACCESS_KEY,
+            self::YAML_STORAGE_SECRET_KEY,
             self::STORAGE_BUCKET,
-            self::STORAGE_REGION
+            self::STORAGE_REGION,
+            self::YAML_ANONYMISED_BUCKET,
+            self::YAML_ANONYMISED_REGION
         ];
     }
 
     private function __construct()
     {
         // Don't allow instantiation.
+    }
+
+    public static function mapYamlOptionToConfigOption(string $yamlOption)
+    {
+        return str_replace('_', '-', $yamlOption);
     }
 }

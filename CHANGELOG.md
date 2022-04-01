@@ -4,6 +4,15 @@ All notable changes will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2022-04-01
+### Changed
+- [backward incompatible] hyphens are no longer allowed in variable names in yaml files
+- an empty config file can no longer be created via the configure method
+- [backward incompatible] data bucket config name modified to reflect the fact that it denotes the bucket where the anonymised exports will be kept
+- updated to version 1.8.5 of guzzlehttp/psr7
+- ls command can now be run with either an anonymised data bucket or just a bucket config, it will just display the exports for whichever one is configured.
+- added option to host the anonymised data in a different region from the stripped data
+
 ## [4.0.0] - 2022-03-08
 
 ### Fixed 
