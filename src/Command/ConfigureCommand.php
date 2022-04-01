@@ -205,10 +205,8 @@ HELP
      */
     protected function populateOptions(InputInterface $input, SymfonyStyle $style, array $data): array
     {
-        $yamlOptionMap = Option::getYamlOptionMap();
-
         foreach (Option::allowUserToPersist() as $optionName) {
-            $configName = $yamlOptionMap[$optionName] ?? $optionName;
+            $configName = Option::mapYamlOptionToConfigOption($optionName)?? $optionName;
             if ($input->isInteractive()) {
                 $currentValue = $this->config->get($configName, true);
                 if ($currentValue) {

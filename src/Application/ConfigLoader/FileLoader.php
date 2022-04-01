@@ -63,10 +63,10 @@ class FileLoader implements ConfigLoaderInterface
 
     private function formatConfigVariableNames(array $variables)
     {
-        $yamlToConfigVariableNameMap = Option::getYamlOptionMap();
         foreach ($variables as $variableName => $variableValue) {
-            if (array_key_exists($variableName, $yamlToConfigVariableNameMap)) {
-                $variables[$yamlToConfigVariableNameMap[$variableName]] = $variableValue;
+            $configOption = Option::mapYamlOptionToConfigOption($variableName);
+            if ($configOption && $configOption !== $variableName) {
+                $variables[$configOption] = $variableValue;
                 unset($variables[$variableName]);
             }
         }
