@@ -28,6 +28,7 @@ final class Option
     const FORCE = 'force';
     const DOWNLOAD_ONLY = 'download-only';
     const STRIP = 'strip';
+    const EXCLUDE_STRIPPED_TABLES = 'exclude-stripped-tables';
 
     const CLEAN_COUNT = 'clean';
     const NO_CLEAN = 'no-clean';

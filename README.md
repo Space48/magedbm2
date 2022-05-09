@@ -68,11 +68,13 @@ There are some advanced configuration options that you may be interested in, suc
 
 ### Upload a database backup
 
-    magedbm2 put [--strip="@development"] [--clean=NUM|--no-clean] <project>
+    magedbm2 put [--strip="@development"] [--exclude-stripped-tables] [--clean=NUM|--no-clean] <project>
 
 The `put` command will create a database backup and upload it to S3. If no database parameters are passed through on the command line, Magento will be assumed, and the database details will attempted to be loaded from the current working directory, or the directory specified by `--root-dir`.
 
 By default, the tables defined in the `@development` table group (which can be seen by running `magedbm2 put --help`) will be stripped. Additional tables or table groups can be added to the `--strip` option, separated by spaces, e.g. `--strip="@log @sessions customtable customprefix*"`.
+
+By default, the `--strip` option creates empty tables with no data for the stripped tables, to exclude those tables entirely use the option `--exclude-stripped-tables`
 
 The `put` command also automatically cleans up old database backups once a new one has been uploaded, keeping only the 5 most recent backup files. You can customise the number of retained backups with the `--clean` option, or disable it completely with `--no-clean`.
 

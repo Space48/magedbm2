@@ -103,7 +103,7 @@ class Shell implements DatabaseInterface
      * @throws \Symfony\Component\Process\Exception\LogicException
      * @throws \Symfony\Component\Process\Exception\RuntimeException
      */
-    public function dump($identifier, $strip_tables_patterns = '')
+    public function dump($identifier, $strip_tables_patterns = '', $exclude_stripped_tables = false)
     {
         $stripTables = array_filter($this->getStripTables($strip_tables_patterns));
 
@@ -118,7 +118,7 @@ class Shell implements DatabaseInterface
         /** @var Process[] $commands */
         $commands = [];
 
-        if (count($stripTables) > 0) {
+        if (count($stripTables) > 0 && !$exclude_stripped_tables) {
             // Create the structure-only dump for tables that we don't want the data from.
             $commands[] = $this->createDumpProcess()
                 ->argument('--no-data')
