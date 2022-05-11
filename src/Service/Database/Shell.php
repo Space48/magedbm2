@@ -98,12 +98,13 @@ class Shell implements DatabaseInterface
      *
      * @param string $identifier An identifier for the dump file.
      * @param string $strip_tables_patterns List of table patterns to dump with no data.
+     * @param bool $exclude_stripped_tables If strip tables is set, define if empty tables are excluded from the dump
      *
      * @return string Path to the database dump.
      * @throws \Symfony\Component\Process\Exception\LogicException
      * @throws \Symfony\Component\Process\Exception\RuntimeException
      */
-    public function dump($identifier, $strip_tables_patterns = '')
+    public function dump($identifier, $strip_tables_patterns = '', $exclude_stripped_tables = false)
     {
         $stripTables = array_filter($this->getStripTables($strip_tables_patterns));
 
@@ -118,7 +119,7 @@ class Shell implements DatabaseInterface
         /** @var Process[] $commands */
         $commands = [];
 
-        if (count($stripTables) > 0) {
+        if (count($stripTables) > 0 && !$exclude_stripped_tables) {
             // Create the structure-only dump for tables that we don't want the data from.
             $commands[] = $this->createDumpProcess()
                 ->argument('--no-data')

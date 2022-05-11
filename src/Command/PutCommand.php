@@ -92,6 +92,12 @@ class PutCommand extends BaseCommand
                 "@development"
             )
             ->addOption(
+                Option::EXCLUDE_STRIPPED_TABLES,
+                "S",
+                InputOption::VALUE_NONE,
+                "Do not include structure for the stripped tables."
+            )
+            ->addOption(
                 Option::CLEAN_COUNT,
                 "c",
                 InputOption::VALUE_REQUIRED,
@@ -123,6 +129,7 @@ class PutCommand extends BaseCommand
 
         $project = $input->getArgument(self::ARG_PROJECT);
         $strip_tables = $input->getOption(Option::STRIP) ?? '@development';
+        $exclude_stripped_tables = $input->getOption(Option::EXCLUDE_STRIPPED_TABLES);
 
         $output->writeln(
             "<info>Creating a backup file of the database...</info>",
@@ -132,7 +139,7 @@ class PutCommand extends BaseCommand
         try {
             $this->database->setLogger($this->getLogger());
 
-            $local_file = $this->database->dump($project, $this->tableExpander->expand($strip_tables));
+            $local_file = $this->database->dump($project, $this->tableExpander->expand($strip_tables), $exclude_stripped_tables);
 
             if (!file_exists($local_file)) {
                 throw new ServiceException(sprintf(
