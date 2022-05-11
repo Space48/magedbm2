@@ -98,6 +98,7 @@ class Shell implements DatabaseInterface
      *
      * @param string $identifier An identifier for the dump file.
      * @param string $strip_tables_patterns List of table patterns to dump with no data.
+     * @param bool $exclude_stripped_tables If strip tables is set, define if empty tables are excluded from the dump
      *
      * @return string Path to the database dump.
      * @throws \Symfony\Component\Process\Exception\LogicException
