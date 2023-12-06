@@ -87,7 +87,8 @@ class Config implements ConfigInterface, LoggerAwareInterface
                         $configReader->getDatabaseUsername() ?? '',
                         $configReader->getDatabasePassword() ?? '',
                         $configReader->getDatabaseHost() ?? '',
-                        $configReader->getDatabasePort() ?? ''
+                        $configReader->getDatabasePort() ?? '',
+                        // @TODO: Support SSL CA from config reader.
                     );
 
                     return $this->databaseCredentials;
@@ -103,7 +104,8 @@ class Config implements ConfigInterface, LoggerAwareInterface
                 $this->get(Option::DB_USER, true) ?? '',
                 $this->get(Option::DB_PASS, true) ?? '',
                 $this->get(Option::DB_HOST, true) ?? 'localhost',
-                $this->get(Option::DB_PORT, true) ?? '3306'
+                $this->get(Option::DB_PORT, true) ?? '3306',
+                $this->get(Option::DB_SSL_CA, true) ?? null,
             );
         }
 

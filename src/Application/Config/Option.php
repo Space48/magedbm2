@@ -14,12 +14,14 @@ final class Option
     const DB_USER = 'db-user';
     const DB_PASS = 'db-pass';
     const DB_PORT = 'db-port';
+    const DB_SSL_CA = 'db-ssl-ca';
 
     const YAML_DB_HOST = 'db_host';
     const YAML_DB_NAME = 'db_name';
     const YAML_DB_USER = 'db_user';
     const YAML_DB_PASS = 'db_pass';
     const YAML_DB_PORT = 'db_port';
+    const YAML_DB_SSL_CA = 'db_ssl_ca';
 
     const TABLE_GROUPS = 'table-groups';
     
@@ -57,6 +59,7 @@ final class Option
             self::YAML_DB_USER,
             self::YAML_DB_PASS,
             self::YAML_DB_PORT,
+            self::YAML_DB_SSL_CA,
 
             self::YAML_STORAGE_ACCESS_KEY,
             self::YAML_STORAGE_SECRET_KEY,
