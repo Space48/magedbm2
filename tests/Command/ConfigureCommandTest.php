@@ -65,6 +65,7 @@ class ConfigureCommandTest extends AbstractCommandTest
             '',
             '',
             '',
+            '',
             'yes' // Confirm write
         ]);
 

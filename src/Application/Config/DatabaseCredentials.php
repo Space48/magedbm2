@@ -29,18 +29,25 @@ class DatabaseCredentials
      */
     private $port;
 
+    /**
+     * @var string
+     */
+    private $sslCAPath;
+
     public function __construct(
         string $name,
         string $username,
         string $password = null,
         string $host = 'localhost',
-        string $port = '3306'
+        string $port = '3306',
+        string $sslCAPath = null
     ) {
         $this->name = $name;
         $this->username = $username;
         $this->password = $password;
         $this->host = $host;
         $this->port = $port;
+        $this->sslCAPath = $sslCAPath;
     }
 
     /**
@@ -83,11 +90,20 @@ class DatabaseCredentials
         return $this->port;
     }
 
+    public function getSSLCAPath(): ?string {
+        return $this->sslCAPath;
+    }
+
     /**
      * @return \PDO
      */
     public function createPDO(): \PDO
     {
+        $options = array()
+        if ($this->getSSLCAPath() !== null) {
+            $options[PDO::MYSQL_ATTR_SSL_CA] = $this->getSSLCAPath();
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+        }
         return new \PDO(
             sprintf(
                 'mysql:dbname=%s;host=%s;port=%s;charset=utf8',
@@ -96,7 +112,8 @@ class DatabaseCredentials
                 $this->getPort()
             ),
             $this->getUsername(),
-            $this->getPassword()
+            $this->getPassword(),
+            $options
         );
     }
 }

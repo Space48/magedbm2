@@ -165,6 +165,12 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     'Database name'
                 ),
                 new InputOption(
+                    Option::DB_SSL_CA,
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    'Path to SSL CA e.g. /etc/ssl/my-cert.pem'
+                ),
+                new InputOption(
                     Option::ROOT_DIR,
                     null,
                     InputOption::VALUE_REQUIRED,
