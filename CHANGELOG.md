@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2022-04-01
+### Added
+Added Command Line only Support for SSL connections to the database. An optional parameter, db-ssl-ca, is now usable on commandline. Expects Path to SSL CA e.g. /etc/ssl/my-cert.pem
+
 ## [5.0.0] - 2022-04-01
 ### Changed
 - [backward incompatible] hyphens are no longer allowed in variable names in yaml files
