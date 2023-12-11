@@ -99,10 +99,10 @@ class DatabaseCredentials
      */
     public function createPDO(): \PDO
     {
-        $options = array()
+        $options = array();
         if ($this->getSSLCAPath() !== null) {
-            $options[PDO::MYSQL_ATTR_SSL_CA] = $this->getSSLCAPath();
-            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            $options[\PDO::MYSQL_ATTR_SSL_CA] = $this->getSSLCAPath();
+            $options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
         }
         return new \PDO(
             sprintf(
