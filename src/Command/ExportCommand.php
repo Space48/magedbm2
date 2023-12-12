@@ -125,7 +125,8 @@ class ExportCommand extends BaseCommand
             'host' => $this->config->getDatabaseCredentials()->getHost(),
             'user' => $this->config->getDatabaseCredentials()->getUsername(),
             'password' => $this->config->getDatabaseCredentials()->getPassword(),
-            'port' => $this->config->getDatabaseCredentials()->getPort()
+            'port' => $this->config->getDatabaseCredentials()->getPort(),
+            'ssl-ca' => $this->config->getDatabaseCredentials()->getSSLCAPath(),
         ];
 
         $args = [];
