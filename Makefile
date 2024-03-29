@@ -2,6 +2,9 @@
 
 build: magedbm2.phar
 
+build-in-container:
+	docker-compose run --rm build /bin/bash -c "cd /var/www/html && make build"
+
 clean:
 	rm -rf vendor box.phar composer.phar magedbm2.phar
 

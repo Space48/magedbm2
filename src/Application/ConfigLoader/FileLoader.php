@@ -34,10 +34,6 @@ class FileLoader implements ConfigLoaderInterface
         try {
             $values = Yaml::parseFile($this->filePath);
 
-            if (is_array($values) && !$this->validateYamlVariables($values)) {
-                $this->configurationError();
-            }
-
             if (is_array($values)) {
                 $values = $this->formatConfigVariableNames($values);
             }
@@ -46,19 +42,6 @@ class FileLoader implements ConfigLoaderInterface
         } catch (ParseException $exception) {
             $this->configurationError();
         }
-    }
-
-    // yaml doesn't like variable names with hyphens (https://github.com/Space48/magedbm2/issues/21)
-    private function validateYamlVariables(array $variables)
-    {
-        $isValidYaml = true;
-        foreach ($variables as $variableName => $variableValue) {
-            if (strpos($variableName, '-') !== false) {
-                $isValidYaml = false;
-                break;
-            }
-        }
-        return $isValidYaml;
     }
 
     private function formatConfigVariableNames(array $variables)

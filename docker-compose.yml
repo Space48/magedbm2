@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  build:
+    image: docker.io/php:8.0.30-cli
+
+    container_name: magedbm_build
+    volumes:
+      - ./:/var/www/html
