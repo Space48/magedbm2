@@ -10,7 +10,7 @@ use Meanbee\Magedbm2\Service\FilesystemInterface;
 use Meanbee\Magedbm2\Service\StorageFactory;
 use Meanbee\Magedbm2\Service\StorageInterface;
 use Meanbee\Magedbm2\Shell\Command\Gzip;
-use Meanbee\Magedbm2\Shell\Command\Mysqldump;
+use Meanbee\Magedbm2\Shell\Command\MariaDbDump;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -168,7 +168,7 @@ class ExportCommand extends BaseCommand
 
         $this->getLogger()->info('Generating XML dump from database');
 
-        $command = (new Mysqldump())
+        $command = (new MariaDbDump())
             ->arguments($this->getCredentialOptions())
             ->argument('--xml')
             ->argument(escapeshellarg($this->config->getDatabaseCredentials()->getName()))
