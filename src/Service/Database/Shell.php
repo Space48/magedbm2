@@ -261,8 +261,7 @@ class Shell implements DatabaseInterface
         return $this->tablePatternExpander->expand(explode(' ', $strip_tables_patterns), $this->getAllTables());
     }
 
-
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

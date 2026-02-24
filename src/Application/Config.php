@@ -227,14 +227,7 @@ class Config implements ConfigInterface, LoggerAwareInterface
         return count(array_filter(array_keys($array), 'is_string')) !== 0;
     }
 
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

@@ -10,6 +10,7 @@ It was written with developers in mind and provides commands for:
 
 ## Requirements
 
+* `>v6.0.0` PHP >=8.1
 * `<v4.0.0` PHP >7.0 <8.0(with permission to run `exec` and `passthru`)
 * `>v4.0.0` PHP 7.4+
 * `mysql` client on the `$PATH`
