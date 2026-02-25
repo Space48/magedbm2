@@ -276,7 +276,8 @@ class S3 implements StorageInterface, LoggerAwareInterface
                 $params['region'] = $region;
             }
 
-            if (($access_key = $this->getConfig()->get(Option::STORAGE_ACCESS_KEY))
+            if (
+                ($access_key = $this->getConfig()->get(Option::STORAGE_ACCESS_KEY))
                 && ($secret_key = $this->getConfig()->get(Option::STORAGE_SECRET_KEY))
             ) {
                 $params["credentials"] = [
@@ -309,13 +310,15 @@ class S3 implements StorageInterface, LoggerAwareInterface
      */
     public function validateConfiguration(): bool
     {
-        if ($this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE
+        if (
+            $this->purpose === StorageInterface::PURPOSE_STRIPPED_DATABASE
             && !$this->getConfig()->get(Option::STORAGE_BUCKET, true)
         ) {
             throw new ConfigurationException('A bucket needs to be defined');
         }
 
-        if ($this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA
+        if (
+            $this->purpose === StorageInterface::PURPOSE_ANONYMISED_DATA
             && !$this->getConfig()->get(Option::STORAGE_ANONYMISED_BUCKET, true)
         ) {
             throw new ConfigurationException('A data bucket for anonymised exports needs to be defined');

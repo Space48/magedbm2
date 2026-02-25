@@ -8,7 +8,7 @@ use VirtualFileSystem\FileSystem;
 
 class Fake implements DatabaseInterface
 {
-    const DUMP_FILE_LOCATION = '/fake-dump.sql.gz';
+    public const DUMP_FILE_LOCATION = '/fake-dump.sql.gz';
 
     /**
      * @var FileSystem

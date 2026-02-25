@@ -12,15 +12,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RmCommand extends BaseCommand
 {
-    const RETURN_CODE_STORAGE_ERROR = 1;
-
-    const ARG_TYPE    = "type";
-    const ARG_PROJECT = "project";
-    const ARG_FILE    = "file";
-    const NAME        = "rm";
-
-    const TYPE_DATABASE = 'database';
-    const TYPE_EXPORT   = 'export';
+    public const RETURN_CODE_STORAGE_ERROR = 1;
+    public const ARG_TYPE    = "type";
+    public const ARG_PROJECT = "project";
+    public const ARG_FILE    = "file";
+    public const NAME        = "rm";
+    public const TYPE_DATABASE = 'database';
+    public const TYPE_EXPORT   = 'export';
 
     /** @var StorageInterface */
     protected $storage;

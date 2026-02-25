@@ -23,10 +23,10 @@ use XMLReader;
  */
 class ImportCommand extends BaseCommand
 {
-    const NAME            = 'import';
-    const OPT_NO_PROGRESS = 'no-progress';
-    const ARG_PROJECT     = "project";
-    const ARG_FILE        = "file";
+    public const NAME            = 'import';
+    public const OPT_NO_PROGRESS = 'no-progress';
+    public const ARG_PROJECT     = "project";
+    public const ARG_FILE        = "file";
 
     /**
      * @var \PDO

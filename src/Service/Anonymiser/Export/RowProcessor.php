@@ -92,7 +92,7 @@ abstract class RowProcessor
             if (in_array('Faker\Provider\Base', class_parents($class), true)) {
                 $instance = new $class($this->faker);
             } else {
-                $instance = new $class;
+                $instance = new $class();
             }
 
             if ($method) {

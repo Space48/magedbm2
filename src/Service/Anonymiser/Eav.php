@@ -4,7 +4,7 @@ namespace Meanbee\Magedbm2\Service\Anonymiser;
 
 class Eav
 {
-    const VALUE_TYPES = ['datetime', 'decimal', 'int', 'text', 'varchar'];
+    public const VALUE_TYPES = ['datetime', 'decimal', 'int', 'text', 'varchar'];
 
     /**
      * Gets tht entity name from a table.

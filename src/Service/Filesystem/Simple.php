@@ -6,7 +6,6 @@ use Meanbee\Magedbm2\Service\FilesystemInterface;
 
 class Simple implements FilesystemInterface
 {
-
     /**
      * @inheritdoc
      */

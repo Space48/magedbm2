@@ -24,10 +24,10 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ConfigureCommand extends BaseCommand
 {
-    const RETURN_CODE_SAVE_ERROR = 1;
-    const NAME = 'configure';
+    public const RETURN_CODE_SAVE_ERROR = 1;
+    public const NAME = 'configure';
 
-    const ARG_CONFIG_FILE = 'config-file';
+    public const ARG_CONFIG_FILE = 'config-file';
 
     /** @var FilesystemInterface */
     protected $filesystem;
@@ -109,6 +109,8 @@ HELP
 
     /**
      * @inheritdoc
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -168,10 +170,12 @@ HELP
         );
 
         if ($this->input->isInteractive()) {
-            if (!$style->confirm(
-                sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile),
-                false
-            )) {
+            if (
+                !$style->confirm(
+                    sprintf('Are you sure you want to write these configuration values to %s?', $configurationFile),
+                    false
+                )
+            ) {
                 return 0;
             }
         }
@@ -206,7 +210,7 @@ HELP
     protected function populateOptions(InputInterface $input, SymfonyStyle $style, array $data): array
     {
         foreach (Option::allowUserToPersist() as $optionName) {
-            $configName = Option::mapYamlOptionToConfigOption($optionName)?? $optionName;
+            $configName = Option::mapYamlOptionToConfigOption($optionName) ?? $optionName;
             if ($input->isInteractive()) {
                 $currentValue = $this->config->get($configName, true);
                 if ($currentValue) {

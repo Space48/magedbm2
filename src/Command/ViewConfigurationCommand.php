@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class ViewConfigurationCommand extends BaseCommand
 {
-    const NAME = 'view-config';
+    public const NAME = 'view-config';
 
     public function __construct(ConfigInterface $config)
     {

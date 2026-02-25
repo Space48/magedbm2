@@ -15,7 +15,7 @@ class EavRowProcessor extends RowProcessor
      */
     public function process(Row $row)
     {
-        $output  = "\t\t" .'<row>'. "\n";
+        $output  = "\t\t" . '<row>' . "\n";
 
         if (Eav::isValueTable($row->table)) {
             $output .= $this->processDataTable($row);
@@ -23,7 +23,7 @@ class EavRowProcessor extends RowProcessor
             $output .= $this->processEntityTable($row);
         }
 
-        $output .= "\t\t" .'</row>'. "\n";
+        $output .= "\t\t" . '</row>' . "\n";
 
         return $output;
     }

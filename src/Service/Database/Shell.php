@@ -26,16 +26,6 @@ use Symfony\Component\Process\Process;
 class Shell implements DatabaseInterface
 {
     /**
-     * This is the amount of time that a process will be allowed to execute for.
-     */
-    const PROCESS_TIMEOUT_SECONDS = 3600;
-
-    /**
-     * @var Application
-     */
-    private $app;
-
-    /**
      * @var Application\ConfigInterface
      */
     private $config;
@@ -50,9 +40,8 @@ class Shell implements DatabaseInterface
      */
     private $logger;
 
-    public function __construct(Application $app, Application\ConfigInterface $config)
+    public function __construct(Application\ConfigInterface $config)
     {
-        $this->app = $app;
         $this->config = $config;
         $this->tablePatternExpander = new TablePatternExpander();
         $this->logger = new NullLogger();

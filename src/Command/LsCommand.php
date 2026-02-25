@@ -14,10 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LsCommand extends BaseCommand
 {
-    const RETURN_CODE_STORAGE_ERROR = 1;
+    public const RETURN_CODE_STORAGE_ERROR = 1;
 
-    const ARG_PROJECT = "project";
-    const NAME        = "ls";
+    public const ARG_PROJECT = "project";
+    public const NAME        = "ls";
 
     /** @var StorageInterface */
     protected $storage;

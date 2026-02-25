@@ -43,21 +43,22 @@ class FileLoader implements ConfigLoaderInterface
             }
 
             return new Config($values);
-        } catch (ParseException $exception) {
+        } catch (ParseException) {
             $this->configurationError();
         }
     }
 
-    // yaml doesn't like variable names with hyphens (https://github.com/Space48/magedbm2/issues/21)
+    // YAML doesn't like variable names with hyphens (https://github.com/Space48/magedbm2/issues/21)
     private function validateYamlVariables(array $variables)
     {
         $isValidYaml = true;
-        foreach ($variables as $variableName => $variableValue) {
-            if (strpos($variableName, '-') !== false) {
+        foreach (array_keys($variables) as $variableName) {
+            if (str_contains($variableName, '-')) {
                 $isValidYaml = false;
                 break;
             }
         }
+
         return $isValidYaml;
     }
 
@@ -74,7 +75,7 @@ class FileLoader implements ConfigLoaderInterface
     }
 
     // the following line throws a void return not allowed for php <7.0, we do not support php 7.0
-    private function configurationError(): void //phpcs:ignore
+    private function configurationError(): void
     {
         throw new ConfigurationException(sprintf(
             'The configuration file at %s does not contain valid YAML',

@@ -7,5 +7,4 @@ namespace Meanbee\Magedbm2\Exception;
  */
 class ConfigurationException extends BaseException
 {
-
 }

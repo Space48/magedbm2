@@ -22,11 +22,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class PutCommand extends BaseCommand
 {
-    const RETURN_CODE_DATABASE_ERROR = 1;
-    const RETURN_CODE_STORAGE_ERROR = 2;
+    public const RETURN_CODE_DATABASE_ERROR = 1;
+    public const RETURN_CODE_STORAGE_ERROR = 2;
 
-    const ARG_PROJECT = "project";
-    const NAME        = "put";
+    public const ARG_PROJECT = "project";
+    public const NAME        = "put";
 
     /** @var DatabaseInterface */
     protected $database;

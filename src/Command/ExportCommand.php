@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ExportCommand extends BaseCommand
 {
-    const NAME = 'export';
+    public const NAME = 'export';
 
     /**
      * @var Export
