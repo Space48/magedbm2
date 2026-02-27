@@ -1,6 +1,12 @@
 [
   {
     "name": "magedbm2.phar",
+    "sha1": "093C4EA219F56BA2A7E8ADC27602AB1EDB1BE848",
+    "url": "https://github.com/space48/magedbm2/releases/download/6.0.1/magedbm2.phar",
+    "version": "6.0.1"
+  },
+  {
+    "name": "magedbm2.phar",
     "sha1": "BF0743FE992E3477EC96B1CCB5BBB31EC6DCB52C",
     "url": "https://github.com/space48/magedbm2/releases/download/6.0.0/magedbm2.phar",
     "version": "6.0.0"
