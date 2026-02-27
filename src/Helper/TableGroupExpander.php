@@ -10,7 +10,7 @@ class TableGroupExpander
      * @var TableGroup[]
      */
     private $tableGroups;
-    
+
     /**
      * @param TableGroup[] $tableGroups
      */
@@ -26,18 +26,18 @@ class TableGroupExpander
     {
         $this->tableGroups = $tableGroups;
     }
-    
+
     /**
      * @inheritdoc
      */
     public function expand($tables = '')
     {
         $tableDefinitions = explode(' ', $tables);
-        
+
         foreach ($tableDefinitions as $idx => $table) {
             if ($this->looksLikeTableDefinition($table)) {
                 $tableGroup  = $this->getTableDefinition($table);
-                
+
                 if ($tableGroup !== null) {
                     $tableDefinitions[$idx] = implode(' ', $tableGroup->getTables());
                 } else {
@@ -47,7 +47,7 @@ class TableGroupExpander
         }
 
         $tableDefinitions = array_map('trim', $tableDefinitions);
-        
+
         $tableDefinitionString = implode(' ', $tableDefinitions);
 
         if (!$this->containsTableDefinition($tableDefinitionString)) {
@@ -56,7 +56,7 @@ class TableGroupExpander
 
         return $this->expand($tableDefinitionString);
     }
-    
+
     /**
      * @param $string
      * @return bool
@@ -74,7 +74,7 @@ class TableGroupExpander
     {
         return strpos($string, '@') !== false;
     }
-    
+
     /**
      * @param $string
      * @return TableGroup|null
@@ -82,13 +82,13 @@ class TableGroupExpander
     protected function getTableDefinition($string)
     {
         $tableGroupId = substr($string, 1);
-        
+
         foreach ($this->tableGroups as $tableGroup) {
             if ($tableGroup->getId() === $tableGroupId) {
                 return $tableGroup;
             }
         }
-        
+
         return null;
     }
 }

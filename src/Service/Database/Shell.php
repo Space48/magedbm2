@@ -12,7 +12,7 @@ use Meanbee\Magedbm2\Shell\Command\EchoPrint;
 use Meanbee\Magedbm2\Shell\Command\Gunzip;
 use Meanbee\Magedbm2\Shell\Command\Gzip;
 use Meanbee\Magedbm2\Shell\Command\Mysql;
-use Meanbee\Magedbm2\Shell\Command\Mysqldump;
+use Meanbee\Magedbm2\Shell\Command\MariaDbDump;
 use Meanbee\Magedbm2\Shell\Command\Sed;
 use Meanbee\Magedbm2\Shell\CommandInterface;
 use Meanbee\Magedbm2\Shell\Pipe;
@@ -25,16 +25,6 @@ use Symfony\Component\Process\Process;
  */
 class Shell implements DatabaseInterface
 {
-    /**
-     * This is the amount of time that a process will be allowed to execute for.
-     */
-    const PROCESS_TIMEOUT_SECONDS = 3600;
-
-    /**
-     * @var Application
-     */
-    private $app;
-
     /**
      * @var Application\ConfigInterface
      */
@@ -50,9 +40,8 @@ class Shell implements DatabaseInterface
      */
     private $logger;
 
-    public function __construct(Application $app, Application\ConfigInterface $config)
+    public function __construct(Application\ConfigInterface $config)
     {
-        $this->app = $app;
         $this->config = $config;
         $this->tablePatternExpander = new TablePatternExpander();
         $this->logger = new NullLogger();
@@ -197,19 +186,13 @@ class Shell implements DatabaseInterface
         return $compressedFinalFile;
     }
 
-    /**
-     * @return Mysqldump
-     */
-    private function createDumpProcess()
+    private function createDumpProcess(): MariaDbDump
     {
-        return (new Mysqldump())
+        return (new MariaDbDump())
             ->arguments($this->getCredentialOptions());
     }
 
-    /**
-     *
-     */
-    private function getCredentialOptions()
+    private function getCredentialOptions(): array
     {
         $map = [
             'host' => $this->config->getDatabaseCredentials()->getHost(),
@@ -251,52 +234,30 @@ class Shell implements DatabaseInterface
         return true;
     }
 
-    /**
-     * @return array
-     */
     private function getAllTables(): array
     {
         $result = $this->getPdo()->query('SHOW TABLES');
         return $result->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    /**
-     * @return \PDO
-     */
-    private function getPdo()
+    private function getPdo(): \PDO
     {
         return $this->config->getDatabaseCredentials()->createPDO();
     }
 
-    /**
-     * @param string $strip_tables_patterns
-     * @return array
-     */
-    private function getStripTables(string $strip_tables_patterns)
+    private function getStripTables(string $strip_tables_patterns): array
     {
         return $this->tablePatternExpander->expand(explode(' ', $strip_tables_patterns), $this->getAllTables());
     }
 
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
 
-    /**
-     * String to be placed at the top of a dump.
-     *
-     * @return string
-     */
     private function getDumpHeader(): string
     {
-        $dumpHeader = sprintf(
+        return sprintf(
             "-- Generator: %s (%s) at %s on %s by %s\n--",
             Application::APP_NAME,
             Application::APP_VERSION,
@@ -304,7 +265,6 @@ class Shell implements DatabaseInterface
             gethostname(),
             get_current_user()
         );
-        return $dumpHeader;
     }
 
     /**

@@ -7,14 +7,14 @@ class TableGroup
     private $id;
     private $description;
     private $tables;
-    
+
     public function __construct(string $id, string $description, string $tables)
     {
         $this->id = $id;
         $this->description = $description;
         $this->tables = $this->processTablesString($tables);
     }
-    
+
     /**
      * @return string
      */
@@ -22,7 +22,7 @@ class TableGroup
     {
         return $this->id;
     }
-    
+
     /**
      * @return string
      */
@@ -30,7 +30,7 @@ class TableGroup
     {
         return $this->description;
     }
-    
+
     /**
      * @return array
      */

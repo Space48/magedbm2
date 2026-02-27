@@ -90,7 +90,8 @@ class DatabaseCredentials
         return $this->port;
     }
 
-    public function getSSLCAPath(): ?string {
+    public function getSSLCAPath(): ?string
+    {
         return $this->sslCAPath;
     }
 

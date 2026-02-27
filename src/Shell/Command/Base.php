@@ -95,6 +95,6 @@ abstract class Base implements CommandInterface
      */
     public function toProcess(): Process
     {
-        return new Process($this->toString(), null, null, null, 60 * 60 * 12);
+        return Process::fromShellCommandline($this->toString(), null, null, null, 60 * 60 * 12);
     }
 }

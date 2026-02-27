@@ -23,8 +23,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 abstract class BaseCommand extends Command implements LoggerAwareInterface
 {
-    const RETURN_CODE_SUCCESS             = 0;
-    const RETURN_CODE_CONFIGURATION_ERROR = 100;
+    public const RETURN_CODE_SUCCESS             = 0;
+    public const RETURN_CODE_CONFIGURATION_ERROR = 100;
 
     private $servicesToValidate = [];
 
@@ -106,6 +106,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
 
     /**
      * Define our global options that can be used by any subcommand.
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     protected function configure()
     {
@@ -115,7 +116,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     Option::PROJECT_CONFIG_FILE,
                     null,
                     InputOption::VALUE_OPTIONAL,
-                    // Note: Don't use the default parameter for the fall back file location as we want to distinguish
+                    // Note: Don't use the default parameter for the fallback file location as we want to distinguish
                     //       between a user defined override and the actual default.
                     sprintf(
                         "Project configuration file to use (will search for .magedbm2.yml in your current working directory if not specified, currently: %s)", //phpcs:ignore
@@ -126,7 +127,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
                     Option::GLOBAL_CONFIG_FILE,
                     null,
                     InputOption::VALUE_OPTIONAL,
-                    // Note: Don't use the default parameter for the fall back file location as we want to distinguish
+                    // Note: Don't use the default parameter for the fallback file location as we want to distinguish
                     //       between a user defined override and the actual default.
                     sprintf(
                         "User configuration file to use (will search for ~/.magedbm2/config.yml if not specified, currently: %s)", //phpcs:ignore
@@ -223,10 +224,7 @@ abstract class BaseCommand extends Command implements LoggerAwareInterface
         return $this->logger;
     }
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

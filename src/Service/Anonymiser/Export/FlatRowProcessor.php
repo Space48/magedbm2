@@ -14,13 +14,13 @@ class FlatRowProcessor extends RowProcessor
      */
     public function process(Row $row)
     {
-        $output =  "\t\t" . '<row>'. "\n";
+        $output =  "\t\t" . '<row>' . "\n";
 
         foreach ($row->all() as $columnName => $columnValue) {
             $output .= $this->formattedValue($row->table, $columnName, $columnValue);
         }
 
-        $output .= "\t\t" .'</row>'. "\n";
+        $output .= "\t\t" . '</row>' . "\n";
 
         return $output;
     }

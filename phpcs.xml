@@ -2,8 +2,8 @@
 <ruleset name="magedbm2 Code Standard">
     <description>Custom Code Standard for magedbm2</description>
 
-    <rule ref="PSR2"/>
+    <rule ref="PSR12"/>
     <rule ref="./vendor/phpcompatibility/php-compatibility/PHPCompatibility/ruleset.xml"/>
 
-    <config name="testVersion" value="7.0-" />
+    <config name="testVersion" value="8.1-" />
 </ruleset>

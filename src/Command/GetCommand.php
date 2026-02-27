@@ -23,10 +23,10 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class GetCommand extends BaseCommand
 {
-    const RETURN_CODE_DOWNLOAD_ERROR   = 1;
-    const RETURN_CODE_FILESYSTEM_ERROR = 2;
-    const RETURN_CODE_DATABASE_ERROR   = 3;
-    const NAME                         = "get";
+    public const RETURN_CODE_DOWNLOAD_ERROR   = 1;
+    public const RETURN_CODE_FILESYSTEM_ERROR = 2;
+    public const RETURN_CODE_DATABASE_ERROR   = 3;
+    public const NAME                         = "get";
 
     /** @var DatabaseInterface */
     protected $database;

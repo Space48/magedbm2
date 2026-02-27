@@ -7,7 +7,6 @@ use Meanbee\Magedbm2\Application\Config\TableGroup;
 
 interface ConfigInterface
 {
-
     /**
      * Get a config option value.
      *
@@ -26,7 +25,7 @@ interface ConfigInterface
      * @return array
      */
     public function all();
-    
+
     /**
      * Get the defined table groups.
      *

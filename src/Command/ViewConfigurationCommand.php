@@ -2,15 +2,7 @@
 
 namespace Meanbee\Magedbm2\Command;
 
-use Meanbee\Magedbm2\Application\Config\Option;
 use Meanbee\Magedbm2\Application\ConfigInterface;
-use Meanbee\Magedbm2\Service\Anonymiser\Export;
-use Meanbee\Magedbm2\Service\FilesystemFactory;
-use Meanbee\Magedbm2\Service\FilesystemInterface;
-use Meanbee\Magedbm2\Service\StorageFactory;
-use Meanbee\Magedbm2\Service\StorageInterface;
-use Meanbee\Magedbm2\Shell\Command\Gzip;
-use Meanbee\Magedbm2\Shell\Command\Mysqldump;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class ViewConfigurationCommand extends BaseCommand
 {
-    const NAME = 'view-config';
+    public const NAME = 'view-config';
 
     public function __construct(ConfigInterface $config)
     {

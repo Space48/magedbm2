@@ -2,7 +2,7 @@
 
 namespace Meanbee\Magedbm2\Shell\Command;
 
-class Mysqldump extends Base
+class MariaDbDump extends Base
 {
     public function __construct($arguments = '')
     {
@@ -11,13 +11,12 @@ class Mysqldump extends Base
         $this->arguments([
             '--single-transaction',
             '--quick',
-            '--column-statistics=0',
             '--no-tablespaces'
         ]);
     }
 
     protected function name(): string
     {
-        return 'mysqldump';
+        return 'mariadb-dump';
     }
 }

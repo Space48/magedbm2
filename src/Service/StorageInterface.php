@@ -6,8 +6,8 @@ use Meanbee\Magedbm2\Service\Storage\Data\File;
 
 interface StorageInterface extends ConfigurableServiceInterface
 {
-    const PURPOSE_STRIPPED_DATABASE = 'stripped-database';
-    const PURPOSE_ANONYMISED_DATA   = 'anon-data';
+    public final const PURPOSE_STRIPPED_DATABASE = 'stripped-database';
+    public final const PURPOSE_ANONYMISED_DATA = 'anon-data';
 
     /**
      * Define the purpose of this instantiation.

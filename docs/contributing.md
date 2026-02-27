@@ -41,7 +41,7 @@ If applicable, update the `CHANGELOG.md` with your change, following the [Keep a
 
 ## Building
 
-You can build the magedbm2 phar archive with [Box](https://github.com/box-project/box2) by running:
+You can build the magedbm2 phar archive with [Box](https://box-project.github.io/box/) by running:
 
     make build
 

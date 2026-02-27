@@ -4,7 +4,7 @@ namespace Meanbee\Magedbm2\Service\Anonymiser;
 
 class Eav
 {
-    const VALUE_TYPES = ['datetime', 'decimal', 'int', 'text', 'varchar'];
+    public const VALUE_TYPES = ['datetime', 'decimal', 'int', 'text', 'varchar'];
 
     /**
      * Gets tht entity name from a table.
@@ -12,16 +12,15 @@ class Eav
      * @param $table
      * @return mixed|null
      */
-    public static function getEntityFromTable($table)
+    public static function getEntityFromTable($table): mixed
     {
-        if (strpos($table, '_entity') === false) {
+        if (strpos((string)$table, '_entity') === false) {
             return null;
         }
 
         $entity = self::getEavParts($table)[0];
-        $entity = str_replace('_entity', '', $entity);
 
-        return $entity;
+        return str_replace('_entity', '', $entity);
     }
 
     /**
@@ -39,7 +38,7 @@ class Eav
 
     private static function getEavParts($table)
     {
-        $parts = explode('_entity_', $table);
+        $parts = explode('_entity_', (string)$table);
 
         if (count($parts) > 1) {
             return [$parts[0], $parts[1]];

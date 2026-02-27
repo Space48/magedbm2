@@ -28,9 +28,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Application extends \Symfony\Component\Console\Application
 {
-
-    const APP_NAME = "magedbm2";
-    const APP_VERSION = "3.0.1";
+    public const APP_NAME = "magedbm2";
+    public const APP_VERSION = "3.0.1";
 
     /** @var ClassLoader $autoloader */
     protected $autoloader;
