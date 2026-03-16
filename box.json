@@ -18,11 +18,8 @@
       ]
     }
   ],
-  "main": "bin/magedbm2",
   "compactors": [
-    "Herrera\\Box\\Compactor\\Php"
+    "KevinGH\\Box\\Compactor\\Json"
   ],
-  "compression": "GZ",
-  "chmod": "0755",
-  "stub": true
+  "compression": "GZ"
 }

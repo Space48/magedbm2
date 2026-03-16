@@ -11,7 +11,6 @@ class Mysqldump extends Base
         $this->arguments([
             '--single-transaction',
             '--quick',
-            '--column-statistics=0',
             '--no-tablespaces'
         ]);
     }
